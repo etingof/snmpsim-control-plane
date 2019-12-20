@@ -1,0 +1,3 @@
+include *.txt *.md *.sh
+recursive-include api *.py
+recursive-include docs *.rst *.py *.svg
