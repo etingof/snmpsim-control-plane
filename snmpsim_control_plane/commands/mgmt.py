@@ -96,6 +96,7 @@ def main():
     args = parse_args()
 
     if args.recreate_db:
+        db.drop_all()
         db.create_all()
         return 0
 
