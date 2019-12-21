@@ -7,6 +7,7 @@
 # SNMP simulator management: configuration renderer
 #
 import os
+import tempfile
 
 import jinja2
 
@@ -26,5 +27,8 @@ def render_configuration(dst_file, template, context):
 
     text = tmpl.render(context=context)
 
-    with open(dst_file, 'w') as fl:
-        fl.write(text)
+    with tempfile.NamedTemporaryFile(
+            dir=os.path.dirname(dst_file), delete=False) as fp:
+        fp.write(text)
+
+    os.rename(fp.name, dst_file)

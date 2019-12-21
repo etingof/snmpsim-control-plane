@@ -5,26 +5,26 @@
 #
 {% if context['labs'] %}
 snmpsim-command-responder \
-    --logging-method file:/var/log/snmpsim/snmpsim-command-responder.log:1d \
+    --logging-method file:/var/log/snmpsim/snmpsim-command-responder.log:1D \
     --cache-dir /tmp/snmpsim/cache \
     --process-user snmpsim --process-group snmpsim \
   {% for lab in context['labs'] %}
-    # Lab #{{ lab['id'] }} ({{ lab['name'] }}) \
     {% for agent in lab['agents'] %}
-      # Agent #{{ agent['id'] }} ({{ agent['name'] }}) \
       {% for engine in agent['engines'] %}
-        # SNMP engine #{{ engine['id'] }} ({{ engine['name'] }}) \
-        --v3-engine-id "{{ engine['engine_id'] }}" \
+    --v3-engine-id "{{ engine['engine_id'] }}" \
         {% for user in engine['users'] %}
-          # SNMP USM user entry #{{ user['id'] }} ({{ user['name'] }}) \
-          --v3-user "{{ user['user'] }}" \
-          --v3-auth-key "{{ user['auth_key'] }}" \
-          --v3-auth-proto "{{ user['auth_proto'] }}" \
-          --v3-priv-key "{{ user['priv_key'] }}" \
-          --v3-priv-proto "{{ user['priv_proto'] }}" \
+      --v3-user "{{ user['user'] }}" \
+          {% if user['auth_key'] is not none %}
+      --v3-auth-key "{{ user['auth_key'] }}" \
+      --v3-auth-proto "{{ user['auth_proto'] }}" \
+            {% if user['priv_key'] is not none %}
+      --v3-priv-key "{{ user['priv_key'] }}" \
+      --v3-priv-proto "{{ user['priv_proto'] }}" \
+            {% endif %}
+          {% endif %}
         {% endfor %}
         {% for endpoint in engine['endpoints'] %}
-        --agent-{{ endpoint['domain'] }}-endpoint "{{ endpoint['address'] }}" \
+      --agent-{{ endpoint['domain'] }}-endpoint "{{ endpoint['address'] }}" \
         {% endfor %}
       --data-dir "{{ agent['data_dir'] }}" \
       {% endfor %}

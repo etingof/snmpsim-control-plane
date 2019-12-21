@@ -6,16 +6,17 @@
 #
 # SNMP simulator management: REST API views
 #
+import os
 from functools import wraps
 
 import flask
 
 from snmpsim_control_plane.api import app
 from snmpsim_control_plane.api import db
-from snmpsim_control_plane.api.models import mgmt as models
-from snmpsim_control_plane.api.schemas import mgmt as schemas
 from snmpsim_control_plane.api.exporters import builder
 from snmpsim_control_plane.api.exporters import renderer
+from snmpsim_control_plane.api.models import mgmt as models
+from snmpsim_control_plane.api.schemas import mgmt as schemas
 
 PREFIX = '/snmpsim/mgmt/v1'
 TARGET_CONFIG = 'snmpsim-run-labs.sh'
@@ -27,8 +28,12 @@ def render_config(f):
         response = f(*args, **kwargs)
 
         context = builder.to_dict()
-        renderer.render_configuration(
-            TARGET_CONFIG, 'snmpsim-command-responder.j2', context)
+
+        template = app.config['SNMPSIM_MGMT_TEMPLATE']
+        dst = os.path.join(
+            app.config['SNMPSIM_MGMT_DESTINATION'], TARGET_CONFIG)
+
+        renderer.render_configuration(dst, template, context)
 
         return response
 
