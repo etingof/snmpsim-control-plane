@@ -24,9 +24,9 @@ app. For experimenting and trying it out in a non-production environment,
 it can be run stand-alone. For production use it's way better to run it
 under a WSGI HTTP Server such as [gunicorn](https://gunicorn.org).
 
-Once the tool is up and running, just follow OpenAPI specification (shipped
-alone with this package) to configure your SNMP Simulator instance by
-issuing a series of REST API calls.
+Once the `snmpsim-restapi-mgmt` tool is up and running, just follow OpenAPI
+specification (shipped alone with this package) to configure your SNMP
+Simulator instance by issuing a series of REST API calls.
 
 For example, to create a virtual laboratory:
 
@@ -77,6 +77,11 @@ snmpsim-command-responder \
       --data-dir "data" \
 
 ```
+
+The above script is rendered from a Jinja2 template. If you need to have
+SNMP simulator invoked somehow differently, just copy over the built-in
+template, modify it and pass to the REST API server via a configuration
+option.
 
 Monitoring part of REST API provides ever growing counters reflecting the
 operations of SNMP Simulator instances running under the supervision of
