@@ -67,6 +67,14 @@ def parse_args():
              'SNMPSIM_MGMT_SSL_KEY.')
 
     parser.add_argument(
+        '--data-root',
+        type=str, default='/use/share/snmpsim/data',
+        help='Path to a SNMP simulation data root directory. SNMP command '
+             'responder will be configured with its data files being under '
+             'this directory. Can also be set via config variable '
+             'SNMPSIM_MGMT_DATAROOT.')
+
+    parser.add_argument(
         '--template',
         type=str, default='snmpsim-command-responder.j2',
         help='Path to Jinja2 template to use for rendering SNMP simulator command '

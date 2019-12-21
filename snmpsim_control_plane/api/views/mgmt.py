@@ -11,6 +11,7 @@ from functools import wraps
 
 import flask
 
+from snmpsim_control_plane import error
 from snmpsim_control_plane.api import app
 from snmpsim_control_plane.api import db
 from snmpsim_control_plane.api.exporters import builder
@@ -31,7 +32,8 @@ def render_config(f):
 
         template = app.config['SNMPSIM_MGMT_TEMPLATE']
         dst = os.path.join(
-            app.config['SNMPSIM_MGMT_DESTINATION'], TARGET_CONFIG)
+            app.config['SNMPSIM_MGMT_DESTINATION'],
+            TARGET_CONFIG)
 
         renderer.render_configuration(dst, template, context)
 
@@ -299,6 +301,21 @@ def show_agent(id):
 @render_config
 def new_agent():
     req = flask.request.json
+
+    data_dir = req.get('data_dir')
+    if data_dir:
+        data_dir = os.path.join(
+            app.config['SNMPSIM_MGMT_DATAROOT'],
+            data_dir)
+
+        data_dir = os.path.abspath(data_dir)
+
+        if not data_dir.startswith(
+                os.path.abspath(app.config['SNMPSIM_MGMT_DATAROOT'])):
+            raise error.ControlPlaneError(
+                'Data directory outside of data root: %s' % data_dir)
+
+        req.update(data_dir=data_dir)
 
     agent = models.Agent(**req)
     db.session.add(agent)

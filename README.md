@@ -97,6 +97,14 @@ Just run:
 $ pip install snmpsim-control-plane
 ```
 
+To run a development version of REST API management server:
+
+```commandline
+$ snmpsim-restapi-mgmt  --recreate-db
+$ snmpsim-restapi-mgmt  --destination /tmp 
+...
+```
+
 Getting help
 ------------
 
