@@ -42,7 +42,8 @@ class UserSchema(ma.ModelSchema):
 class EngineSchema(ma.ModelSchema):
     class Meta:
         model = models.Engine
-        fields = ('id', 'engine_id', 'users', 'endpoints', 'agents', '_links')
+        fields = ('id', 'name', 'engine_id', 'users', 'endpoints',
+                  'agents', '_links')
 
     users = ma.Nested(UserSchema, many=True, exclude=('engines',))
     endpoints = ma.Nested(EndpointSchema, many=True, exclude=('engines',))

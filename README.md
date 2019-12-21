@@ -16,21 +16,6 @@ Features
 * Generates performance and operational metrics
 * REST API is compliant to OpenAPI 3.0.0
 
-Download
---------
-
-SNMP Simulator Control Plane tool is freely available for download from
-[PyPI](https://pypi.org/project/snmpsim-control-plane/).
-
-Installation
-------------
-
-Just run:
-
-```bash
-$ pip install snmpsim-control-plane
-```
-
 How to use SNMP Simulator Control Plane
 ---------------------------------------
 
@@ -46,6 +31,21 @@ issuing a series of REST API calls.
 Monitoring part of REST API provides ever growing counters reflecting the
 operations of SNMP Simulator instances running under the supervision of
 this control plane tool.
+
+Download
+--------
+
+SNMP Simulator Control Plane tool is freely available for download from
+[PyPI](https://pypi.org/project/snmpsim-control-plane/).
+
+Installation
+------------
+
+Just run:
+
+```bash
+$ pip install snmpsim-control-plane
+```
 
 Getting help
 ------------

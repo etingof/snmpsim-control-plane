@@ -1196,11 +1196,17 @@ components:
           description: >
             Descriptive name of this agent e.g. "cisco5300"
           type: string
+        data_dir:
+          description: >
+            Simulation data directory for this agent to use
+          type: string
         engine:
           description: >
-            SNMP engine ID associated with this SNMP agent
-          type: integer
-          format: int64
+            SNMP engines associated with this SNMP agent
+          type: array
+          items:
+            type: integer
+            format: int64
         selectors:
           description: >
             Ordered list of selectors probed by the agent to find a simulation

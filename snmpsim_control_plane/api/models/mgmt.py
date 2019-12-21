@@ -36,6 +36,7 @@ class User(db.Model):
 
 class Engine(db.Model):
     id = db.Column(db.Integer(), primary_key=True)
+    name = db.Column(db.String(64), nullable=True)
     engine_id = db.Column(db.String(32), default='auto')
     users = db.relationship(
         'User', cascade="all,delete", secondary='engine_user',
