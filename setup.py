@@ -45,8 +45,9 @@ if sys.version_info[:2] < (2, 7):
 with open(os.path.join('snmpsim_control_plane', '__init__.py')) as fl:
     version = fl.read().split('\'')[1]
 
+# make sure to have fresh `setuptools` for this to work
 with open('requirements.txt') as fl:
-    requirements = fl.read()
+    requirements = fl.readlines()
 
 doclines = [x.strip() for x in (__doc__ or '').split('\n') if x]
 

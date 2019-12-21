@@ -1,0 +1,28 @@
+#!/bin/bash
+
+{% if context['labs'] %}
+snmpsim-command-responder \
+    --logging-method file:/var/log/snmpsim/snmpsim-command-responder.log:1d \
+    --cache-dir /tmp/snmpsim/cache \
+    --process-user snmpsim --process-group snmpsim \
+  {% for lab in context['labs'] %}
+    # Lab {{ lab['name'] }} \
+    {% for agent in lab['agents'] %}
+    # Agent {{ agent['name'] }} \
+      {% for engine in agent['engines'] %}
+    --v3-engine-id "{{ engine['engine_id'] }}" \
+        {% for user in engine['users'] %}
+    --v3-user "{{ user['user'] }}" \
+    --v3-auth-key "{{ user['auth_key'] }}" \
+    --v3-auth-proto "{{ user['auth_proto'] }}" \
+    --v3-priv-key "{{ user['priv_key'] }}" \
+    --v3-priv-proto "{{ user['priv_proto'] }}" \
+        {% endfor %}
+        {% for endpoint in engine['endpoints'] %}
+    --agent-{{ endpoint['domain'] }}-endpoint "{{ endpoint['address'] }}" \
+        {% endfor %}
+    --data-dir "{{ agent['data_dir'] }}" \
+      {% endfor %}
+    {% endfor %}
+  {% endfor %}
+{% endif %}

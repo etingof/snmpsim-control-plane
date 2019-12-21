@@ -991,7 +991,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/Error"
 
-  /labs/{id}/power:
+  /labs/{id}/power/{state}:
     description: >
       This resource represents the power state of the entire virtual laboratory.
       The virtual laboratory is identified by `id`, power state can be
@@ -1007,20 +1007,13 @@ paths:
           description: The ID of the virtual laboratory
           schema:
             type: integer
-        - name: power
+        - name: state
           in: path
           required: true
-          description: The ID of the virtual laboratory
+          description: Desired power state of the entire lab
           schema:
-            type: integer
-      requestBody:
-        description: >
-          Carries desired power state of the virtual laboratory
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/LabPowerState"
+            type: string
+            enum: ['on', 'off']
       responses:
         "204":
           description: Null response
@@ -1088,11 +1081,6 @@ components:
           description: >
             SNMP security name of this entry.
           type: string
-        level:
-          description: >
-            SNMP security level.
-          type: string
-          enum: ["noAuthNoPriv", "authNoPriv", "authPriv"]
         auth_key:
           description: >
             USM user authentication key
@@ -1298,17 +1286,6 @@ components:
       type: array
       items:
         $ref: "#/components/schemas/Lab"
-
-    LabPowerState:
-      description: >
-        Desired lab power state.
-      type: object
-      properties:
-        state:
-          description: >
-            Power state of all SNMP agents in this lab
-          type: string
-          enum: ["up", "down"]
 
     Error:
       type: object

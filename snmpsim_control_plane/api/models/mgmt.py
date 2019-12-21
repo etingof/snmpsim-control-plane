@@ -10,32 +10,33 @@ from snmpsim_control_plane.api import db
 
 
 class Endpoint(db.Model):
-    id = db.Column('id', db.Integer(), primary_key=True)
-    name = db.Column('name', db.String(), nullable=True)
-    domain = db.Column(
-        'domain', db.String(64), unique=True, nullable=False)
-    address = db.Column(
-        'address', db.String(64), unique=True, nullable=False)
+    id = db.Column(db.Integer(), primary_key=True)
+    name = db.Column(db.String(), nullable=True)
+    domain = db.Column(db.Enum('udpv4', 'udpv6'), nullable=False)
+    address = db.Column(db.String(64), unique=True, nullable=False)
     engines = db.relationship(
         'EngineEndpoint', cascade="all,delete", backref='endpoint', lazy=True)
 
 
 class User(db.Model):
-    id = db.Column('id', db.Integer(), primary_key=True)
-    user = db.Column('user', db.String(32), unique=True)
+    id = db.Column(db.Integer(), primary_key=True)
+    user = db.Column(db.String(32), unique=True)
     name = db.Column(db.String(60))
-    level = db.Column(db.String(12), nullable=False)
-    auth_key = db.Column(db.String())
-    auth_proto = db.Column(db.String(8), nullable=False)
-    priv_key = db.Column(db.String())
-    priv_proto = db.Column(db.String(8), nullable=False)
+    auth_key = db.Column(db.String(), nullable=True)
+    auth_proto = db.Column(
+        db.Enum("md5", "sha", "sha224", "sha256", "sha384", "sha512",
+                "none"), default='none')
+    priv_key = db.Column(db.String(), nullable=True)
+    priv_proto = db.Column(
+        db.Enum("des", "3des", "aes", "aes128", "aes192", "aes192blmt",
+                "aes256", "aes256blmt", "none"), default='none')
     engines = db.relationship(
         'EngineUser', cascade="all,delete", backref='user', lazy=True)
 
 
 class Engine(db.Model):
-    id = db.Column('id', db.Integer(), primary_key=True)
-    engine_id = db.Column('engine_id', db.String(32), unique=True)
+    id = db.Column(db.Integer(), primary_key=True)
+    engine_id = db.Column(db.String(32), default='auto')
     users = db.relationship(
         'User', cascade="all,delete", secondary='engine_user',
         backref='engine', lazy=True)
@@ -70,16 +71,17 @@ class EngineEndpoint(db.Model):
 
 
 class Selector(db.Model):
-    id = db.Column('id', db.Integer(), primary_key=True)
-    comment = db.Column('comment', db.String())
-    template = db.Column('template', db.String())
+    id = db.Column(db.Integer(), primary_key=True)
+    comment = db.Column(db.String())
+    template = db.Column(db.String())
     agents = db.relationship(
         'Agent', cascade="all,delete", backref='selector', lazy=True)
 
 
 class Agent(db.Model):
-    id = db.Column('id', db.Integer(), primary_key=True)
-    name = db.Column('name', db.String(), nullable=True)
+    id = db.Column(db.Integer(), primary_key=True)
+    name = db.Column(db.String(), nullable=True)
+    data_dir = db.Column(db.String(), default='.')
     engine_id = db.Column(db.Integer, db.ForeignKey('engine.id'))
     selector_id = db.Column(db.Integer, db.ForeignKey('selector.id'))
     engines = db.relationship(
@@ -105,7 +107,7 @@ class AgentEngine(db.Model):
 
 
 class AgentSelector(db.Model):
-    order = db.Column('order', db.Integer())
+    order = db.Column(db.Integer())
     selector_id = db.Column(
         db.Integer, db.ForeignKey("selector.id"), nullable=False)
     agent_id = db.Column(
@@ -117,15 +119,15 @@ class AgentSelector(db.Model):
 
 
 class Recording(db.Model):
-    id = db.Column('id', db.Integer(), primary_key=True)
+    id = db.Column(db.Integer(), primary_key=True)
     name = db.Column(db.String(60))
     path = db.Column(db.String(), unique=True, nullable=False)
 
 
 class Lab(db.Model):
-    id = db.Column('id', db.Integer(), primary_key=True)
-    name = db.Column('name', db.String(), nullable=True)
-    power = db.Column('power', db.String(), nullable=True)
+    id = db.Column(db.Integer(), primary_key=True)
+    name = db.Column(db.String(), nullable=True)
+    power = db.Column(db.Enum('on', 'off'), default='off')
     agents = db.relationship(
         'Agent', cascade="all,delete", secondary='lab_agent',
         backref='lab', lazy=True)

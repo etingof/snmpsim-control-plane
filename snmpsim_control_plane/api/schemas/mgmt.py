@@ -27,7 +27,7 @@ class EndpointSchema(ma.ModelSchema):
 class UserSchema(ma.ModelSchema):
     class Meta:
         model = models.User
-        fields = ('id', 'user', 'name', 'level', 'auth_key',
+        fields = ('id', 'user', 'name', 'auth_key',
                   'auth_proto', 'priv_key', 'priv_proto',
                   'engines', '_links')
 
@@ -71,7 +71,7 @@ class SelectorSchema(ma.ModelSchema):
 class AgentSchema(ma.ModelSchema):
     class Meta:
         model = models.Agent
-        fields = ('id', 'name', 'engines', 'selectors',
+        fields = ('id', 'name', 'engines', 'data_dir', 'selectors',
                   'labs', '_links')
 
     engines = ma.Nested(EngineSchema, many=True, exclude=('agents',))

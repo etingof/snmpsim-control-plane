@@ -6,14 +6,33 @@
 #
 # SNMP simulator management: REST API views
 #
+from functools import wraps
+
 import flask
 
 from snmpsim_control_plane.api import app
 from snmpsim_control_plane.api import db
 from snmpsim_control_plane.api.models import mgmt as models
 from snmpsim_control_plane.api.schemas import mgmt as schemas
+from snmpsim_control_plane.api.exporters import builder
+from snmpsim_control_plane.api.exporters import renderer
 
 PREFIX = '/snmpsim/mgmt/v1'
+TARGET_CONFIG = 'snmpsim-run-labs.sh'
+
+
+def render_config(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        response = f(*args, **kwargs)
+
+        context = builder.to_dict()
+        renderer.render_configuration(
+            TARGET_CONFIG, 'snmpsim-command-responder.j2', context)
+
+        return response
+
+    return decorated_function
 
 
 @app.route(PREFIX + '/endpoints')
@@ -44,6 +63,7 @@ def show_endpoint(id):
 
 
 @app.route(PREFIX + '/endpoints', methods=['POST'])
+@render_config
 def new_endpoint():
     req = flask.request.json
 
@@ -56,6 +76,7 @@ def new_endpoint():
 
 
 @app.route(PREFIX + '/endpoints/<id>', methods=['DELETE'])
+@render_config
 def del_endpoint(id):
     endpoint = (
         models.Endpoint
@@ -88,6 +109,7 @@ def show_user(id):
 
 
 @app.route(PREFIX + '/users', methods=['POST'])
+@render_config
 def new_user():
     req = flask.request.json
 
@@ -100,6 +122,7 @@ def new_user():
 
 
 @app.route(PREFIX + '/users/<id>', methods=['DELETE'])
+@render_config
 def del_user(id):
     user = (
         models.User
@@ -143,6 +166,7 @@ def show_engine(id):
 
 
 @app.route(PREFIX + '/engines', methods=['POST'])
+@render_config
 def new_engine():
     req = flask.request.json
 
@@ -156,6 +180,7 @@ def new_engine():
 
 
 @app.route(PREFIX + '/engines/<id>', methods=['DELETE'])
+@render_config
 def del_engine(id):
     engine = (
         models
@@ -171,6 +196,7 @@ def del_engine(id):
 
 
 @app.route(PREFIX + '/engines/<id>/user/<user_id>', methods=['PUT'])
+@render_config
 def add_engine_user(id, user_id):
     engine_user = models.EngineUser(user_id=user_id, engine_id=id)
 
@@ -183,6 +209,7 @@ def add_engine_user(id, user_id):
 
 
 @app.route(PREFIX + '/engines/<id>/user/<user_id>', methods=['DELETE'])
+@render_config
 def del_engine_user(id, user_id):
     engine_user = (
         models
@@ -200,6 +227,7 @@ def del_engine_user(id, user_id):
 
 
 @app.route(PREFIX + '/engines/<id>/endpoint/<endpoint_id>', methods=['PUT'])
+@render_config
 def add_engine_endpoint(id, endpoint_id):
     engine_endpoint = models.EngineEndpoint(
         endpoint_id=endpoint_id, engine_id=id)
@@ -218,6 +246,7 @@ def add_engine_endpoint(id, endpoint_id):
 
 
 @app.route(PREFIX + '/engines/<id>/endpoint/<endpoint_id>', methods=['DELETE'])
+@render_config
 def del_engine_endpoint(id, endpoint_id):
     engine_endpoint = (
         models
@@ -262,6 +291,7 @@ def show_agent(id):
 
 
 @app.route(PREFIX + '/agents', methods=['POST'])
+@render_config
 def new_agent():
     req = flask.request.json
 
@@ -274,6 +304,7 @@ def new_agent():
 
 
 @app.route(PREFIX + '/agents/<id>', methods=['DELETE'])
+@render_config
 def del_agent(id):
     agent = (
         models
@@ -289,6 +320,7 @@ def del_agent(id):
 
 
 @app.route(PREFIX + '/agents/<id>/engine/<engine_id>', methods=['PUT'])
+@render_config
 def add_agent_engine(id, engine_id):
     agent_engine = (
         models
@@ -308,12 +340,13 @@ def add_agent_engine(id, engine_id):
 
 
 @app.route(PREFIX + '/agents/<id>/engine/<engine_id>', methods=['DELETE'])
+@render_config
 def del_agent_engine(id, engine_id):
     agent_engine = (
         models
         .AgentEngine
         .query
-        .filter_by(engine_id=id, agent_id=agent_id).first())
+        .filter_by(engine_id=engine_id, agent_id=id).first())
 
     db.session.delete(agent_engine)
     db.session.commit()
@@ -356,6 +389,7 @@ def show_selector(id):
 
 
 @app.route(PREFIX + '/selectors', methods=['POST'])
+@render_config
 def new_selector():
     req = flask.request.json
 
@@ -368,6 +402,7 @@ def new_selector():
 
 
 @app.route(PREFIX + '/selectors/<id>', methods=['DELETE'])
+@render_config
 def del_selector(id):
     selector = (
         models.Selector
@@ -382,6 +417,7 @@ def del_selector(id):
 
 
 @app.route(PREFIX + '/agents/<id>/selector/<selector_id>/<order>', methods=['PUT'])
+@render_config
 def add_agent_selector(id, selector_id, order):
     agent_selector = (
         models
@@ -401,12 +437,13 @@ def add_agent_selector(id, selector_id, order):
 
 
 @app.route(PREFIX + '/agents/<id>/selector/<selector_id>', methods=['DELETE'])
-def del_agent_selector(id, engine_id):
+@render_config
+def del_agent_selector(id, selector_id):
     agent_selector = (
         models
         .AgentSelector
         .query
-        .filter_by(selector_id=id, agent_id=agent_id).first())
+        .filter_by(selector_id=selector_id, agent_id=id).first())
 
     db.session.delete(agent_selector)
     db.session.commit()
@@ -498,6 +535,7 @@ def show_lab(id):
 
 
 @app.route(PREFIX + '/labs', methods=['POST'])
+@render_config
 def new_lab():
     req = flask.request.json
 
@@ -510,6 +548,7 @@ def new_lab():
 
 
 @app.route(PREFIX + '/labs/<id>', methods=['DELETE'])
+@render_config
 def del_lab(id):
     lab = (
         models
@@ -525,6 +564,7 @@ def del_lab(id):
 
 
 @app.route(PREFIX + '/labs/<id>/agent/<agent_id>', methods=['PUT'])
+@render_config
 def add_lab_agent(id, agent_id):
     lab_agent = models.LabAgent(agent_id=agent_id, lab_id=id)
 
@@ -538,6 +578,7 @@ def add_lab_agent(id, agent_id):
 
 
 @app.route(PREFIX + '/labs/<id>/agent/<agent_id>', methods=['DELETE'])
+@render_config
 def del_lab_agent(id, agent_id):
     lab_agent = (
         models
@@ -554,7 +595,8 @@ def del_lab_agent(id, agent_id):
     return schema.jsonify(engine)
 
 
-@app.route(PREFIX + '/labs/<id>/power', methods=['PUT'])
+@app.route(PREFIX + '/labs/<id>/power/<state>', methods=['PUT'])
+@render_config
 def change_lab_power(id, state):
     lab = (
         models.Lab
@@ -562,7 +604,7 @@ def change_lab_power(id, state):
         .filter_by(id=id)
         .first())
 
-    lab.power = state
+    lab.power = state.lower()
 
     db.session.commit()
 
