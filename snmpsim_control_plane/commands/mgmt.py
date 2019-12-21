@@ -1,18 +1,18 @@
 #
 # This file is part of SNMP simulator Control Plane software.
 #
-# Copyright (c) 2010-2019, Ilya Etingof <etingof@gmail.com>
+# Copyright (c) 2019, Ilya Etingof <etingof@gmail.com>
 # License: http://snmplabs.com/snmpsim/license.html
 #
 # SNMP Agent Simulator: REST API management server
 #
 import argparse
-import sys
 import os
 import ssl
+import sys
 
 from snmpsim_control_plane.api import app
-
+from snmpsim_control_plane.api import db
 
 DESCRIPTION = """\
 SNMP Simulation Control Plane REST API server.
@@ -27,6 +27,13 @@ Can be run as a WSGI application.
 
 def parse_args():
     parser = argparse.ArgumentParser(description=DESCRIPTION)
+
+    parser.add_argument(
+        '--recreate-db',
+        action='store_true',
+        help='DANGER! Running with this flag wipes up REST API server DB! '
+             'This switch makes sense only when running this tool for the '
+             'first time.')
 
     parser.add_argument(
         '--config', type=str,
@@ -79,6 +86,10 @@ def parse_args():
 def main():
 
     args = parse_args()
+
+    if args.recreate_db:
+        db.create_all()
+        return 0
 
     if args.config:
         os.environ['SNMPSIM_MGMT_CONFIG'] = args.config

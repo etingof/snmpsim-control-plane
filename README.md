@@ -19,14 +19,64 @@ Features
 How to use SNMP Simulator Control Plane
 ---------------------------------------
 
-SNMP Simulator Control Plane tool is a typical Web app. For experimenting and
-trying it out in a non-production environment, it can be run stand-alone.
-For production use it's way better to run it under a WSGI HTTP Server such
-as [gunicorn](https://gunicorn.org).
+SNMP Simulator Control Plane tool (`snmpsim-restapi-mgmt`) is a typical Web
+app. For experimenting and trying it out in a non-production environment,
+it can be run stand-alone. For production use it's way better to run it
+under a WSGI HTTP Server such as [gunicorn](https://gunicorn.org).
 
 Once the tool is up and running, just follow OpenAPI specification (shipped
 alone with this package) to configure your SNMP Simulator instance by
 issuing a series of REST API calls.
+
+For example, to create a virtual laboratory:
+
+```commandline
+$ curl -d '{
+      "name": "Test Lab"
+    }' \
+    -H 'Content-Type: application/json' \
+    -X POST http://localhost:8000/snmpsim/mgmt/v1/labs
+
+{
+  "_links": {
+    "collection": "/snmpsim/mgmt/v1/labs", 
+    "self": "/snmpsim/mgmt/v1/labs/2"
+  }, 
+  "agents": [], 
+  "id": 2, 
+  "name": "Test Lab", 
+  "power": "off"
+}
+
+```
+
+Complete SNMP simulator bootstrapping sequences can be found in the
+`conf/bootstraps` directory.
+
+Upon each configuration change, REST API server will re-create one or
+more shell scripts that can be used to invoke SNMP simulator command
+responder having desired configuration.
+
+For a minimal configuration with just one SNMP agent and one SNMPv3
+USM user generated script will look like this:
+
+```commandline
+$ cat /tmp/snmpsim-run-labs.sh 
+#!/bin/bash
+#
+# SNMP Simulator Command Responder invocation script
+# Automatically generated from REST API DB data - do not edit!
+#
+snmpsim-command-responder \
+    --logging-method file:/var/log/snmpsim/snmpsim-command-responder.log:1D \
+    --cache-dir /tmp/snmpsim/cache \
+    --process-user snmpsim --process-group snmpsim \
+    --v3-engine-id "auto" \
+      --v3-user "simulator" \
+      --agent-udpv4-endpoint "127.0.0.1:1161" \
+      --data-dir "data" \
+
+```
 
 Monitoring part of REST API provides ever growing counters reflecting the
 operations of SNMP Simulator instances running under the supervision of
@@ -60,4 +110,4 @@ Feedback and collaboration
 I'm interested in bug reports, fixes, suggestions and improvements. Your
 pull requests are very welcome!
 
-Copyright (c) 2010-2019, [Ilya Etingof](mailto:etingof@gmail.com). All rights reserved.
+Copyright (c) 2019, [Ilya Etingof](mailto:etingof@gmail.com). All rights reserved.
