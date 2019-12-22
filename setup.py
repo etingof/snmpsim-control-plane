@@ -69,6 +69,7 @@ params = {
     'entry_points': {
         'console_scripts': [
             'snmpsim-restapi-mgmt = snmpsim_control_plane.commands.mgmt:main',
+            'snmpsim-supervisor = snmpsim_control_plane.commands.supervisor:main',
         ]
     },
     'install_requires': requirements,

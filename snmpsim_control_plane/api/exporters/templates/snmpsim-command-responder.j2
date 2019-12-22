@@ -4,7 +4,7 @@
 # Automatically generated from REST API DB data - do not edit!
 #
 {% if context['labs'] %}
-snmpsim-command-responder \
+exec snmpsim-command-responder \
     --logging-method file:/var/log/snmpsim/snmpsim-command-responder.log:1D \
     --cache-dir /tmp/snmpsim/cache \
     --process-user snmpsim --process-group snmpsim \

@@ -21,10 +21,6 @@ def object_as_dict(obj):
 def to_dict():
     labs = []
 
-    context = {
-        'labs': labs
-    }
-
     query = (
         models.Lab
         .query
@@ -100,6 +96,11 @@ def to_dict():
             for orm_selector in query:
                 selector = object_as_dict(orm_selector)
                 selectors.append(selector)
+
+    context = {}
+
+    if labs:
+        context.update(labs=labs)
 
     return context
 
