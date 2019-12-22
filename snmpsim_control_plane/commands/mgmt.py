@@ -95,11 +95,6 @@ def main():
 
     args = parse_args()
 
-    if args.recreate_db:
-        db.drop_all()
-        db.create_all()
-        return 0
-
     if args.config:
         os.environ['SNMPSIM_MGMT_CONFIG'] = args.config
 
@@ -132,6 +127,11 @@ def main():
 
     if args.destination:
         app.config['SNMPSIM_MGMT_DESTINATION'] = args.destination
+
+    if args.recreate_db:
+        db.drop_all()
+        db.create_all()
+        return 0
 
     app.run(host=app.config.get('SNMPSIM_MGMT_LISTEN_IP'),
             port=app.config.get('SNMPSIM_MGMT_LISTEN_PORT'),
