@@ -24,6 +24,11 @@ app. For experimenting and trying it out in a non-production environment,
 it can be run stand-alone. For production use it's way better to run it
 under a WSGI HTTP Server such as [gunicorn](https://gunicorn.org).
 
+```commandline
+$ snmpsim-restapi-mgmt  --destination /tmp/watched \
+    --data-root /tmp/data-dir
+```
+
 Once the `snmpsim-restapi-mgmt` tool is up and running, just follow OpenAPI
 specification (shipped alone with this package) to configure your SNMP
 Simulator instance by issuing a series of REST API calls.
@@ -53,9 +58,14 @@ $ curl -d '{
 Complete SNMP simulator bootstrapping sequences can be found in the
 `conf/bootstraps` directory.
 
-Upon each configuration change, REST API server will re-create one or
-more shell scripts that can be used to invoke SNMP simulator command
-responder having desired configuration.
+Upon each configuration change, REST API server will creat, update or
+remove one or more shell scripts that can be watched by the `snmpsim-supervisor`
+tool to invoke SNMP simulator command responder instance(s) with desired
+configuration.
+
+```commandline
+$ snmpsim-supervisor --watch-dir /tmp/watched
+```
 
 For a minimal configuration with just one SNMP agent and one SNMPv3
 USM user generated script will look like this:
@@ -67,7 +77,7 @@ $ cat /tmp/snmpsim-run-labs.sh
 # SNMP Simulator Command Responder invocation script
 # Automatically generated from REST API DB data - do not edit!
 #
-snmpsim-command-responder \
+exec snmpsim-command-responder \
     --logging-method file:/var/log/snmpsim/snmpsim-command-responder.log:1D \
     --cache-dir /tmp/snmpsim/cache \
     --process-user snmpsim --process-group snmpsim \
