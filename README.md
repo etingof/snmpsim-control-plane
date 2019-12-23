@@ -101,24 +101,92 @@ Download
 --------
 
 SNMP Simulator Control Plane tool is freely available for download from
-[PyPI](https://pypi.org/project/snmpsim-control-plane/).
+[PyPI](https://pypi.org/project/snmpsim-control-plane/) or
+[GitHub](https://github.com/etingof/snmpsim-control-plane/archive/master.zip).
+
 
 Installation
 ------------
 
-Just run:
+For experimenting with this software, it's easier to set up everything in
+Python virtual environment:
+ 
+```commandline
+mkdir /tmp/snmpsim && cd /tmp/snmpsim
 
-```bash
-$ pip install snmpsim-control-plane
+python3 -m venv venv
+
+. venv/bin/activate
+
+pip install https://github.com/etingof/snmpsim-control-plane/archive/master.zip
 ```
 
-To run a development version of REST API management server:
+To make a real use of SNMP simulator control plane, consider installing
+SNMP simulator into the same virtual environment as well:
 
 ```commandline
-$ snmpsim-restapi-mgmt  --recreate-db
-$ snmpsim-restapi-mgmt  --destination /tmp 
-...
+pip install https://github.com/etingof/snmpsim/archive/master.zip
 ```
+
+Once everything is successfully installed, configure control plane tools:
+
+```commandline
+mkdir -p /tmp/snmpsim/boot
+
+cat > snmpsim-management.conf <<EOF
+SQLALCHEMY_DATABASE_URI = 'sqlite:////tmp/snmpsim/snmpsim-restapi-management.db'
+SQLALCHEMY_ECHO = False
+SECRET_KEY = '\xfb\x12\xdf\xa1@i\xd6>V\xc0\xbb\x8fp\x16#Z\x0b\x81\xeb\x16'
+
+DEBUG = True
+
+SNMPSIM_MGMT_LISTEN_IP = '127.0.0.1'
+SNMPSIM_MGMT_LISTEN_PORT = 8000
+
+SNMPSIM_MGMT_SSL_CERT = None
+SNMPSIM_MGMT_SSL_KEY = None
+SNMPSIM_MGMT_DATAROOT = '/tmp/snmpsim/data'
+SNMPSIM_MGMT_TEMPLATE = 'snmpsim-command-responder.j2'
+SNMPSIM_MGMT_DESTINATION = '.'
+EOF
+```
+
+You may want to put a simple SNMP simulation data file for SNMP simulator
+to serve:
+
+```commandline
+mkdir -p /tmp/snmpsim/data
+
+cat > /tmp/snmpsim/data/public.snmprec <<EOF
+1.3.6.1.2.1.1.1.0|4|Linux zeus 4.8.6.5-smp #2 SMP Sun Nov 13 14:58:11 CDT 2016 i686
+1.3.6.1.2.1.1.2.0|6|1.3.6.1.4.1.8072.3.2.10
+1.3.6.1.2.1.1.3.0|67:numeric|rate=100,initial=123999999
+1.3.6.1.2.1.1.4.0|4|SNMP Laboratories, info@snmplabs.com
+1.3.6.1.2.1.1.5.0|4:writecache|value=zeus.snmplabs.com (you can change this!)
+1.3.6.1.2.1.1.6.0|4|San Francisco, California, United States
+1.3.6.1.2.1.1.7.0|2|72
+1.3.6.1.2.1.1.8.0|67:numeric|rate=100,initial=123999999
+EOF
+```
+
+It might be easier to play with SNMP simulator control plane tools if
+you have each running in the foreground:
+
+```commandline
+snmpsim-supervisor --watch-dir /tmp/snmpsim/boot
+```
+
+```commandline
+snmpsim-restapi-mgmt --config /tmp/snmpsim/snmpsim-management.conf \
+    --recreate-db
+snmpsim-restapi-mgmt --config /tmp/snmpsim/snmpsim-management.conf \
+    --destination /tmp/snmpsim/boot
+```
+
+By this point you should be able to run REST API calls against control
+plane and observe what happens. Look into
+[conf/bootstraps/minimal.sh](https://raw.githubusercontent.com/etingof/snmpsim-control-plane/master/conf/bootstraps/minimal.sh)
+for inspiration.
 
 Getting help
 ------------

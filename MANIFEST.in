@@ -1,3 +1,4 @@
 include *.txt *.md *.sh
 recursive-include api *.py
-recursive-include docs *.rst *.py *.svg
+recursive-include conf *.conf *.sh
+recursive-include docs *.rst *.py *.svg *.yaml

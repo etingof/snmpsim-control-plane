@@ -13,6 +13,7 @@ import sys
 
 from snmpsim_control_plane.api import app
 from snmpsim_control_plane.api import db
+from snmpsim_control_plane.api.views import mgmt  #noqa
 
 DESCRIPTION = """\
 SNMP Simulation Control Plane REST API server.

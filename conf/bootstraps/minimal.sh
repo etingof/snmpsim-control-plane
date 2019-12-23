@@ -22,7 +22,7 @@ lab_id=$(create_resource "$req" $ENDPOINT/labs)
 # Create a SNMP agent
 req='{
   "name": "Test SNMP agent",
-  "data_dir": "data"
+  "data_dir": "."
 }'
 
 agent_id=$(create_resource "$req" $ENDPOINT/agents)

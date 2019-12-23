@@ -63,9 +63,7 @@ params = {
     'license': 'BSD',
     'platforms': ['any'],
     'classifiers': [x for x in classifiers.split('\n') if x],
-    'packages': [
-        'snmpsim_control_plane',
-    ],
+    'packages': setuptools.find_packages(),
     'entry_points': {
         'console_scripts': [
             'snmpsim-restapi-mgmt = snmpsim_control_plane.commands.mgmt:main',
@@ -73,7 +71,8 @@ params = {
         ]
     },
     'install_requires': requirements,
-    'zip_safe': True
+    'zip_safe': False,  # Flask
+    'include_package_data': True
 }
 
 setuptools.setup(**params)

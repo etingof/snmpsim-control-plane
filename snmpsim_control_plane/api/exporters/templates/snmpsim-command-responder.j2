@@ -5,9 +5,6 @@
 #
 {% if context['labs'] %}
 exec snmpsim-command-responder \
-    --logging-method file:/var/log/snmpsim/snmpsim-command-responder.log:1D \
-    --cache-dir /tmp/snmpsim/cache \
-    --process-user snmpsim --process-group snmpsim \
   {% for lab in context['labs'] %}
     {% for agent in lab['agents'] %}
       {% for engine in agent['engines'] %}
