@@ -97,7 +97,7 @@ For production use, just `pip install snmpsim-control-plane` package
 and follow general WSGI (Flask) application setup guidelines.
 
 For development and testing, it is probably easier to set up everything
-within Python virtual environment:
+within a Python virtual environment:
  
 ```commandline
 mkdir /tmp/snmpsim && cd /tmp/snmpsim
@@ -116,7 +116,7 @@ SNMP simulator into the same virtual environment as well:
 pip install https://github.com/etingof/snmpsim/archive/master.zip
 ```
 
-Once everything is successfully installed, configure control plane tools:
+Once everything is successfully installed, configure your control plane tools:
 
 ```commandline
 mkdir -p /tmp/snmpsim/boot
@@ -164,6 +164,8 @@ you have each running in the foreground:
 snmpsim-supervisor --watch-dir /tmp/snmpsim/boot
 ```
 
+and (in a different shell, but same Python virtual environment):
+
 ```commandline
 snmpsim-restapi-mgmt --config /tmp/snmpsim/snmpsim-management.conf \
     --recreate-db
@@ -173,8 +175,9 @@ snmpsim-restapi-mgmt --config /tmp/snmpsim/snmpsim-management.conf \
 
 By this point you should be able to run REST API calls against control
 plane and observe what happens. Look into
-[conf/bootstraps/minimal.sh](https://raw.githubusercontent.com/etingof/snmpsim-control-plane/master/conf/bootstraps/minimal.sh)
-for inspiration.
+[conf/bootstraps/minimal.sh](https://github.com/etingof/snmpsim-control-plane/tree/master/conf/bootstraps)
+for inspiration. Plain `curl` or highly automated
+[Postman API client](https://www.getpostman.com/product/api-client) would work.
 
 Getting help
 ------------
