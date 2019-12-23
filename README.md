@@ -148,12 +148,12 @@ mkdir -p /tmp/snmpsim/data
 cat > /tmp/snmpsim/data/public.snmprec <<EOF
 1.3.6.1.2.1.1.1.0|4|Linux zeus 4.8.6.5-smp #2 SMP Sun Nov 13 14:58:11 CDT 2016 i686
 1.3.6.1.2.1.1.2.0|6|1.3.6.1.4.1.8072.3.2.10
-1.3.6.1.2.1.1.3.0|67:numeric|rate=100,initial=123999999
+1.3.6.1.2.1.1.3.0|67|123999999
 1.3.6.1.2.1.1.4.0|4|SNMP Laboratories, info@snmplabs.com
-1.3.6.1.2.1.1.5.0|4:writecache|value=zeus.snmplabs.com (you can change this!)
+1.3.6.1.2.1.1.5.0|4|zeus.snmplabs.com
 1.3.6.1.2.1.1.6.0|4|San Francisco, California, United States
 1.3.6.1.2.1.1.7.0|2|72
-1.3.6.1.2.1.1.8.0|67:numeric|rate=100,initial=123999999
+1.3.6.1.2.1.1.8.0|67|123999999
 EOF
 ```
 

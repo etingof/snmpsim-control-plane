@@ -26,6 +26,20 @@ Can be run as a WSGI application.
 """
 
 
+class DefaultConfig(object):
+    SQLALCHEMY_DATABASE_URI = 'sqlite::memory'
+    SQLALCHEMY_ECHO = False
+    DEBUG = False
+
+    SNMPSIM_MGMT_LISTEN_IP = '127.0.0.1'
+    SNMPSIM_MGMT_LISTEN_PORT = 8000
+    SNMPSIM_MGMT_SSL_CERT = None
+    SNMPSIM_MGMT_SSL_KEY = None
+    SNMPSIM_MGMT_DATAROOT = '/usr/share/snmpsim/data'
+    SNMPSIM_MGMT_TEMPLATE = 'snmpsim-command-responder.j2'
+    SNMPSIM_MGMT_DESTINATION = '.'
+
+
 def parse_args():
     parser = argparse.ArgumentParser(description=DESCRIPTION)
 
@@ -42,49 +56,42 @@ def parse_args():
              'SNMPSIM_MGMT_CONFIG.')
 
     parser.add_argument(
-        '--interface',
-        type=str, default='127.0.0.1',
+        '--interface', type=str,
         help='IP address of the local interface for REST API'
              'server to listen on. Can also be set via config variable '
              'SNMPSIM_MGMT_LISTEN_IP. Default is all local interfaces.')
 
     parser.add_argument(
-        '--port',
-        type=int, default=8000,
+        '--port', type=int,
         help='TCP port to bind REST API server to.  Can also be '
              'set via config variable SNMPSIM_MGMT_LISTEN_PORT. '
              'Default is 8000.')
 
     parser.add_argument(
-        '--ssl-certificate',
-        type=str,
+        '--ssl-certificate', type=str,
         help='SSL certificate to use for HTTPS. Can also be set via '
              'config variable SNMPSIM_MGMT_SSL_CERT.')
 
     parser.add_argument(
-        '--ssl-key',
-        type=str,
+        '--ssl-key', type=str,
         help='SSL key to use for HTTPS. Can also be set via config variable '
              'SNMPSIM_MGMT_SSL_KEY.')
 
     parser.add_argument(
-        '--data-root',
-        type=str, default='/use/share/snmpsim/data',
+        '--data-root', type=str,
         help='Path to a SNMP simulation data root directory. SNMP command '
              'responder will be configured with its data files being under '
              'this directory. Can also be set via config variable '
              'SNMPSIM_MGMT_DATAROOT.')
 
     parser.add_argument(
-        '--template',
-        type=str, default='snmpsim-command-responder.j2',
+        '--template', type=str,
         help='Path to Jinja2 template to use for rendering SNMP simulator command '
              'responder invocation command. Can also be set via config variable '
              'SNMPSIM_MGMT_TEMPLATE. By default, built-in template is used.')
 
     parser.add_argument(
-        '--destination',
-        type=str, default='.',
+        '--destination', type=str,
         help='Path to a directory where REST API server will place rendered '
              'SNMP simulator command responder invocation scripts. Can also '
              'be set via config variable SNMPSIM_MGMT_DESTINATION.')
@@ -98,6 +105,8 @@ def main():
 
     if args.config:
         os.environ['SNMPSIM_MGMT_CONFIG'] = args.config
+
+    app.config.from_object(DefaultConfig)
 
     config_file = os.environ.get('SNMPSIM_MGMT_CONFIG')
     if config_file:
@@ -122,6 +131,9 @@ def main():
     if ssl_certificate and ssl_key:
         ssl_context = ssl.SSLContext(ssl.PROTOCOL_TLSv1_2)
         ssl_context.load_cert_chain(ssl_certificate, ssl_key)
+
+    if args.template:
+        app.config['SNMPSIM_MGMT_DATAROOT'] = args.data_root
 
     if args.template:
         app.config['SNMPSIM_MGMT_TEMPLATE'] = args.template
