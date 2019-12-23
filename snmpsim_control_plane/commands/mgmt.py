@@ -29,6 +29,7 @@ Can be run as a WSGI application.
 class DefaultConfig(object):
     SQLALCHEMY_DATABASE_URI = 'sqlite::memory'
     SQLALCHEMY_ECHO = False
+
     DEBUG = False
 
     SNMPSIM_MGMT_LISTEN_IP = '127.0.0.1'

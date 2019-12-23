@@ -7,6 +7,7 @@
 # SNMP Agent Simulator Control Plane: process management
 #
 import os
+import select
 import time
 import subprocess
 
@@ -37,10 +38,10 @@ def _traverse_dir(dir):
     return files
 
 
-def _run_process(fl):
+def _run_process(fl, fd):
     try:
         return subprocess.Popen(
-            [fl], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            [fl], stdout=fd, stderr=fd)
 
     except Exception as exc:
         log.error('Executable %s failed to start: %s' % (fl, exc))
@@ -70,12 +71,29 @@ def manage_executables(watch_dir):
     log.info('Watching directory %s' % watch_dir)
 
     while True:
+        # Collect and log processes output
+
+        rlist = {x['pipe']: x['executable'] for x in known_instances.values()}
+
+        while True:
+            r, w, x = select.select(rlist, [], [], 0.1)
+            if not r:
+                break
+
+            for fd in r:
+                log.msg('Output from process "%s" begins' % rlist[fd])
+                log.msg(os.read(fd, 32768))
+                log.msg('Output from process "%s" ends' % rlist[fd])
+
+        # Watch executables
+
         existing_files = set()
 
         try:
             files = _traverse_dir(watch_dir)
 
         except Exception as exc:
+            log.error('Directory %s traversal failure: %s' % (watch_dir, exc))
             time.sleep(10)
             continue
 
@@ -89,6 +107,7 @@ def manage_executables(watch_dir):
                     'executable': fl,
                     'file_info': stat,
                     'leash': None,
+                    'pipe': None,
                     'state': STATE_ADDED,
                     'started': None,
                 }
@@ -132,8 +151,12 @@ def manage_executables(watch_dir):
             state = instance['state']
 
             if state in (STATE_ADDED, STATE_DIED):
-                leash = _run_process(fl)
+                r, w = os.pipe()
+
+                leash = _run_process(fl, w)
+
                 instance['leash'] = leash
+                instance['pipe'] = r
 
                 if leash:
                     instance['state'] = STATE_RUNNING
@@ -152,6 +175,10 @@ def manage_executables(watch_dir):
                     log.info(
                         'Executable %s (PID %s) has been '
                         'stopped' % (fl, leash.pid))
+
+                r = instance['pipe']
+                if r:
+                    os.close(r)
 
                 known_instances.pop(fl)
 

@@ -286,19 +286,19 @@ def debug(message, ctx=''):
         msg('DEBUG %s %s' % (message, ctx))
 
 
-def setLevel(level):
+def set_level(level):
     global logLevel
 
     try:
         logLevel = LEVELS_MAP[level]
 
     except KeyError:
-        raise SnmpsimError(
+        raise ControlPlaneError(
             'Unknown log level "%s", known levels are: '
             '%s' % (level, ', '.join(LEVELS_MAP)))
 
 
-def setLogger(progId, *priv, **options):
+def set_logger(progId, *priv, **options):
     global msg
 
     try:
@@ -306,6 +306,6 @@ def setLogger(progId, *priv, **options):
             msg = METHODS_MAP[priv[0]](progId, *priv[1:])
 
     except KeyError:
-        raise SnmpsimError(
+        raise ControlPlaneError(
             'Unknown logging method "%s", known methods are: '
             '%s' % (priv[0], ', '.join(METHODS_MAP)))

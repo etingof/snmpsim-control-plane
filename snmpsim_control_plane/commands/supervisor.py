@@ -70,10 +70,10 @@ def main():
     args = parse_args()
 
     try:
-        log.setLogger(__name__, *args.logging_method, force=True)
+        log.set_logger(__name__, *args.logging_method, force=True)
 
         if args.log_level:
-            log.setLevel(args.log_level)
+            log.set_level(args.log_level)
 
     except error.ControlPlaneError as exc:
         sys.stderr.write('%s\r\n' % exc)
