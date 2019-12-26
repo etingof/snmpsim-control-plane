@@ -68,6 +68,7 @@ params = {
         'console_scripts': [
             'snmpsim-restapi-mgmt = snmpsim_control_plane.commands.mgmt:main',
             'snmpsim-supervisor = snmpsim_control_plane.commands.supervisor:main',
+            'snmpsim-metrics-importer = snmpsim_control_plane.commands.importer:main',
         ]
     },
     'install_requires': requirements,
