@@ -48,6 +48,8 @@ user_id=$(create_resource "$req" $ENDPOINT/users)
 # Bind SNMP USM user to SNMP engine
 update_resource $ENDPOINT/engines/$engine_id/user/$user_id
 
+# Bind SNMP engine to SNMP agent
+update_resource $ENDPOINT/agents/$agent_id/engine/$engine_id
 
 # Create SNMP transport endpoint
 req='{
