@@ -3,7 +3,7 @@ info:
   license:
     name: BSD License
   version: '1.0.0'
-  title: 'SNMP Simulator Monitoring REST API'
+  title: 'SNMP Simulator Metrics REST API'
   description: >
     Monitoring API provides the insight for the operator to how SNMP Simulator
     is doing. That includes health reporting and operational statistics.
@@ -49,7 +49,7 @@ info:
     aggregation.
 
 servers:
-  - url: https://virtserver.swaggerhub.com/etingof/snmpsimd-monitoring/1.0.0
+  - url: http://127.0.0.1:5000/snmpsim/metrics/v1
 
 paths:
   /processes:
