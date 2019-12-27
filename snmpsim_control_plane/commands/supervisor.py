@@ -38,10 +38,6 @@ def parse_args():
         version=snmpsim_control_plane.__version__)
 
     parser.add_argument(
-        '--quiet', action='store_true',
-        help='Do not print out informational messages')
-
-    parser.add_argument(
         '--logging-method', type=lambda x: x.split(':'),
         metavar='=<%s[:args]>]' % '|'.join(log.METHODS_MAP),
         default='stderr', help='Logging method')

@@ -27,7 +27,7 @@ Can be run as a WSGI application.
 
 
 class DefaultConfig(object):
-    SQLALCHEMY_DATABASE_URI = 'sqlite::memory'
+    SQLALCHEMY_DATABASE_URI = 'sqlite:///:memory'
     SQLALCHEMY_ECHO = False
 
     DEBUG = False
@@ -133,7 +133,7 @@ def main():
         ssl_context = ssl.SSLContext(ssl.PROTOCOL_TLSv1_2)
         ssl_context.load_cert_chain(ssl_certificate, ssl_key)
 
-    if args.template:
+    if args.data_root:
         app.config['SNMPSIM_MGMT_DATAROOT'] = args.data_root
 
     if args.template:
