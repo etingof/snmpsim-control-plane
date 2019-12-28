@@ -94,7 +94,7 @@ def show_endpoint(id):
         raise exceptions.NotFound('Endpoint not found')
 
     schema = schemas.EndpointSchema(many=True)
-    return schema.jsonify(endpoint)
+    return schema.jsonify(endpoint), 200
 
 
 @app.route(PREFIX + '/endpoints', methods=['POST'])
@@ -107,7 +107,7 @@ def new_endpoint():
     db.session.commit()
 
     schema = schemas.EndpointSchema()
-    return schema.jsonify(endpoint)
+    return schema.jsonify(endpoint), 201
 
 
 @app.route(PREFIX + '/endpoints/<id>', methods=['DELETE'])
@@ -119,17 +119,19 @@ def del_endpoint(id):
         .filter_by(id=id)
         .first())
 
-    if endpoint:
-        db.session.delete(endpoint)
-        db.session.commit()
+    if not endpoint:
+        raise exceptions.NotFound('Endpoint not found')
 
-    return flask.Response(status=201)
+    db.session.delete(endpoint)
+    db.session.commit()
+
+    return flask.Response(status=204)
 
 
 @app.route(PREFIX + '/users')
 def show_users():
     schema = schemas.UserSchema(many=True)
-    return schema.jsonify(models.User.query.all())
+    return schema.jsonify(models.User.query.all()), 200
 
 
 @app.route(PREFIX + '/users/<id>', methods=['GET'])
@@ -144,7 +146,7 @@ def show_user(id):
         raise exceptions.NotFound('User not found')
 
     schema = schemas.UserSchema()
-    return schema.jsonify(user)
+    return schema.jsonify(user), 200
 
 
 @app.route(PREFIX + '/users', methods=['POST'])
@@ -157,7 +159,7 @@ def new_user():
     db.session.commit()
 
     schema = schemas.UserSchema()
-    return schema.jsonify(user)
+    return schema.jsonify(user), 201
 
 
 @app.route(PREFIX + '/users/<id>', methods=['DELETE'])
@@ -169,11 +171,13 @@ def del_user(id):
         .filter_by(id=id)
         .first())
 
-    if user:
-        db.session.delete(user)
-        db.session.commit()
+    if not user:
+        raise exceptions.NotFound('User not found')
 
-    return flask.Response(status=201)
+    db.session.delete(user)
+    db.session.commit()
+
+    return flask.Response(status=204)
 
 
 @app.route(PREFIX + '/engines')
@@ -185,7 +189,7 @@ def show_engines():
         .outerjoin(models.User)
         .all())
     schema = schemas.EngineSchema(many=True)
-    return schema.jsonify(engines)
+    return schema.jsonify(engines), 200
 
 
 @app.route(PREFIX + '/engines/<id>', methods=['GET'])
@@ -202,7 +206,7 @@ def show_engine(id):
         return flask.make_response('Engine not found', 404)
 
     schema = schemas.EngineSchema()
-    return schema.jsonify(engine)
+    return schema.jsonify(engine), 200
 
 
 @app.route(PREFIX + '/engines', methods=['POST'])
@@ -216,7 +220,7 @@ def new_engine():
     db.session.commit()
 
     schema = schemas.EngineSchema()
-    return schema.jsonify(engine)
+    return schema.jsonify(engine), 201
 
 
 @app.route(PREFIX + '/engines/<id>', methods=['DELETE'])
@@ -229,11 +233,13 @@ def del_engine(id):
         .filter_by(id=id)
         .first())
 
-    if engine:
-        db.session.delete(engine)
-        db.session.commit()
+    if not engine:
+        raise exceptions.NotFound('Engine not found')
 
-    return flask.Response(status=201)
+    db.session.delete(engine)
+    db.session.commit()
+
+    return flask.Response(status=204)
 
 
 @app.route(PREFIX + '/engines/<id>/user/<user_id>', methods=['PUT'])
@@ -246,7 +252,7 @@ def add_engine_user(id, user_id):
 
     engine = models.Engine.query.filter_by(id=id).first()
     schema = schemas.EngineSchema()
-    return schema.jsonify(engine)
+    return schema.jsonify(engine), 200
 
 
 @app.route(PREFIX + '/engines/<id>/user/<user_id>', methods=['DELETE'])
@@ -259,13 +265,15 @@ def del_engine_user(id, user_id):
         .filter_by(engine_id=id, user_id=user_id)
         .first())
 
-    if engine_user:
-        db.session.delete(engine_user)
-        db.session.commit()
+    if not engine_user:
+        raise exceptions.NotFound('Engine <-> user binding not found')
+
+    db.session.delete(engine_user)
+    db.session.commit()
 
     engine = models.Engine.query.filter_by(id=id).first()
     schema = schemas.EngineSchema()
-    return schema.jsonify(engine)
+    return schema.jsonify(engine), 204
 
 
 @app.route(PREFIX + '/engines/<id>/endpoint/<endpoint_id>', methods=['PUT'])
@@ -284,7 +292,7 @@ def add_engine_endpoint(id, endpoint_id):
         .filter_by(id=id).first())
 
     schema = schemas.EngineSchema()
-    return schema.jsonify(engine)
+    return schema.jsonify(engine), 200
 
 
 @app.route(PREFIX + '/engines/<id>/endpoint/<endpoint_id>', methods=['DELETE'])
@@ -296,14 +304,16 @@ def del_engine_endpoint(id, endpoint_id):
         .query
         .filter_by(engine_id=id, endpoint_id=endpoint_id).first())
 
-    if engine_endpoint:
-        db.session.delete(engine_endpoint)
-        db.session.commit()
+    if not engine_endpoint:
+        raise exceptions.NotFound('Engine <-> endpoint binding not found')
+
+    db.session.delete(engine_endpoint)
+    db.session.commit()
 
     engine = models.Engine.query.filter_by(id=id).first()
     schema = schemas.EngineSchema()
 
-    return schema.jsonify(engine)
+    return schema.jsonify(engine), 204
 
 
 @app.route(PREFIX + '/agents')
@@ -316,7 +326,7 @@ def show_agents():
         .all())
 
     schema = schemas.AgentSchema(many=True)
-    return schema.jsonify(agents)
+    return schema.jsonify(agents), 200
 
 
 @app.route(PREFIX + '/agents/<id>', methods=['GET'])
@@ -333,7 +343,7 @@ def show_agent(id):
         raise exceptions.NotFound('Agent not found')
 
     schema = schemas.AgentSchema()
-    return schema.jsonify(agent)
+    return schema.jsonify(agent), 200
 
 
 @app.route(PREFIX + '/agents', methods=['POST'])
@@ -361,7 +371,7 @@ def new_agent():
     db.session.commit()
 
     schema = schemas.AgentSchema()
-    return schema.jsonify(agent)
+    return schema.jsonify(agent), 201
 
 
 @app.route(PREFIX + '/agents/<id>', methods=['DELETE'])
@@ -374,11 +384,13 @@ def del_agent(id):
         .filter_by(id=id)
         .first())
 
-    if agent:
-        db.session.delete(agent)
-        db.session.commit()
+    if not agent:
+        raise exceptions.NotFound('Agent not found')
 
-    return flask.Response(status=201)
+    db.session.delete(agent)
+    db.session.commit()
+
+    return flask.Response(status=204)
 
 
 @app.route(PREFIX + '/agents/<id>/engine/<engine_id>', methods=['PUT'])
@@ -398,7 +410,7 @@ def add_agent_engine(id, engine_id):
         .filter_by(id=id).first())
 
     schema = schemas.AgentSchema()
-    return schema.jsonify(agent)
+    return schema.jsonify(agent), 200
 
 
 @app.route(PREFIX + '/agents/<id>/engine/<engine_id>', methods=['DELETE'])
@@ -410,9 +422,11 @@ def del_agent_engine(id, engine_id):
         .query
         .filter_by(engine_id=engine_id, agent_id=id).first())
 
-    if agent_engine:
-        db.session.delete(agent_engine)
-        db.session.commit()
+    if not agent_engine:
+        raise exceptions.NotFound('Agent <-> engine binding not found')
+
+    db.session.delete(agent_engine)
+    db.session.commit()
 
     agent = (
         models
@@ -421,7 +435,7 @@ def del_agent_engine(id, engine_id):
         .filter_by(id=id).first())
 
     schema = schemas.AgentSchema()
-    return schema.jsonify(agent)
+    return schema.jsonify(agent), 204
 
 
 @app.route(PREFIX + '/selectors')
@@ -434,7 +448,7 @@ def show_selectors():
         .all())
 
     schema = schemas.SelectorSchema(many=True)
-    return schema.jsonify(selectors)
+    return schema.jsonify(selectors), 200
 
 
 @app.route(PREFIX + '/selectors/<id>', methods=['GET'])
@@ -451,7 +465,7 @@ def show_selector(id):
         raise exceptions.NotFound('Selector not found')
 
     schema = schemas.SelectorSchema()
-    return schema.jsonify(selector)
+    return schema.jsonify(selector), 200
 
 
 @app.route(PREFIX + '/selectors', methods=['POST'])
@@ -464,7 +478,7 @@ def new_selector():
     db.session.commit()
 
     schema = schemas.SelectorSchema()
-    return schema.jsonify(selector)
+    return schema.jsonify(selector), 201
 
 
 @app.route(PREFIX + '/selectors/<id>', methods=['DELETE'])
@@ -476,14 +490,17 @@ def del_selector(id):
         .filter_by(id=id)
         .first())
 
-    if selector:
-        db.session.delete(selector)
-        db.session.commit()
+    if not selector:
+        raise exceptions.NotFound('Selector not found')
 
-    return flask.Response(status=201)
+    db.session.delete(selector)
+    db.session.commit()
+
+    return flask.Response(status=204)
 
 
-@app.route(PREFIX + '/agents/<id>/selector/<selector_id>/<order>', methods=['PUT'])
+@app.route(PREFIX + '/agents/<id>/selector/<selector_id>/<order>',
+           methods=['PUT'])
 @render_config
 def add_agent_selector(id, selector_id, order):
     agent_selector = (
@@ -500,7 +517,7 @@ def add_agent_selector(id, selector_id, order):
         .filter_by(id=id).first())
 
     schema = schemas.AgentSchema()
-    return schema.jsonify(agent)
+    return schema.jsonify(agent), 200
 
 
 @app.route(PREFIX + '/agents/<id>/selector/<selector_id>', methods=['DELETE'])
@@ -512,9 +529,11 @@ def del_agent_selector(id, selector_id):
         .query
         .filter_by(selector_id=selector_id, agent_id=id).first())
 
-    if agent_selector:
-        db.session.delete(agent_selector)
-        db.session.commit()
+    if not agent_selector:
+        raise exceptions.NotFound('Agent <-> selector binding not found')
+
+    db.session.delete(agent_selector)
+    db.session.commit()
 
     agent = (
         models
@@ -523,7 +542,7 @@ def del_agent_selector(id, selector_id):
         .filter_by(id=id).first())
 
     schema = schemas.AgentSchema()
-    return schema.jsonify(agent)
+    return schema.jsonify(agent), 204
 
 
 @app.route(PREFIX + '/recordings')
@@ -534,7 +553,7 @@ def show_recordings():
         .all())
 
     schema = schemas.RecordingSchema(many=True)
-    return schema.jsonify(recordings)
+    return schema.jsonify(recordings), 200
 
 
 @app.route(PREFIX + '/recordings/<id>', methods=['GET'])
@@ -549,7 +568,7 @@ def show_recording(id):
         raise exceptions.NotFound('Recording not found')
 
     schema = schemas.RecordingSchema()
-    return schema.jsonify(recording)
+    return schema.jsonify(recording), 200
 
 
 @app.route(PREFIX + '/recordings', methods=['POST'])
@@ -561,7 +580,7 @@ def new_recording():
     db.session.commit()
 
     schema = schemas.RecordingSchema()
-    return schema.jsonify(recording)
+    return schema.jsonify(recording), 201
 
 
 @app.route(PREFIX + '/recordings/<id>', methods=['DELETE'])
@@ -572,11 +591,13 @@ def del_recording(id):
         .filter_by(id=id)
         .first())
 
-    if recording:
-        db.session.delete(recording)
-        db.session.commit()
+    if not recording:
+        raise exceptions.NotFound('Recording not found')
 
-    return flask.Response(status=201)
+    db.session.delete(recording)
+    db.session.commit()
+
+    return flask.Response(status=204)
 
 
 @app.route(PREFIX + '/labs')
@@ -589,7 +610,7 @@ def show_labs():
         .all())
 
     schema = schemas.LabSchema(many=True)
-    return schema.jsonify(labs)
+    return schema.jsonify(labs), 200
 
 
 @app.route(PREFIX + '/labs/<id>', methods=['GET'])
@@ -606,7 +627,7 @@ def show_lab(id):
         raise exceptions.NotFound('Lab not found')
 
     schema = schemas.LabSchema()
-    return schema.jsonify(lab)
+    return schema.jsonify(lab), 200
 
 
 @app.route(PREFIX + '/labs', methods=['POST'])
@@ -619,7 +640,7 @@ def new_lab():
     db.session.commit()
 
     schema = schemas.LabSchema()
-    return schema.jsonify(lab)
+    return schema.jsonify(lab), 201
 
 
 @app.route(PREFIX + '/labs/<id>', methods=['DELETE'])
@@ -632,11 +653,13 @@ def del_lab(id):
         .filter_by(id=id)
         .first())
 
-    if lab:
-        db.session.delete(lab)
-        db.session.commit()
+    if not lab:
+        raise exceptions.NotFound('Lab not found')
 
-    return flask.Response(status=201)
+    db.session.delete(lab)
+    db.session.commit()
+
+    return flask.Response(status=204)
 
 
 @app.route(PREFIX + '/labs/<id>/agent/<agent_id>', methods=['PUT'])
@@ -650,7 +673,7 @@ def add_lab_agent(id, agent_id):
     lab = models.Lab.query.filter_by(id=id).first()
 
     schema = schemas.LabSchema()
-    return schema.jsonify(lab)
+    return schema.jsonify(lab), 200
 
 
 @app.route(PREFIX + '/labs/<id>/agent/<agent_id>', methods=['DELETE'])
@@ -663,13 +686,15 @@ def del_lab_agent(id, agent_id):
         .filter_by(agent_id=agent_id, lab_id=id)
         .first())
 
-    if lab_agent:
-        db.session.delete(lab_agent)
-        db.session.commit()
+    if not lab_agent:
+        raise exceptions.NotFound('Lab <-> agent binding not found')
+
+    db.session.delete(lab_agent)
+    db.session.commit()
 
     engine = models.Lab.query.filter_by(id=id).first()
     schema = schemas.LabSchema()
-    return schema.jsonify(engine)
+    return schema.jsonify(engine), 204
 
 
 @app.route(PREFIX + '/labs/<id>/power/<state>', methods=['PUT'])
@@ -691,4 +716,4 @@ def change_lab_power(id, state):
     lab = models.Lab.query.filter_by(id=id).first()
 
     schema = schemas.LabSchema()
-    return schema.jsonify(lab)
+    return schema.jsonify(lab), 200
