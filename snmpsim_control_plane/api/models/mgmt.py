@@ -6,6 +6,10 @@
 #
 # SNMP simulator management: REST API document model
 #
+import re
+
+from sqlalchemy.orm import validates
+
 from snmpsim_control_plane.api import db
 
 
@@ -16,6 +20,19 @@ class Endpoint(db.Model):
     address = db.Column(db.String(64), unique=True, nullable=False)
     engines = db.relationship(
         'EngineEndpoint', cascade="all,delete", backref='endpoint', lazy=True)
+
+    @validates('address')
+    def validate_address(self, key, address):
+        # TODO: also match `protocol`
+        ipv4 = re.match(r'[0-9]+(?:\.[0-9]+){3}(:[0-9]+)?$', address)
+        if ipv4:
+            return
+
+        ipv6 = re.match(r'\[([a-f0-9:]+:+)+[a-f0-9]+\](:[0-9]+)?$', address)
+        if ipv6:
+            return
+
+        raise Exception('Malformed IP address %s' % address)
 
 
 class User(db.Model):
