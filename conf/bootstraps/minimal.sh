@@ -2,7 +2,7 @@
 #
 # Example REST API based SNMP simulator bootstrapping
 #
-ENDPOINT=http://localhost:8000/snmpsim/mgmt/v1
+ENDPOINT=http://localhost:5000/snmpsim/mgmt/v1
 
 path="`dirname \"$0\"`"
 
@@ -52,7 +52,7 @@ update_resource $ENDPOINT/agents/$agent_id/engine/$engine_id
 # Create SNMP transport endpoint
 req='{
   "name": "Test SNMP transport endpoint (UDPv4 at localhost)",
-  "domain": "udpv4",
+  "protocol": "udpv4",
   "address": "127.0.0.1:1161"
 }'
 

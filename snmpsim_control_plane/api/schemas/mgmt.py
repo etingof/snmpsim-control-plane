@@ -14,7 +14,7 @@ from snmpsim_control_plane.api.models import mgmt as models
 class EndpointSchema(ma.ModelSchema):
     class Meta:
         model = models.Endpoint
-        fields = ('id', 'name', 'domain', 'address', 'engines', '_links')
+        fields = ('id', 'name', 'protocol', 'address', 'engines', '_links')
 
     engines = ma.Nested('EngineSchema', many=True, exclude=('endpoints',))
 

@@ -1033,7 +1033,7 @@ components:
         by one SNMP engine.
       type: object
       required:
-        - domain
+        - protocol
         - address
       properties:
         id:
@@ -1045,7 +1045,7 @@ components:
           description: >
             Descriptive name of this transport endpoint e.g. "port123 at vif456"
           type: string
-        domain:
+        protocol:
           type: string
           enum: ["udpv4", "udpv6"]
         address:

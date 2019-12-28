@@ -12,7 +12,7 @@ from snmpsim_control_plane.api import db
 class Endpoint(db.Model):
     id = db.Column(db.Integer(), primary_key=True)
     name = db.Column(db.String(), nullable=True)
-    domain = db.Column(db.Enum('udpv4', 'udpv6'), nullable=False)
+    protocol = db.Column(db.Enum('udpv4', 'udpv6'), nullable=False)
     address = db.Column(db.String(64), unique=True, nullable=False)
     engines = db.relationship(
         'EngineEndpoint', cascade="all,delete", backref='endpoint', lazy=True)

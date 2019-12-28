@@ -21,7 +21,7 @@ exec snmpsim-command-responder \
           {% endif %}
         {% endfor %}
         {% for endpoint in engine['endpoints'] %}
-      --agent-{{ endpoint['domain'] }}-endpoint "{{ endpoint['address'] }}" \
+      --agent-{{ endpoint['protocol'] }}-endpoint "{{ endpoint['address'] }}" \
         {% endfor %}
       --data-dir "{{ agent['data_dir'] }}" \
       {% endfor %}
