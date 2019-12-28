@@ -10,7 +10,7 @@ import os
 from functools import wraps
 
 import flask
-from werkzeug.exceptions import HTTPException
+from werkzeug import exceptions
 
 from snmpsim_control_plane import error
 from snmpsim_control_plane.api import app
@@ -43,7 +43,7 @@ def render_config(f):
     return decorated_function
 
 
-@app.errorhandler(HTTPException)
+@app.errorhandler(exceptions.HTTPException)
 def flask_exception_handler(exc):
     app.logger.error(exc)
     err = {
@@ -90,6 +90,9 @@ def show_endpoint(id):
         .outerjoin(models.Engine)
         .first())
 
+    if not endpoint:
+        raise exceptions.NotFound('Endpoint not found')
+
     schema = schemas.EndpointSchema(many=True)
     return schema.jsonify(endpoint)
 
@@ -116,8 +119,9 @@ def del_endpoint(id):
         .filter_by(id=id)
         .first())
 
-    db.session.delete(endpoint)
-    db.session.commit()
+    if endpoint:
+        db.session.delete(endpoint)
+        db.session.commit()
 
     return flask.Response(status=201)
 
@@ -135,6 +139,9 @@ def show_user(id):
         .query
         .filter_by(id=id)
         .first())
+
+    if not user:
+        raise exceptions.NotFound('User not found')
 
     schema = schemas.UserSchema()
     return schema.jsonify(user)
@@ -162,8 +169,9 @@ def del_user(id):
         .filter_by(id=id)
         .first())
 
-    db.session.delete(user)
-    db.session.commit()
+    if user:
+        db.session.delete(user)
+        db.session.commit()
 
     return flask.Response(status=201)
 
@@ -191,7 +199,7 @@ def show_engine(id):
         .first())
 
     if not engine:
-        return flask.make_response('Not found', 404)
+        return flask.make_response('Engine not found', 404)
 
     schema = schemas.EngineSchema()
     return schema.jsonify(engine)
@@ -221,8 +229,9 @@ def del_engine(id):
         .filter_by(id=id)
         .first())
 
-    db.session.delete(engine)
-    db.session.commit()
+    if engine:
+        db.session.delete(engine)
+        db.session.commit()
 
     return flask.Response(status=201)
 
@@ -250,8 +259,9 @@ def del_engine_user(id, user_id):
         .filter_by(engine_id=id, user_id=user_id)
         .first())
 
-    db.session.delete(engine_user)
-    db.session.commit()
+    if engine_user:
+        db.session.delete(engine_user)
+        db.session.commit()
 
     engine = models.Engine.query.filter_by(id=id).first()
     schema = schemas.EngineSchema()
@@ -286,8 +296,9 @@ def del_engine_endpoint(id, endpoint_id):
         .query
         .filter_by(engine_id=id, endpoint_id=endpoint_id).first())
 
-    db.session.delete(engine_endpoint)
-    db.session.commit()
+    if engine_endpoint:
+        db.session.delete(engine_endpoint)
+        db.session.commit()
 
     engine = models.Engine.query.filter_by(id=id).first()
     schema = schemas.EngineSchema()
@@ -317,6 +328,9 @@ def show_agent(id):
         .outerjoin(models.AgentEngine)
         .outerjoin(models.Engine)
         .first())
+
+    if not agent:
+        raise exceptions.NotFound('Agent not found')
 
     schema = schemas.AgentSchema()
     return schema.jsonify(agent)
@@ -360,8 +374,9 @@ def del_agent(id):
         .filter_by(id=id)
         .first())
 
-    db.session.delete(agent)
-    db.session.commit()
+    if agent:
+        db.session.delete(agent)
+        db.session.commit()
 
     return flask.Response(status=201)
 
@@ -395,8 +410,9 @@ def del_agent_engine(id, engine_id):
         .query
         .filter_by(engine_id=engine_id, agent_id=id).first())
 
-    db.session.delete(agent_engine)
-    db.session.commit()
+    if agent_engine:
+        db.session.delete(agent_engine)
+        db.session.commit()
 
     agent = (
         models
@@ -431,6 +447,9 @@ def show_selector(id):
         .outerjoin(models.Agent)
         .first())
 
+    if not selector:
+        raise exceptions.NotFound('Selector not found')
+
     schema = schemas.SelectorSchema()
     return schema.jsonify(selector)
 
@@ -457,8 +476,9 @@ def del_selector(id):
         .filter_by(id=id)
         .first())
 
-    db.session.delete(selector)
-    db.session.commit()
+    if selector:
+        db.session.delete(selector)
+        db.session.commit()
 
     return flask.Response(status=201)
 
@@ -492,8 +512,9 @@ def del_agent_selector(id, selector_id):
         .query
         .filter_by(selector_id=selector_id, agent_id=id).first())
 
-    db.session.delete(agent_selector)
-    db.session.commit()
+    if agent_selector:
+        db.session.delete(agent_selector)
+        db.session.commit()
 
     agent = (
         models
@@ -524,6 +545,9 @@ def show_recording(id):
         .filter_by(id=id)
         .first())
 
+    if not recording:
+        raise exceptions.NotFound('Recording not found')
+
     schema = schemas.RecordingSchema()
     return schema.jsonify(recording)
 
@@ -548,8 +572,9 @@ def del_recording(id):
         .filter_by(id=id)
         .first())
 
-    db.session.delete(recording)
-    db.session.commit()
+    if recording:
+        db.session.delete(recording)
+        db.session.commit()
 
     return flask.Response(status=201)
 
@@ -576,6 +601,9 @@ def show_lab(id):
         .outerjoin(models.LabAgent)
         .outerjoin(models.Agent)
         .first())
+
+    if not lab:
+        raise exceptions.NotFound('Lab not found')
 
     schema = schemas.LabSchema()
     return schema.jsonify(lab)
@@ -604,8 +632,9 @@ def del_lab(id):
         .filter_by(id=id)
         .first())
 
-    db.session.delete(lab)
-    db.session.commit()
+    if lab:
+        db.session.delete(lab)
+        db.session.commit()
 
     return flask.Response(status=201)
 
@@ -634,11 +663,12 @@ def del_lab_agent(id, agent_id):
         .filter_by(agent_id=agent_id, lab_id=id)
         .first())
 
-    db.session.delete(lab_agent)
-    db.session.commit()
+    if lab_agent:
+        db.session.delete(lab_agent)
+        db.session.commit()
 
-    engine = models.Engine.query.filter_by(id=id).first()
-    schema = schemas.EngineSchema()
+    engine = models.Lab.query.filter_by(id=id).first()
+    schema = schemas.LabSchema()
     return schema.jsonify(engine)
 
 
@@ -650,6 +680,9 @@ def change_lab_power(id, state):
         .query
         .filter_by(id=id)
         .first())
+
+    if not lab:
+        raise exceptions.NotFound('Lab not found')
 
     lab.power = state.lower()
 
