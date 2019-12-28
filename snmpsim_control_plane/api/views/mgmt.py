@@ -10,6 +10,7 @@ import os
 from functools import wraps
 
 import flask
+from werkzeug.exceptions import HTTPException
 
 from snmpsim_control_plane import error
 from snmpsim_control_plane.api import app
@@ -40,6 +41,30 @@ def render_config(f):
         return response
 
     return decorated_function
+
+
+@app.errorhandler(HTTPException)
+def flask_exception_handler(exc):
+    app.logger.error(exc)
+    err = {
+        'status': exc.code,
+        'message': exc.description
+    }
+    response = flask.jsonify(err)
+    response.status_code = exc.code
+    return response
+
+
+@app.errorhandler(Exception)
+def all_exception_handler(exc):
+    app.logger.error(exc)
+    err = {
+        'status': 400,
+        'message': exc.message
+    }
+    response = flask.jsonify(err)
+    response.status_code = 400
+    return response
 
 
 @app.route(PREFIX + '/endpoints')

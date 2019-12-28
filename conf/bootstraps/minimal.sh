@@ -4,8 +4,6 @@
 #
 ENDPOINT=http://localhost:8000/snmpsim/mgmt/v1
 
-set -x
-
 path="`dirname \"$0\"`"
 
 . $path/functions.sh
@@ -16,7 +14,7 @@ req='{
   "name": "Test Lab"
 }'
 
-lab_id=$(create_resource "$req" $ENDPOINT/labs)
+lab_id=$(create_resource "$req" $ENDPOINT/labs) || exit 1
 
 
 # Create a SNMP agent
