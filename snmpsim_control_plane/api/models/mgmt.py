@@ -26,11 +26,11 @@ class Endpoint(db.Model):
         # TODO: also match `protocol`
         ipv4 = re.match(r'[0-9]+(?:\.[0-9]+){3}(:[0-9]+)?$', address)
         if ipv4:
-            return
+            return address
 
         ipv6 = re.match(r'\[([a-f0-9:]+:+)+[a-f0-9]+\](:[0-9]+)?$', address)
         if ipv6:
-            return
+            return address
 
         raise Exception('Malformed IP address %s' % address)
 
