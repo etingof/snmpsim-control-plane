@@ -5,7 +5,7 @@ info:
   version: '1.0.0'
   title: 'SNMP Simulator Metrics REST API'
   description: >
-    Monitoring API provides the insight for the operator to how SNMP Simulator
+    Metrics API provides the insight for the operator to how SNMP Simulator
     is doing. That includes health reporting and operational statistics.
     The data is provided by running SNMP Simulator, REST API is essentially
     read-only.
@@ -17,36 +17,43 @@ info:
 
 
     Typical use of the `/processes` endpoint by some monitoring application
-    can be a parameterized REST API call designed to reveal missing processes,
+    can be a parameterized REST API call designed to reveal crashing processes,
     overly consumed system resources or serious application-specific errors
     occurring in SNMP simulator.
 
 
-    The `/activity` endpoint is all about SNMP
-    traffic being handled by certain simulator
-    subsystem. Conceptually, any SNMP command
-    traverses simulator subsystems in order
+    The `/activity` endpoints report SNMP traffic counters sliced by one or
+    more attributes. Conceptually, any SNMP command traverses simulator
+    subsystems in order
 
-    * transport endpoint
+    1. network transport
 
-    * agent
+    2. agent
 
-    * recording
+    3. recording
 
-
-    Reported data reflects cumulative SNMP traffic
-    optionally selected by any subsystem.
+    4. variation module
 
 
-    For example, the user can get packet count for all agents or for a single
+    Each subsystem extract certain attributes from the passing traffic by
+    which `/activity/packets` and `/activity/recordings` endpoints can group
+    reported counters.
+
+
+    For example, user can get packet count for all agents or for a single
     specific agent, for agent+endpoint combination (an agent can listen on
     multiple endpoints) or for agent+recording pair (any single recording can
     be used by many agents).
 
 
-    The consumer of this endpoint is expected to poll it periodically pushing
-    collected data into a time-series database for dynamics computing and data
-    aggregation.
+    The consumer of `/activity/*` endpoints is expected to poll the API
+    periodically pushing collected data into a time-series database for
+    dynamics computing and data aggregation.
+
+
+    Although reported counters are ever growing, the consumer should be
+    prepared to handle the situation when the counters are reset to zero
+    abruptly.
 
 servers:
   - url: http://127.0.0.1:5000/snmpsim/metrics/v1
