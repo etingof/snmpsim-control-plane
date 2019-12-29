@@ -13,5 +13,7 @@ from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
 
+app.url_map.strict_slashes = False
+
 db = SQLAlchemy(app)
 ma = Marshmallow(app)

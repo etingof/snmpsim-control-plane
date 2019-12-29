@@ -33,7 +33,7 @@ class DefaultConfig(object):
     DEBUG = False
 
     SNMPSIM_MGMT_LISTEN_IP = '127.0.0.1'
-    SNMPSIM_MGMT_LISTEN_PORT = 8000
+    SNMPSIM_MGMT_LISTEN_PORT = 5000
     SNMPSIM_MGMT_SSL_CERT = None
     SNMPSIM_MGMT_SSL_KEY = None
     SNMPSIM_MGMT_DATAROOT = '/usr/share/snmpsim/data'
@@ -66,7 +66,7 @@ def parse_args():
         '--port', type=int,
         help='TCP port to bind REST API server to.  Can also be '
              'set via config variable SNMPSIM_MGMT_LISTEN_PORT. '
-             'Default is 8000.')
+             'Default is 5000.')
 
     parser.add_argument(
         '--ssl-certificate', type=str,

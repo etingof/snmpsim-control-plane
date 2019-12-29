@@ -106,6 +106,9 @@ python3 -m venv venv
 
 . venv/bin/activate
 
+# older setuptools fail on versioned dependencies
+pip install setuptools -U
+
 pip install https://github.com/etingof/snmpsim-control-plane/archive/master.zip
 ```
 
@@ -116,20 +119,23 @@ SNMP simulator into the same virtual environment as well:
 pip install https://github.com/etingof/snmpsim/archive/master.zip
 ```
 
-Once everything is successfully installed, configure your control plane tools:
+Once everything is successfully installed, configure your control plane tools.
+
+Management API configuration
+++++++++++++++++++++++++++++
+
+Create REST API server configuration file:
 
 ```commandline
 mkdir -p /tmp/snmpsim/boot
 
 cat > snmpsim-management.conf <<EOF
 SQLALCHEMY_DATABASE_URI = 'sqlite:////tmp/snmpsim/snmpsim-restapi-management.db'
-SQLALCHEMY_ECHO = False
-SECRET_KEY = '\xfb\x12\xdf\xa1@i\xd6>V\xc0\xbb\x8fp\x16#Z\x0b\x81\xeb\x16'
 
 DEBUG = True
 
 SNMPSIM_MGMT_LISTEN_IP = '127.0.0.1'
-SNMPSIM_MGMT_LISTEN_PORT = 8000
+SNMPSIM_MGMT_LISTEN_PORT = 5000
 
 SNMPSIM_MGMT_SSL_CERT = None
 SNMPSIM_MGMT_SSL_KEY = None
@@ -173,11 +179,115 @@ snmpsim-restapi-mgmt --config /tmp/snmpsim/snmpsim-management.conf \
     --destination /tmp/snmpsim/boot
 ```
 
-By this point you should be able to run REST API calls against control
-plane and observe what happens. Look into
+By this point you should be able to run REST API calls against management
+control plane and observe what happens. Look into
 [conf/bootstraps/minimal.sh](https://github.com/etingof/snmpsim-control-plane/tree/master/conf/bootstraps)
 for inspiration. Plain `curl` or highly automated
 [Postman API client](https://www.getpostman.com/product/api-client) would work.
+
+Metrics API configuration
++++++++++++++++++++++++++
+
+Create REST API server configuration file:
+
+```commandline
+cat > snmpsim-metrics.conf <<EOF
+SQLALCHEMY_DATABASE_URI = 'sqlite:////tmp/snmpsim/snmpsim-restapi-metrics.db'
+
+DEBUG = True
+
+SNMPSIM_METRICS_LISTEN_IP = '127.0.0.1'
+SNMPSIM_METRICS_LISTEN_PORT = 5001
+
+EOF
+```
+
+To get SNMP simulator command responder producing metrics we need to enable that
+by passing the command-line option to the command responder process. This can
+be done by modifying Management REST API template:
+
+```commandline
+mkdir -p /tmp/snmpsim/reports
+
+cat > /tmp/snmpsim/snmpsim-command-responder.j2 <<EOF
+{% if context['labs'] %}
+exec snmpsim-command-responder \
+  --reporting-method fulljson:/tmp/snmpsim/reports \
+  {% for lab in context['labs'] %}
+    {% for agent in lab['agents'] %}
+      {% for engine in agent['engines'] %}
+    --v3-engine-id "{{ engine['engine_id'] }}" \
+        {% for user in engine['users'] %}
+      --v3-user "{{ user['user'] }}" \
+          {% if user['auth_key'] is not none %}
+      --v3-auth-key "{{ user['auth_key'] }}" \
+      --v3-auth-proto "{{ user['auth_proto'] }}" \
+            {% if user['priv_key'] is not none %}
+      --v3-priv-key "{{ user['priv_key'] }}" \
+      --v3-priv-proto "{{ user['priv_proto'] }}" \
+            {% endif %}
+          {% endif %}
+        {% endfor %}
+        {% for endpoint in engine['endpoints'] %}
+      --agent-{{ endpoint['protocol'] }}-endpoint "{{ endpoint['address'] }}" \
+        {% endfor %}
+      --data-dir "{{ agent['data_dir'] }}" \
+      {% endfor %}
+    {% endfor %}
+  {% endfor %}
+{% endif %}
+EOF
+```
+
+Re/start management REST API server with new template:
+
+```commandline
+snmpsim-restapi-mgmt --config /tmp/snmpsim/snmpsim-management.conf \
+    --destination /tmp/snmpsim/boot \
+    --template /tmp/snmpsim/snmpsim-command-responder.j2
+```
+
+Start metrics importing process over the same directory where SNMP
+simulator command responder will push its reports to:
+
+```commandline
+snmpsim-metrics-importer --config /tmp/snmpsim/snmpsim-metrics.conf \
+    --recreate-db
+snmpsim-metrics-importer --config /tmp/snmpsim/snmpsim-metrics.conf \
+    --watch-dir /tmp/snmpsim/reports
+```
+
+Start Metrics REST API server:
+
+```commandline
+snmpsim-restapi-metrics --config /tmp/snmpsim/snmpsim-metrics.conf
+```
+
+By this point you should be able to run REST API calls against metrics
+endpoints like this:
+
+```commandline
+$ curl http://127.0.0.1:5001/snmpsim/metrics/v1/activity/messages
+{
+  "_links": {
+    "filters": "/snmpsim/metrics/v1/activity/messages/filters", 
+    "self": "/snmpsim/metrics/v1/activity/messages?"
+  }, 
+  "failures": 0, 
+  "pdus": 25456, 
+  "var_binds": 28392, 
+  "variations": {
+    "numeric": {
+      "failures": 0, 
+      "total": 66
+    }, 
+    "writecache": {
+      "failures": 0, 
+      "total": 26
+    }
+  }
+}
+```
 
 Getting help
 ------------

@@ -13,5 +13,11 @@ from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
 
+app.url_map.strict_slashes = False
+
+app.config.from_envvar('SNMPSIM_METRICS_CONFIG')
+
 db = SQLAlchemy(app)
 ma = Marshmallow(app)
+
+from snmpsim_control_plane.metrics import views  # noqa
