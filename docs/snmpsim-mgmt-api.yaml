@@ -1143,9 +1143,9 @@ components:
       description: >
         Required fields of SNMP Engine object.
       type: object
+      required:
+        - engine_id
       properties:
-        required:
-          - engine_id
         engine_id:
           description: >
             Administratively assigned, unique (within an administrative domain) ID
