@@ -6,6 +6,7 @@
 #
 # SNMP simulator management: turn ORM data into a tree of dicts
 #
+from sqlalchemy import and_
 from sqlalchemy import inspect
 
 from snmpsim_control_plane.api.models import mgmt as models
@@ -37,7 +38,9 @@ def to_dict():
         query = (
             models.Agent
             .query
-            .outerjoin(models.LabAgent)
+            .join(models.LabAgent,
+                  and_(models.LabAgent.agent_id == models.Agent.id,
+                       models.LabAgent.lab_id == orm_lab.id))
             .all()
         )
 
@@ -52,7 +55,9 @@ def to_dict():
             query = (
                 models.Engine
                 .query
-                .outerjoin(models.AgentEngine)
+                .join(models.AgentEngine,
+                      and_(models.AgentEngine.engine_id == models.Engine.id,
+                           models.AgentEngine.agent_id == orm_agent.id))
                 .all()
             )
 
@@ -67,7 +72,9 @@ def to_dict():
                 query = (
                     models.User
                     .query
-                    .outerjoin(models.EngineUser)
+                    .join(models.EngineUser,
+                          and_(models.EngineUser.user_id == models.User.id,
+                               models.EngineUser.engine_id == orm_engine.id))
                     .all()
                 )
 
@@ -78,7 +85,9 @@ def to_dict():
                 query = (
                     models.Endpoint
                     .query
-                    .outerjoin(models.EngineEndpoint)
+                    .join(models.EngineEndpoint,
+                          and_(models.EngineEndpoint.endpoint_id == models.Endpoint.id,
+                               models.EngineEndpoint.engine_id == orm_engine.id))
                     .all()
                 )
 
@@ -89,7 +98,9 @@ def to_dict():
             query = (
                 models.Selector
                 .query
-                .outerjoin(models.AgentSelector)
+                .join(models.AgentSelector,
+                      and_(models.AgentSelector.selector_id == models.Selector.id,
+                           models.AgentSelector.agent_id == orm_agent.id))
                 .all()
             )
 
