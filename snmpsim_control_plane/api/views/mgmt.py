@@ -60,7 +60,7 @@ def all_exception_handler(exc):
     app.logger.error(exc)
     err = {
         'status': 400,
-        'message': exc.message
+        'message': getattr(exc, 'message', str(exc))
     }
     response = flask.jsonify(err)
     response.status_code = 400
