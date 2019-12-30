@@ -62,5 +62,8 @@ endpoint_id=$(create_resource "$req" $ENDPOINT/endpoints)
 # Bind SNMP transport endpoint to SNMP engine
 update_resource $ENDPOINT/engines/$engine_id/endpoint/$endpoint_id
 
+# Bind SNMP agent to virtual lab
+update_resource $ENDPOINT/labs/$lab_id/agent/$agent_id
+
 # Power ON the lab
 update_resource $ENDPOINT/labs/$lab_id/power/on
