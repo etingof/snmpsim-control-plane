@@ -31,7 +31,7 @@ class UserSchema(ma.ModelSchema):
                   'auth_proto', 'priv_key', 'priv_proto',
                   'engines', '_links')
 
-    engines = ma.List(ma.URLFor('show_engine', id='<id>'))
+    engines = ma.Nested('EngineSchema', many=True, exclude=('users',))
 
     _links = ma.Hyperlinks({
         'self': ma.URLFor('show_user', id='<id>'),
