@@ -82,7 +82,7 @@ def manage_executables(watch_dir):
 
             for fd in r:
                 log.msg('Output from process "%s" begins' % rlist[fd])
-                log.msg(os.read(fd, 32768))
+                log.msg(os.read(fd, 32768).decode(errors='ignore'))
                 log.msg('Output from process "%s" ends' % rlist[fd])
 
         # Watch executables
