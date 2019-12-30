@@ -19,7 +19,8 @@ class Endpoint(db.Model):
     protocol = db.Column(db.Enum('udpv4', 'udpv6'), nullable=False)
     address = db.Column(db.String(64), unique=True, nullable=False)
     engines = db.relationship(
-        'EngineEndpoint', cascade="all,delete", backref='endpoint', lazy=True)
+        'Engine', cascade="all,delete", secondary='engine_endpoint',
+        backref='endpoint', lazy=True)
 
     @validates('address')
     def validate_address(self, key, address):
@@ -48,7 +49,8 @@ class User(db.Model):
         db.Enum("des", "3des", "aes", "aes128", "aes192", "aes192blmt",
                 "aes256", "aes256blmt", "none"), default='none')
     engines = db.relationship(
-        'EngineUser', cascade="all,delete", backref='user', lazy=True)
+        'Engine', cascade="all,delete", secondary='engine_user',
+        backref='user', lazy=True)
 
 
 class Engine(db.Model):
