@@ -172,13 +172,6 @@ def _show_packets_or_messages(show_messages=False):
         schema = schemas.VariationsSchema(many=True)
         variations = schema.dump(variations)
 
-        variations = {
-            variation['name']: {
-                key: variation[key] for key in variation if key != 'name'
-            }
-            for variation in variations.data
-        }
-
         _self = flask.url_for(
             'show_messages', **dict(
                 (field, flask.request.args.getlist(field))

@@ -354,8 +354,8 @@ components:
         variations:
           description: >
             Dictionary of variation modules metrics
-          type: object
-          additionalProperties:
+          type: array
+          items:
             $ref: "#/components/schemas/VariationMetrics"
 
     VariationMetrics:
@@ -367,6 +367,10 @@ components:
           type: integer
         last_hit:
           type: integer
+        name:
+          description: >
+            Name of the variation module
+          type: string
         total:
           description: >
             Total number of calls this variation module received.
