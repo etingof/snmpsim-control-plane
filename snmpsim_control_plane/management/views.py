@@ -7,6 +7,7 @@
 # SNMP simulator management: REST API views
 #
 import os
+import tempfile
 from functools import wraps
 
 import flask
@@ -15,9 +16,11 @@ from werkzeug import exceptions
 from snmpsim_control_plane import error
 from snmpsim_control_plane.management import app
 from snmpsim_control_plane.management import db
-from snmpsim_control_plane.management import exporters
 from snmpsim_control_plane.management import models
+from snmpsim_control_plane.management import recording
 from snmpsim_control_plane.management import schemas
+from snmpsim_control_plane.management.exporters import builder
+from snmpsim_control_plane.management.exporters import renderer
 
 PREFIX = '/snmpsim/mgmt/v1'
 TARGET_CONFIG = 'snmpsim-run-labs.sh'
@@ -28,14 +31,14 @@ def render_config(f):
     def decorated_function(*args, **kwargs):
         response = f(*args, **kwargs)
 
-        context = exporters.builder.to_dict()
+        context = builder.to_dict()
 
         template = app.config['SNMPSIM_MGMT_TEMPLATE']
         dst = os.path.join(
             app.config['SNMPSIM_MGMT_DESTINATION'],
             TARGET_CONFIG)
 
-        exporters.renderer.render_configuration(dst, template, context)
+        renderer.render_configuration(dst, template, context)
 
         return response
 
@@ -546,55 +549,61 @@ def del_agent_selector(id, selector_id):
 
 @app.route(PREFIX + '/recordings')
 def show_recordings():
-    recordings = (
-        models.Recording
-        .query
-        .all())
+    try:
+        recordings = recording.list_recordings(
+            app.config['SNMPSIM_MGMT_DATAROOT'])
+
+    except error.ControlPlaneError:
+        raise exceptions.NotFound('Recording not found')
 
     schema = schemas.RecordingSchema(many=True)
     return schema.jsonify(recordings), 200
 
 
-@app.route(PREFIX + '/recordings/<id>', methods=['GET'])
-def show_recording(id):
-    recording = (
-        models.Recording
-        .query
-        .filter_by(id=id)
-        .first())
+@app.route(PREFIX + '/recordings/<path:path>', methods=['GET'])
+def show_recording(path):
+    try:
+        directory, file = recording.get_recording(
+            app.config['SNMPSIM_MGMT_DATAROOT'], path, exists=True)
 
-    if not recording:
+    except error.ControlPlaneError:
         raise exceptions.NotFound('Recording not found')
 
-    schema = schemas.RecordingSchema()
-    return schema.jsonify(recording), 200
+    return flask.send_from_directory(directory, file)
 
 
-@app.route(PREFIX + '/recordings', methods=['POST'])
-def new_recording():
-    req = flask.request.json
+@app.route(PREFIX + '/recordings/<path:path>', methods=['POST'])
+def new_recording(path):
+    recording_type = recording.get_recording_type(path)
+    if not recording_type:
+        raise error.ControlPlaneError('Unknown recording type')
 
-    recording = models.Recording(**req)
-    db.session.add(recording)
-    db.session.commit()
+    try:
+        directory, file = recording.get_recording(
+            app.config['SNMPSIM_MGMT_DATAROOT'], path, not_exists=True)
 
-    schema = schemas.RecordingSchema()
-    return schema.jsonify(recording), 201
+    except error.ControlPlaneError:
+        raise exceptions.NotFound('Bad recording path (is it already exists?)')
+
+    # TODO: is it a memory hog when .snmprec file is large?
+    with tempfile.NamedTemporaryFile(dir=directory, delete=False) as fl:
+        fl.write(flask.request.data)
+
+    os.rename(fl.name, os.path.join(directory, file))
+
+    return flask.Response(status=204)
 
 
-@app.route(PREFIX + '/recordings/<id>', methods=['DELETE'])
-def del_recording(id):
-    recording = (
-        models.Recording
-        .query
-        .filter_by(id=id)
-        .first())
+@app.route(PREFIX + '/recordings/<path:path>', methods=['DELETE'])
+def del_recording(path):
+    try:
+        directory, file = recording.get_recording(
+            app.config['SNMPSIM_MGMT_DATAROOT'], path, exists=True)
 
-    if not recording:
+    except error.ControlPlaneError:
         raise exceptions.NotFound('Recording not found')
 
-    db.session.delete(recording)
-    db.session.commit()
+    os.unlink(os.path.join(directory, file))
 
     return flask.Response(status=204)
 

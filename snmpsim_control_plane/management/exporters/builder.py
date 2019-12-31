@@ -9,7 +9,7 @@
 from sqlalchemy import and_
 from sqlalchemy import inspect
 
-from snmpsim_control_plane.management import mgmt as models
+from snmpsim_control_plane.management import models
 
 
 def object_as_dict(obj):

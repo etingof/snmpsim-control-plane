@@ -161,23 +161,60 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
+
+  /recordings/{path}:
+    description: >
+      This resource represents a single simulation data recording identified
+      by `path`.
+    get:
+      summary: Info for a specific simulation data object
+      parameters:
+        - name: path
+          in: path
+          required: true
+          description: Simulation file path relative to data root
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Simulation file contents
+          content:
+            text/plain:
+              schema:
+                type: string
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
     post:
       summary: Create a new simulation data recording
-      tags:
-        - recordings
+      parameters:
+        - name: path
+          in: path
+          required: true
+          description: Simulation file path relative to data root
+          schema:
+            type: string
       requestBody:
         description: >
-          Receive the entire .snmprec file in a JSON object or ASCII text form.
+          Receive the entire .snmprec file in a text or compressed form.
         required: true
         content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/RecordingRequired"
           text/plain:
             schema:
               type: string
+          application/octet-stream:
+            schema:
+              type: string
+              format: binary
       responses:
-        "201":
+        "204":
           description: Null response
         default:
           description: Unspecified error
@@ -185,48 +222,17 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
-
-  /recordings/{id}:
-    description: >
-      This resource represents a single simulation data recording identified
-      by `id`.
-    get:
-      summary: Info for a specific simulation data object
-      tags:
-        - recordings
-      parameters:
-        - name: id
-          in: path
-          required: true
-          description: The ID of the object to retrieve
-          schema:
-            type: integer
-      responses:
-        "200":
-          description: Expected response to a valid request
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Recording"
-        default:
-          description: unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
     delete:
       summary: Delete simulation data object
-      tags:
-        - recordings
       parameters:
-        - name: id
+        - name: path
           in: path
           required: true
-          description: The ID of the object to retrieve
+          description: Simulation file path relative to data root
           schema:
-            type: integer
+            type: string
       responses:
-        "201":
+        "204":
           description: Null response
         default:
           description: Unspecified error

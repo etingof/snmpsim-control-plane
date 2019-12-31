@@ -45,3 +45,18 @@ function update_resource() {
       return 1
   fi
 }
+
+# Upload recording
+function upload_recording() {
+  endpoint=$1
+  filename=$2
+
+  curl -s -d "$filename" \
+      -H "Content-Type: text/plain" \
+      -X POST \
+      $endpoint
+
+  if [ $? -ne 0 ]; then
+      return 1
+  fi
+}
