@@ -87,7 +87,7 @@ class AgentSchema(ma.ModelSchema):
 
 class RecordingSchema(ma.ModelSchema):
     class Meta:
-        model = models.Recording
+        fields = ('path', 'size', 'type')
 
 
 class LabSchema(ma.ModelSchema):

@@ -138,12 +138,6 @@ class AgentSelector(db.Model):
     )
 
 
-class Recording(db.Model):
-    id = db.Column(db.Integer(), primary_key=True)
-    name = db.Column(db.String(60))
-    path = db.Column(db.String(), unique=True, nullable=False)
-
-
 class Lab(db.Model):
     id = db.Column(db.Integer(), primary_key=True)
     name = db.Column(db.String(), nullable=True)
