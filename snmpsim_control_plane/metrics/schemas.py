@@ -8,8 +8,6 @@
 #
 import marshmallow
 
-from snmpsim_control_plane.api import ma
-
 
 class EnsureZeroMixIn(object):
 

@@ -10,7 +10,7 @@ import re
 
 from sqlalchemy.orm import validates
 
-from snmpsim_control_plane.api import db
+from snmpsim_control_plane.management import db
 
 
 class Endpoint(db.Model):
