@@ -7,8 +7,8 @@
 # SNMP simulator management: REST API view schemas
 #
 
-from snmpsim_control_plane.api import ma
-from snmpsim_control_plane.api.models import mgmt as models
+from snmpsim_control_plane.management import ma
+from snmpsim_control_plane.management import models
 
 
 class EndpointSchema(ma.ModelSchema):

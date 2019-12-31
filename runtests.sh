@@ -13,13 +13,13 @@ RESTAPI_CONF=$(mktemp /tmp/snmpsimd.XXXXXX)
 
 sed -e 's/DEBUG = True/DEBUG = False/g' $(pwd)/conf/snmpsim-management.conf > $RESTAPI_CONF
 
-snmpsim-restapi-mgmt \
+snmpsim-mgmt-restapi \
     --config $RESTAPI_CONF \
     --recreate-db
 
 RESTAPI_DST_DIR=$(mktemp -d /tmp/snmpsimd.XXXXXX)
 
-snmpsim-restapi-mgmt \
+snmpsim-mgmt-restapi \
     --config $RESTAPI_CONF \
     --destination "$RESTAPI_DST_DIR" &
 

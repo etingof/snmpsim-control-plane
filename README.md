@@ -19,12 +19,12 @@ Features
 How to use SNMP Simulator Control Plane
 ---------------------------------------
 
-SNMP Simulator Control Plane tool (`snmpsim-restapi-mgmt`) is a typical Web
+SNMP Simulator Control Plane tool (`snmpsim-mgmt-restapi`) is a typical Web
 app. For experimenting and trying it out in a non-production environment,
 it can be run stand-alone. For production use it's way better to run it
 under a WSGI HTTP Server such as [gunicorn](https://gunicorn.org).
 
-Once the `snmpsim-restapi-mgmt` tool is up and running, just follow OpenAPI
+Once the `snmpsim-mgmt-restapi` tool is up and running, just follow OpenAPI
 specification (shipped alone with this package) to configure your SNMP
 Simulator instance by issuing a series of REST API calls.
 
@@ -173,9 +173,9 @@ snmpsim-supervisor --watch-dir /tmp/snmpsim/boot
 and (in a different shell, but same Python virtual environment):
 
 ```commandline
-snmpsim-restapi-mgmt --config /tmp/snmpsim/snmpsim-management.conf \
+snmpsim-mgmt-restapi --config /tmp/snmpsim/snmpsim-management.conf \
     --recreate-db
-snmpsim-restapi-mgmt --config /tmp/snmpsim/snmpsim-management.conf \
+snmpsim-mgmt-restapi --config /tmp/snmpsim/snmpsim-management.conf \
     --destination /tmp/snmpsim/boot
 ```
 
@@ -242,7 +242,7 @@ EOF
 Re/start management REST API server with new template:
 
 ```commandline
-snmpsim-restapi-mgmt --config /tmp/snmpsim/snmpsim-management.conf \
+snmpsim-mgmt-restapi --config /tmp/snmpsim/snmpsim-management.conf \
     --destination /tmp/snmpsim/boot \
     --template /tmp/snmpsim/snmpsim-command-responder.j2
 ```
