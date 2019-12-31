@@ -8,6 +8,7 @@
 #
 import argparse
 import sys
+import os
 
 import snmpsim_control_plane
 from snmpsim_control_plane import daemon
@@ -64,6 +65,11 @@ def parse_args():
     parser.add_argument(
         '--daemonize', action='store_true',
         help='Disengage from controlling terminal and become a daemon')
+
+    parser.add_argument(
+        '--pid-file', metavar='<FILE>', type=str,
+        default='/var/run/%s/%s.pid' % (__name__, os.getpid()),
+        help='PID file to track daemon process execution')
 
     parser.add_argument(
         '--watch-dir', metavar='<DIR>', type=str,

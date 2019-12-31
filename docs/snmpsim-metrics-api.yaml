@@ -22,8 +22,8 @@ info:
     occurring in SNMP simulator.
 
 
-    The `/activity` endpoints report SNMP traffic counters sliced by one or
-    more attributes. Conceptually, any SNMP command traverses simulator
+    The `/activity` endpoints report SNMP traffic counters optionally filtered
+    by one or more attributes. Conceptually, any SNMP command traverses simulator
     subsystems in order
 
     1. network transport
@@ -36,8 +36,12 @@ info:
 
 
     Each subsystem extract certain attributes from the passing traffic by
-    which `/activity/packets` and `/activity/recordings` endpoints can group
+    which `/activity/packets` and `/activity/messages` endpoints can filter
     reported counters.
+
+
+    Available filters applicable to specific endpoint can be discovered via
+    `/activity/{packets, messages}/filters` endpoint.
 
 
     For example, user can get packet count for all agents or for a single
@@ -56,15 +60,15 @@ info:
     abruptly.
 
 servers:
-  - url: http://127.0.0.1:5000/snmpsim/metrics/v1
+  - url: http://127.0.0.1:5001/snmpsim/metrics/v1
 
 paths:
   /activity/packets:
     get:
       description: >
-        Activity report for a selection of transport protocols, endpoints and
-        peer addresses. Reports metrics that include both successful SNMP
-        commands and failed at different processing stages.
+        Activity report for a selection of network transport. Reports metrics
+        that reflect raw network packet counts i.e. includes both successful
+        and unsuccessful SNMP commands.
 
       parameters:
         - name: transport_protocol
@@ -94,11 +98,12 @@ paths:
 
       responses:
         '200':
-          description: Transport-level metrics
+          description: SNMP simulation recording metrics
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/PacketMetrics"
+
         default:
           description: Unspecified error
           content:
@@ -106,11 +111,24 @@ paths:
               schema:
                 $ref: "#/components/schemas/Error"
 
-  /activity/recordings:
+  /activity/packets/filters:
+    get:
+      description: >
+        List of known filters
+      responses:
+        '200':
+          description: Transport-level metrics
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Filters"
+
+  /activity/messages:
     get:
       description: >
         Activity report for a selection of network transport, SNMP parameters and
-        recordings. Reports metrics for successful SNMP commands.
+        recordings. Reports metrics that only include successful SNMP commands,
+
       parameters:
         - name: transport_protocol
           in: query
@@ -190,23 +208,37 @@ paths:
         - name: recording
           in: query
           description: >
-            Report activity for this recording ID.
+            Report activity for this simulation recording file path.
           required: false
           schema:
-            type: integer
+            type: string
+
       responses:
         '200':
           description: SNMP simulation recording metrics
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/RecordingMetrics"
+                $ref: "#/components/schemas/MessageMetrics"
+
         default:
           description: Unspecified error
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
+
+  /activity/messages/filters:
+    get:
+      description: >
+        List of known filters
+      responses:
+        '200':
+          description: Transport-level metrics
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Filters"
 
   /processes:
     get:
@@ -297,7 +329,7 @@ components:
 
     MessageMetrics:
       description: >
-        SNMP PDU level metrics.
+        SNMP message level metrics.
       type: object
       properties:
         first_hit:
@@ -319,16 +351,18 @@ components:
             Total number of variable-bindings that failed to process.
           type: integer
           format: int64
+        variations:
+          description: >
+            Dictionary of variation modules metrics
+          type: object
+          additionalProperties:
+            $ref: "#/components/schemas/VariationMetrics"
 
     VariationMetrics:
       description: >
         Variation module metrics.
       type: object
       properties:
-        name:
-          description: >
-            Name of the variation module.
-          type: string
         first_hit:
           type: integer
         last_hit:
@@ -344,17 +378,19 @@ components:
           type: integer
           format: int64
 
-    RecordingMetrics:
+    Filter:
       description: >
-        SNMP simulation recording scope metrics.
+        A hashmap of filter name and URI
       type: object
-      properties:
-        message:
-          $ref: "#/components/schemas/MessageMetrics"
-        variation:
-          type: array
-          items:
-            $ref: "#/components/schemas/VariationMetrics"
+      additionalProperties:
+        type: string
+
+    Filters:
+      description: >
+        Array of Filters
+      type: array
+      items:
+        $ref: "#/components/schemas/Filter"
 
     ProcessMetrics:
       description: >

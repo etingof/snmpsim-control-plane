@@ -69,6 +69,7 @@ params = {
             'snmpsim-restapi-mgmt = snmpsim_control_plane.commands.mgmt:main',
             'snmpsim-supervisor = snmpsim_control_plane.commands.supervisor:main',
             'snmpsim-metrics-importer = snmpsim_control_plane.commands.importer:main',
+            'snmpsim-metrics-restapi = snmpsim_control_plane.commands.metrics:main',
         ]
     },
     'install_requires': requirements,

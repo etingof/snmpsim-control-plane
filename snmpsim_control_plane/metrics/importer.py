@@ -161,7 +161,7 @@ def import_metrics(fulljson):
                                             autoincrement(agent_model, models.Agent)
 
                                             recording_model = models.Recording(
-                                                agent_id=agent_model.id, name=recording)
+                                                agent_id=agent_model.id, path=recording)
 
                                             recording_model = db.session.merge(recording_model)
 

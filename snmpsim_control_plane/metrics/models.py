@@ -66,7 +66,7 @@ class Agent(db.Model):
 
 class Recording(db.Model):
     id = db.Column(db.Integer(), unique=True)
-    name = db.Column(db.String(16), nullable=False)
+    path = db.Column(db.String(16), nullable=False)
 
     agent_id = db.Column(
         db.Integer, db.ForeignKey("agent.id"), nullable=False)
@@ -76,7 +76,7 @@ class Recording(db.Model):
 
     __table_args__ = (
         db.PrimaryKeyConstraint(
-            'agent_id', 'name'
+            'agent_id', 'path'
         ),
     )
 
