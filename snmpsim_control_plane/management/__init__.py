@@ -21,5 +21,3 @@ if 'SNMPSIM_MGMT_CONFIG' in os.environ:
 
 db = SQLAlchemy(app)
 ma = Marshmallow(app)
-
-from snmpsim_control_plane.management import views  # noqa

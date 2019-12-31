@@ -16,17 +16,22 @@ Features
 * Generates performance and operational metrics
 * REST API is compliant to OpenAPI 3.0.0
 
-How to use SNMP Simulator Control Plane
----------------------------------------
+SNMP Simulator Control Plane overview
+-------------------------------------
 
-SNMP Simulator Control Plane tool (`snmpsim-mgmt-restapi`) is a typical Web
-app. For experimenting and trying it out in a non-production environment,
-it can be run stand-alone. For production use it's way better to run it
-under a WSGI HTTP Server such as [gunicorn](https://gunicorn.org).
+SNMP Simulator Control Plane tools set includes a handful of daemons and
+WSGI applications implementing REST API endpoints:
 
-Once the `snmpsim-mgmt-restapi` tool is up and running, just follow OpenAPI
-specification (shipped alone with this package) to configure your SNMP
-Simulator instance by issuing a series of REST API calls.
+* `snmpsim-mgmt-restapi` - Management REST API server
+* `snmpsim-mgmt-supervisor` - SNMP Simulator Command Responder instance
+  supervisor
+* `snmpsim-metrics-restapi` - System performance metrics reporting REST
+  API server
+* `snmpsim-metrics-importer` - Performance metrics DB importer
+
+Once the system is up and running, the user can follow OpenAPI specification
+(shipped alone with this package) to configure your SNMP Simulator instance
+by issuing a series of REST API calls.
 
 For example, to create a virtual laboratory:
 
@@ -47,13 +52,12 @@ $ curl -d '{
   "name": "Test Lab", 
   "power": "off"
 }
-
 ```
 
 Upon each configuration change, REST API server will create, update or
-remove one or more shell scripts that can be watched by the `snmpsim-supervisor`
-tool to invoke SNMP simulator command responder instance(s) with desired
-configuration.
+remove one or more shell scripts that can be watched by the
+`snmpsim-mgmt-supervisor` tool to invoke SNMP simulator command responder
+instance(s) with desired configuration.
 
 For a minimal configuration with just one SNMP agent and one SNMPv3
 USM user generated script will look like this:
@@ -69,8 +73,7 @@ exec snmpsim-command-responder \
     --v3-engine-id "auto" \
       --v3-user "simulator" \
       --agent-udpv4-endpoint "127.0.0.1:1161" \
-      --data-dir "data" \
-
+      --data-dir "data"
 ```
 
 The above script is rendered from a Jinja2 template. If you need to have
@@ -78,26 +81,69 @@ SNMP simulator invoked somehow differently, just copy over the built-in
 template, modify it and pass to the REST API server via a configuration
 option.
 
-Monitoring part of REST API provides ever growing counters reflecting the
+Metrics part of REST API provides ever growing counters reflecting the
 operations of SNMP Simulator instances running under the supervision of
 this control plane tool.
 
-Download
---------
+SNMP simulator command responder processes can be configured (via
+`--reporting-method`) to collect and periodically dump various metrics.
+One of the reporting methods is to write JSON files in certain format.
 
-SNMP Simulator Control Plane tool is freely available for download from
-[PyPI](https://pypi.org/project/snmpsim-control-plane/) or
-[GitHub](https://github.com/etingof/snmpsim-control-plane/archive/master.zip).
+The `snmpsim-metrics-importer` daemon can collect these JSON files,
+aggregate and load metrics into a SQL SB. Then `snmpsim-metrics-restapi`
+server exposes collected metrics to REST API clients. For example,
+this Metrics REST API call would reveal SNMP simulator activity:
 
+```commandline
+$ curl http://127.0.0.1:5001/snmpsim/metrics/v1/activity/messages
+{
+  "_links": {
+    "filters": "/snmpsim/metrics/v1/activity/messages/filters", 
+    "self": "/snmpsim/metrics/v1/activity/messages?"
+  }, 
+  "failures": 0, 
+  "pdus": 25456, 
+  "var_binds": 28392, 
+  "variations": {
+    "numeric": {
+      "failures": 0, 
+      "total": 66
+    }, 
+    "writecache": {
+      "failures": 0, 
+      "total": 26
+    }
+  }
+}
+```
 
-Installation
-------------
+Installation and configuration
+------------------------------
 
-For production use, just `pip install snmpsim-control-plane` package
-and follow general WSGI (Flask) application setup guidelines.
+For production use, just `pip install snmpsim-control-plane` package.
+To bring up REST API servers, just follow WSGI application setup
+guidelines.
 
-For development and testing, it is probably easier to set up everything
-within a Python virtual environment:
+For example, for [gunicorn](https://gunicorn.org):
+
+```commandline
+pip install gunicorn
+
+gunicorn --env "SNMPSIM_MGMT_CONFIG=/etc/snmpsim/snmpsim-management.conf" \
+  --access-logfile /var/log/snmpsim/mgmt-access.log \
+  --error-logfile /var/log/snmpsim/mgmt-error.log  \
+  --daemon \
+  snmpsim_control_plane.wsgi.management:app
+
+gunicorn --env "SNMPSIM_METRICS_CONFIG=/etc/snmpsim/snmpsim-metrics.conf" \
+  --access-logfile /var/log/snmpsim/metrics-access.log \
+  --error-logfile /var/log/snmpsim/metrics-error.log  \
+  --daemon \
+  snmpsim_control_plane.wsgi.metrics:app
+```
+
+For development and testing purposes, it is probably easier to set up
+everything within a Python virtual environment:
  
 ```commandline
 mkdir /tmp/snmpsim && cd /tmp/snmpsim
@@ -264,30 +310,14 @@ snmpsim-restapi-metrics --config /tmp/snmpsim/snmpsim-metrics.conf
 ```
 
 By this point you should be able to run REST API calls against metrics
-endpoints like this:
+endpoints.
 
-```commandline
-$ curl http://127.0.0.1:5001/snmpsim/metrics/v1/activity/messages
-{
-  "_links": {
-    "filters": "/snmpsim/metrics/v1/activity/messages/filters", 
-    "self": "/snmpsim/metrics/v1/activity/messages?"
-  }, 
-  "failures": 0, 
-  "pdus": 25456, 
-  "var_binds": 28392, 
-  "variations": {
-    "numeric": {
-      "failures": 0, 
-      "total": 66
-    }, 
-    "writecache": {
-      "failures": 0, 
-      "total": 26
-    }
-  }
-}
-```
+Download
+--------
+
+SNMP Simulator Control Plane tool is freely available for download from
+[PyPI](https://pypi.org/project/snmpsim-control-plane/) or
+[GitHub](https://github.com/etingof/snmpsim-control-plane/archive/master.zip).
 
 Getting help
 ------------
@@ -299,7 +329,6 @@ post your question [on Stack Overflow](https://stackoverflow.com/questions/ask).
 Feedback and collaboration
 --------------------------
 
-I'm interested in bug reports, fixes, suggestions and improvements. Your
-pull requests are very welcome!
+Bug reports, fixes, suggestions and improvements are welcome!
 
 Copyright (c) 2019, [Ilya Etingof](mailto:etingof@gmail.com). All rights reserved.
