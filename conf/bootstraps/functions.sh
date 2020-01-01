@@ -51,7 +51,7 @@ function upload_recording() {
   endpoint=$1
   filename=$2
 
-  curl -s -d "$filename" \
+  curl -s -d "@$filename" \
       -H "Content-Type: text/plain" \
       -X POST \
       $endpoint

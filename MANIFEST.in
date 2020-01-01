@@ -1,4 +1,4 @@
 include *.txt *.md *.sh
 recursive-include snmpsim_control_plane *.j2
 recursive-include conf *.conf *.sh
-recursive-include docs *.rst *.py *.svg *.yaml
+recursive-include docs *.rst *.py *.svg *.yaml *.png
