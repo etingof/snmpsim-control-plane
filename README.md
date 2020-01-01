@@ -331,4 +331,4 @@ Feedback and collaboration
 
 Bug reports, fixes, suggestions and improvements are welcome!
 
-Copyright (c) 2019, [Ilya Etingof](mailto:etingof@gmail.com). All rights reserved.
+Copyright (c) 2019-2020, [Ilya Etingof](mailto:etingof@gmail.com). All rights reserved.
