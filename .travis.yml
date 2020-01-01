@@ -11,7 +11,9 @@ matrix:
   - python: 'pypy'
   - python: 'pypy3'
 install:
+  - pip install setuptools -U
   - pip install -r requirements.txt -r devel-requirements.txt
   - pip install -e .
 script:
+  - if [[ $TRAVIS_PYTHON_VERSION == '3.8' ]]; then (make -C docs html); fi
   - bash runtests.sh
