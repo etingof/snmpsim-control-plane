@@ -1,0 +1,15 @@
+[Unit]
+Description=snmpsim gunicorn metrics
+After=network.target
+
+[Service]
+ExecStart=/opt/snmpsim/venv/bin/gunicorn -b "127.0.0.1:8001" \
+  --env "SNMPSIM_METRICS_CONFIG=/opt/snmpsim/etc/snmpsim-metrics.conf" \
+  --access-logfile /opt/snmpsim/log/metrics-access.log \
+  --error-logfile  /opt/snmpsim/log/metrics-error.log  \
+  snmpsim_control_plane.wsgi.metrics:app
+Restart=on-failure
+User=snmpsim
+
+[Install]
+WantedBy=multi-user.target

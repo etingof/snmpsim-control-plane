@@ -1,0 +1,14 @@
+[Unit]
+Description=snmpsim supervisor
+After=network.target
+
+[Service]
+ExecStart=/opt/snmpsim/venv/bin/snmpsim-mgmt-supervisor \
+  --watch-dir /opt/snmpsim/supervised \
+  --pid-file /opt/snmpsim/run/supervisor.pid \
+  --logging-method file:/opt/snmpsim/log/supervisor.log
+Restart=on-failure
+User=snmpsim
+
+[Install]
+WantedBy=multi-user.target

@@ -10,6 +10,7 @@ Revision 0.0.1, released XX-01-2020
 - Fixed WSGI servers default config initialization.
 - When failing to create/override a recording, return HTTP code 490 instead
   of 404.
+- Added example systemd unit files for all control panel components.
 
 Revision 0.0.0, released 01-01-2020
 -----------------------------------

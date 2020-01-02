@@ -1,0 +1,15 @@
+[Unit]
+Description=snmpsim metric
+After=network.target
+
+[Service]
+ExecStart=/opt/snmpsim/venv/bin/snmpsim-metrics-importer \
+  --config /opt/snmpsim/etc/snmpsim-metrics.conf \
+  --watch-dir /opt/snmpsim/log/metrics \
+  --pid-file /opt/snmpsim/log/importer.pid \
+  --logging-method file:/opt/snmpsim/log/importer.log
+Restart=on-failure
+User=snmpsim
+
+[Install]
+WantedBy=multi-user.target
