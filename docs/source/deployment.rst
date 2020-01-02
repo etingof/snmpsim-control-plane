@@ -71,7 +71,7 @@ This can be done by modifying Management REST API template:
 
 .. code-block:: bash
 
-    cat > /etc/snmpsim/snmpsim-command-responder.j2 <<EOF
+    cat > /etc/snmpsim/snmpsim-command-responder.j2 <<EOF\
     #!/bin/sh
     {% if context['labs'] %}
     exec snmpsim-command-responder \
