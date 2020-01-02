@@ -75,7 +75,7 @@ This can be done by modifying Management REST API template:
     #!/bin/sh
     {% if context['labs'] %}
     exec snmpsim-command-responder \
-      --reporting-method fulljson:/var/log/snmpsim/reports \
+      --reporting-method fulljson:/var/log/snmpsim/metrics \
       --process-user snmpsim --process-group snmpsim \
       {% for lab in context['labs'] %}
         {% for agent in lab['agents'] %}
