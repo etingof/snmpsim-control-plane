@@ -8,7 +8,6 @@
 #
 import argparse
 import os
-import ssl
 import sys
 
 from snmpsim_control_plane.management import app
@@ -54,16 +53,6 @@ def parse_args():
              'Default is 5000.')
 
     parser.add_argument(
-        '--ssl-certificate', type=str,
-        help='SSL certificate to use for HTTPS. Can also be set via '
-             'config variable SNMPSIM_MGMT_SSL_CERT.')
-
-    parser.add_argument(
-        '--ssl-key', type=str,
-        help='SSL key to use for HTTPS. Can also be set via config variable '
-             'SNMPSIM_MGMT_SSL_KEY.')
-
-    parser.add_argument(
         '--data-root', type=str,
         help='Path to a SNMP simulation data root directory. SNMP command '
              'responder will be configured with its data files being under '
@@ -102,20 +91,6 @@ def main():
     if args.port:
         app.config['SNMPSIM_MGMT_LISTEN_PORT'] = args.port
 
-    if args.ssl_certificate:
-        app.config['SNMPSIM_MGMT_SSL_CERT'] = args.ssl_certificate
-
-    if args.ssl_key:
-        app.config['SNMPSIM_MGMT_SSL_KEY'] = args.ssl_key
-
-    ssl_context = None
-    ssl_certificate = app.config.get('SNMPSIM_MGMT_SSL_CERT')
-    ssl_key = app.config.get('SNMPSIM_MGMT_SSL_KEY')
-
-    if ssl_certificate and ssl_key:
-        ssl_context = ssl.SSLContext(ssl.PROTOCOL_TLSv1_2)
-        ssl_context.load_cert_chain(ssl_certificate, ssl_key)
-
     if args.data_root:
         app.config['SNMPSIM_MGMT_DATAROOT'] = args.data_root
 
@@ -131,8 +106,7 @@ def main():
         return 0
 
     app.run(host=app.config.get('SNMPSIM_MGMT_LISTEN_IP'),
-            port=app.config.get('SNMPSIM_MGMT_LISTEN_PORT'),
-            ssl_context=ssl_context)
+            port=app.config.get('SNMPSIM_MGMT_LISTEN_PORT'))
 
     return 0
 
