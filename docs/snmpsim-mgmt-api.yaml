@@ -222,6 +222,36 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
+    put:
+      summary: Replace existing or create a new simulation data recording
+      parameters:
+        - name: path
+          in: path
+          required: true
+          description: Simulation file path relative to data root
+          schema:
+            type: string
+      requestBody:
+        description: >
+          Receive the entire .snmprec file in a text or compressed form.
+        required: true
+        content:
+          text/plain:
+            schema:
+              type: string
+          application/octet-stream:
+            schema:
+              type: string
+              format: binary
+      responses:
+        "204":
+          description: Null response
+        default:
+          description: Unspecified error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
     delete:
       summary: Delete simulation data object
       parameters:

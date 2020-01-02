@@ -2,8 +2,8 @@
 Revision 0.0.1, released XX-01-2020
 -----------------------------------
 
-No changes yet
-
+- Added `PUT /snmpsim/mgmt/v1/recordings/<recording>` endpoint which (unlike
+  POST) will create new or override existing recording.
 
 Revision 0.0.0, released 01-01-2020
 -----------------------------------

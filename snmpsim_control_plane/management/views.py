@@ -572,15 +572,17 @@ def show_recording(path):
     return flask.send_from_directory(directory, file)
 
 
-@app.route(PREFIX + '/recordings/<path:path>', methods=['POST'])
+@app.route(PREFIX + '/recordings/<path:path>', methods=['POST', 'PUT'])
 def new_recording(path):
     recording_type = recording.get_recording_type(path)
     if not recording_type:
         raise error.ControlPlaneError('Unknown recording type')
 
+    can_exist = flask.request.method == 'POST'
+
     try:
         directory, file = recording.get_recording(
-            app.config['SNMPSIM_MGMT_DATAROOT'], path, not_exists=True)
+            app.config['SNMPSIM_MGMT_DATAROOT'], path, not_exists=can_exist)
 
     except error.ControlPlaneError:
         raise exceptions.NotFound('Bad recording path (is it already exists?)')
