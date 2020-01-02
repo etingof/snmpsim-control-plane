@@ -71,12 +71,12 @@ This can be done by modifying Management REST API template:
 
 .. code-block:: bash
 
-    cat > /etc/snmpsim/snmpsim-command-responder.j2 <<EOF
+    cat > /etc/snmpsim/snmpsim-command-responder.j2 <<EOF\
     #!/bin/sh
     {% if context['labs'] %}
     exec snmpsim-command-responder \
       --reporting-method fulljson:/tmp/snmpsim/reports \
-      --proc-user snmpsim --proc-group snmpsim \
+      --process-user snmpsim --process-group snmpsim \
       {% for lab in context['labs'] %}
         {% for agent in lab['agents'] %}
           {% for engine in agent['engines'] %}
