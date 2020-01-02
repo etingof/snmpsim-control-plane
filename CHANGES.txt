@@ -4,6 +4,10 @@ Revision 0.0.1, released XX-01-2020
 
 - Added `PUT /snmpsim/mgmt/v1/recordings/<recording>` endpoint which (unlike
   POST) will create new or override existing recording.
+- When creating new recordings, also create all directories leading to the
+  recording being created. When recording is deleted, try to also remove
+  its directory if it's empty.
+- Fixed WSGI servers default config initialization.
 
 Revision 0.0.0, released 01-01-2020
 -----------------------------------

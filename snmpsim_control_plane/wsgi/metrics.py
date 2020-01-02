@@ -6,5 +6,5 @@
 #
 # SNMP Agent Simulator: REST API metrics WSGI app
 #
+from snmpsim_control_plane.management import app  # noqa
 from snmpsim_control_plane.metrics import views  # noqa
-from snmpsim_control_plane.metrics import app  # noqa

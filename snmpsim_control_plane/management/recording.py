@@ -69,7 +69,8 @@ def list_recordings(data_dir):
     return recordings
 
 
-def get_recording(data_dir, filename, exists=False, not_exists=False):
+def get_recording(data_dir, filename, exists=False,
+                  not_exists=False, ensure_path=False):
     filename = os.path.abspath(os.path.join(data_dir, filename))
 
     if not filename.startswith(data_dir):
@@ -83,5 +84,18 @@ def get_recording(data_dir, filename, exists=False, not_exists=False):
     if not_exists and os.path.exists(filename):
         log.error('Requested recording %s unexpectedly exists' % filename)
         raise error.ControlPlaneError('No such recording')
+
+    if ensure_path:
+        directory = os.path.dirname(filename)
+        if not os.path.exists(directory):
+            try:
+                os.makedirs(directory)
+
+            except OSError as exc:
+                log.error('Failed to create %s: exc' % directory)
+                raise error.ControlPlaneError('No such recording')
+
+        elif not os.path.isdir(directory):
+            raise error.ControlPlaneError('No such recording')
 
     return os.path.dirname(filename), os.path.basename(filename)

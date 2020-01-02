@@ -582,7 +582,8 @@ def new_recording(path):
 
     try:
         directory, file = recording.get_recording(
-            app.config['SNMPSIM_MGMT_DATAROOT'], path, not_exists=can_exist)
+            app.config['SNMPSIM_MGMT_DATAROOT'], path,
+            not_exists=can_exist, ensure_path=True)
 
     except error.ControlPlaneError:
         raise exceptions.NotFound('Bad recording path (is it already exists?)')
@@ -606,6 +607,13 @@ def del_recording(path):
         raise exceptions.NotFound('Recording not found')
 
     os.unlink(os.path.join(directory, file))
+
+    if directory != os.path.abspath(app.config['SNMPSIM_MGMT_DATAROOT']):
+        try:
+            os.rmdir(directory)
+
+        except OSError:
+            pass  # might not be empty
 
     return flask.Response(status=204)
 

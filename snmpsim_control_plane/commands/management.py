@@ -26,21 +26,6 @@ Can be run as a WSGI application.
 """
 
 
-class DefaultConfig(object):
-    SQLALCHEMY_DATABASE_URI = 'sqlite:///:memory'
-    SQLALCHEMY_ECHO = False
-
-    DEBUG = False
-
-    SNMPSIM_MGMT_LISTEN_IP = '127.0.0.1'
-    SNMPSIM_MGMT_LISTEN_PORT = 5000
-    SNMPSIM_MGMT_SSL_CERT = None
-    SNMPSIM_MGMT_SSL_KEY = None
-    SNMPSIM_MGMT_DATAROOT = '/usr/share/snmpsim/data'
-    SNMPSIM_MGMT_TEMPLATE = 'snmpsim-command-responder.j2'
-    SNMPSIM_MGMT_DESTINATION = '.'
-
-
 def parse_args():
     parser = argparse.ArgumentParser(description=DESCRIPTION)
 
@@ -106,8 +91,6 @@ def main():
 
     if args.config:
         os.environ['SNMPSIM_MGMT_CONFIG'] = args.config
-
-    app.config.from_object(DefaultConfig)
 
     config_file = os.environ.get('SNMPSIM_MGMT_CONFIG')
     if config_file:

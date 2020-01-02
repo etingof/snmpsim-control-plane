@@ -12,9 +12,14 @@ from flask import Flask
 from flask_marshmallow import Marshmallow
 from flask_sqlalchemy import SQLAlchemy
 
+from snmpsim_control_plane.metrics import config
+
+
 app = Flask(__name__)
 
 app.url_map.strict_slashes = False
+
+app.config.from_object(config.DefaultConfig)
 
 if 'SNMPSIM_METRICS_CONFIG' in os.environ:
     app.config.from_envvar('SNMPSIM_METRICS_CONFIG')
