@@ -72,6 +72,7 @@ This can be done by modifying Management REST API template:
 .. code-block:: bash
 
     cat > /etc/snmpsim/snmpsim-command-responder.j2 <<EOF
+    #!/bin/sh
     {% if context['labs'] %}
     exec snmpsim-command-responder \
       --reporting-method fulljson:/tmp/snmpsim/reports \
@@ -134,14 +135,13 @@ Then bring up the rest of the daemons:
 .. code-block:: bash
 
    snmpsim-mgmt-supervisor \
-     --config /etc/snmpsim/snmpsim-management.conf \
      --watch-dir /var/snmpsim/supervised \
      --daemonize \
      --pid-file /var/run/snmpsim/supervisor.pid \
      --logging-method file:/var/log/snmpsim/supervisor.log
 
    snmpsim-metrics-importer \
-     --config /var/log/snmpsim/snmpsim-metrics.conf \
+     --config /etc/snmpsim/snmpsim-metrics.conf \
      --watch-dir /var/log/snmpsim/metrics \
      --daemonize \
      --pid-file /var/log/snmpsim/importer.pid \
