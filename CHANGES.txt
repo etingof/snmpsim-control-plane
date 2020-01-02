@@ -8,6 +8,8 @@ Revision 0.0.1, released XX-01-2020
   recording being created. When recording is deleted, try to also remove
   its directory if it's empty.
 - Fixed WSGI servers default config initialization.
+- When failing to create/override a recording, return HTTP code 490 instead
+  of 404.
 
 Revision 0.0.0, released 01-01-2020
 -----------------------------------

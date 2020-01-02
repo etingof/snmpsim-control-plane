@@ -586,7 +586,7 @@ def new_recording(path):
             not_exists=can_exist, ensure_path=True)
 
     except error.ControlPlaneError:
-        raise exceptions.NotFound('Bad recording path (is it already exists?)')
+        raise exceptions.Conflict('Bad recording path (is it already exists?)')
 
     # TODO: is it a memory hog when .snmprec file is large?
     with tempfile.NamedTemporaryFile(dir=directory, delete=False) as fl:
