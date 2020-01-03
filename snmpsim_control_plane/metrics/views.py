@@ -170,7 +170,7 @@ def _show_packets_or_messages(show_messages=False):
 
         variations = variations_query.all()
         schema = schemas.VariationsSchema(many=True)
-        variations = schema.dump(variations)
+        variations = schema.dump(variations).data
 
         _self = flask.url_for(
             'show_messages', **dict(
