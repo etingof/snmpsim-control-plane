@@ -169,7 +169,8 @@ Then bring up the rest of the daemons:
      --logging-method file:/var/log/snmpsim/importer.log
 
 Perhaps it's better to configure all process invocation commands within
-systemd unit file or alike.
+`systemd unit files <https://github.com/etingof/snmpsim-control-plane/tree/master/conf/systemd>`_
+or alike.
 
 By this point you should be able to run REST API calls against Management
 and Metrics REST API endpoints.
