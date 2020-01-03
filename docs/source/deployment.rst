@@ -27,7 +27,7 @@ and group (e.g. `snmpsim`).
 .. code-block:: bash
 
     su snmpsim
-    mkdir -p /var/snmpsim /etc/snmpsim /var/run/snmpsim /var/log/snmpsim
+    mkdir -p /var/snmpsim /etc/snmpsim /var/run/snmpsim /var/log/snmpsim/metrics
 
 Configuration files
 +++++++++++++++++++
@@ -76,7 +76,6 @@ This can be done by modifying Management REST API template:
     {% if context['labs'] %}
     exec snmpsim-command-responder \
       --reporting-method fulljson:/var/log/snmpsim/metrics \
-      --process-user snmpsim --process-group snmpsim \
       {% for lab in context['labs'] %}
         {% for agent in lab['agents'] %}
           {% for engine in agent['engines'] %}
@@ -101,6 +100,28 @@ This can be done by modifying Management REST API template:
       {% endfor %}
     {% endif %}
     EOF
+
+To have SNMP command responder instances binding privileged UNIX
+ports (<1024), you have to run `snmpsim-mgmt-supervisor` under root
+and tell `snmpsim-command-responder` to drop root privileges right
+after binding privileged ports.
+
+This can be done by passing `snmpsim-command-responder` tool the
+`--process-user` and `--process-group` options along with non-privileged
+UNIX user and group names to switch into:
+
+.. code-block:: bash
+
+    cat > /etc/snmpsim/snmpsim-command-responder.j2 <<EOF\
+    #!/bin/sh
+    {% if context['labs'] %}
+    exec snmpsim-command-responder \
+      --process-user snmpsim --process-group snmpsim \
+      ...
+
+For binding only non-privileged ports you can run `snmpsim-mgmt-supervisor`
+under a non-privileged user and omit `--process-user` and `--process-group`
+options.
 
 REST API servers
 ++++++++++++++++
