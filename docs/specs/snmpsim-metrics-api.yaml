@@ -114,7 +114,7 @@ paths:
   /activity/packets/filters:
     get:
       description: >
-        List of known filters
+        A hashmap of known filters
       responses:
         '200':
           description: Transport-level metrics
@@ -231,7 +231,7 @@ paths:
   /activity/messages/filters:
     get:
       description: >
-        List of known filters
+        A hashmap of known filters
       responses:
         '200':
           description: Transport-level metrics
@@ -382,19 +382,12 @@ components:
           type: integer
           format: int64
 
-    Filter:
+    Filters:
       description: >
-        A hashmap of filter name and URI
+        A hashmap of filter names and endpoint URIs
       type: object
       additionalProperties:
         type: string
-
-    Filters:
-      description: >
-        Array of Filters
-      type: array
-      items:
-        $ref: "#/components/schemas/Filter"
 
     ProcessMetrics:
       description: >
