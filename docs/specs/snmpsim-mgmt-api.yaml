@@ -3,7 +3,7 @@ info:
   license:
     name: BSD License
   version: '1.0.0'
-  title: 'SNMP Simulator Control Plane REST API'
+  title: 'SNMP Simulator Management REST API'
   description: >
     Management API is designed to support complete SNMP Simulator work flow
     remotely. As such, Management API supports SNMP Agent creation,

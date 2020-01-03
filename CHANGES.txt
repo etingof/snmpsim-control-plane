@@ -11,6 +11,8 @@ Revision 0.0.1, released XX-01-2020
 - When failing to create/override a recording, return HTTP code 490 instead
   of 404.
 - Added example systemd unit files for all control panel components.
+- Renamed REST API specs into `snmpsimd-mgmt` and `snmpsim-metrics` on Swagger
+  and moved spec files into specs folder.
 
 Revision 0.0.0, released 01-01-2020
 -----------------------------------

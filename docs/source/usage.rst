@@ -9,7 +9,7 @@ Simulator management
 ++++++++++++++++++++
 
 To make sense of Management API, the user can follow
-`Management <https://app.swaggerhub.com/apis/etingof/snmpsimd-control-plane/1.0.0>`_
+`Management <https://app.swaggerhub.com/apis/etingof/snmpsim-mgmt/1.0.0>`_
 OpenAPI specification to build REST API queries assembling "virtual laboratories" of
 SNMP agents.
 
@@ -67,7 +67,7 @@ the operations of SNMP Simulator Command Responder instances running under
 the supervision of `snmpsim-mgmt-supervisor` tool.
 
 The consumer of this service can follow
-`Metrics <https://app.swaggerhub.com/apis/etingof/snmpsimd-monitoring/1.0.0>`_
+`Metrics <https://app.swaggerhub.com/apis/etingof/snmpsim-metrics/1.0.0>`_
 OpenAPI specification to build queries requesting slices of data.
 
 Examples
