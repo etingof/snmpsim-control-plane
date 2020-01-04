@@ -69,6 +69,34 @@ def all_exception_handler(exc):
     return response
 
 
+def cleanup_recorodings(f):
+    @wraps(f)
+    def rm_empty_dirs(top_dir):
+        entries = os.listdir(top_dir)
+
+        for entry in entries:
+            sub_dir = os.path.join(top_dir, entry)
+            if not os.path.isdir(sub_dir):
+                continue
+
+            rm_empty_dirs(sub_dir)
+
+        try:
+            os.rmdir(top_dir)
+
+        except OSError:
+            return
+
+    def decorated_function(*args, **kwargs):
+        response = f(*args, **kwargs)
+
+        rm_empty_dirs(app.config['SNMPSIM_MGMT_DATAROOT'])
+
+        return response
+
+    return decorated_function
+
+
 @app.route(PREFIX + '/endpoints')
 def show_endpoints():
     endpoints = (
@@ -598,6 +626,7 @@ def new_recording(path):
 
 
 @app.route(PREFIX + '/recordings/<path:path>', methods=['DELETE'])
+@cleanup_recorodings
 def del_recording(path):
     try:
         directory, file = recording.get_recording(
@@ -607,13 +636,6 @@ def del_recording(path):
         raise exceptions.NotFound('Recording not found')
 
     os.unlink(os.path.join(directory, file))
-
-    if directory != os.path.abspath(app.config['SNMPSIM_MGMT_DATAROOT']):
-        try:
-            os.rmdir(directory)
-
-        except OSError:
-            pass  # might not be empty
 
     return flask.Response(status=204)
 

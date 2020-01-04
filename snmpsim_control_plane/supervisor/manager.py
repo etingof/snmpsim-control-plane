@@ -22,12 +22,12 @@ STATE_REMOVED = 'removed'
 STATE_DIED = 'died'
 
 
-def _traverse_dir(dir):
+def _traverse_dir(top_dir):
     files = []
-    entries = os.listdir(dir)
+    entries = os.listdir(top_dir)
 
     for entry in entries:
-        dir_or_file = os.path.join(dir, entry)
+        dir_or_file = os.path.join(top_dir, entry)
         if os.path.isdir(dir_or_file):
             files.extend(_traverse_dir(dir_or_file))
 
