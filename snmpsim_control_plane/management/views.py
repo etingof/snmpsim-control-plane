@@ -71,7 +71,7 @@ def all_exception_handler(exc):
 
 def cleanup_recorodings(f):
     @wraps(f)
-    def rm_empty_dirs(top_dir):
+    def rm_empty_dirs(top_dir, delete=False):
         entries = os.listdir(top_dir)
 
         for entry in entries:
@@ -79,13 +79,14 @@ def cleanup_recorodings(f):
             if not os.path.isdir(sub_dir):
                 continue
 
-            rm_empty_dirs(sub_dir)
+            rm_empty_dirs(sub_dir, delete=True)
 
-        try:
-            os.rmdir(top_dir)
+        if delete:
+            try:
+                os.rmdir(top_dir)
 
-        except OSError:
-            return
+            except OSError:
+                return
 
     def decorated_function(*args, **kwargs):
         response = f(*args, **kwargs)
