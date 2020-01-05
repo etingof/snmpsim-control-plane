@@ -8,10 +8,13 @@
 #
 import os
 import select
-import time
 import subprocess
+import time
 
 from snmpsim_control_plane import log
+from snmpsim_control_plane.supervisor.reporting.manager import ReportingManager
+from snmpsim_control_plane.supervisor import lifecycle
+
 
 POLL_PERIOD = 1
 
@@ -73,17 +76,35 @@ def manage_executables(watch_dir):
     while True:
         # Collect and log processes output
 
-        rlist = {x['pipe']: x['executable'] for x in known_instances.values()}
+        rlist = {x['pipe'][0]: x['executable']
+                 for x in known_instances.values()
+                 if x['state'] == STATE_RUNNING}
 
         while True:
-            r, w, x = select.select(rlist, [], [], 0.1)
+            try:
+                r, w, x = select.select(rlist, [], [], 0.1)
+
+            except Exception as exc:
+                log.error(exc)
+                break
+
             if not r:
                 break
 
             for fd in r:
-                log.msg('Output from process "%s" begins' % rlist[fd])
-                log.msg(os.read(fd, 32768).decode(errors='ignore'))
-                log.msg('Output from process "%s" ends' % rlist[fd])
+                executable = rlist[fd]
+                instance = known_instances[executable]
+                console = instance['console']
+
+                log.msg('Output from process "%s" begins' % executable)
+
+                page_text = os.read(fd, console.MAX_CONSOLE_SIZE)
+                page_text = page_text.decode(errors='ignore')
+
+                console.add(page_text)
+
+                log.msg(page_text)
+                log.msg('Output from process "%s" ends' % executable)
 
         # Watch executables
 
@@ -104,12 +125,19 @@ def manage_executables(watch_dir):
 
             if not instance:
                 instance = {
+                    'pid': 0,
                     'executable': fl,
                     'file_info': stat,
                     'leash': None,
-                    'pipe': None,
+                    'pipe': (None, None),
                     'state': STATE_ADDED,
+                    'created': time.time(),
                     'started': None,
+                    'stopped': None,
+                    'runtime': lifecycle.Counter(0),
+                    'changes': lifecycle.Counter(0),
+                    'exits': lifecycle.Counter(0),
+                    'console': lifecycle.ConsoleLog(),
                 }
                 known_instances[fl] = instance
 
@@ -120,21 +148,28 @@ def manage_executables(watch_dir):
             if instance['file_info'] != stat:
                 instance['file_info'] = stat
                 instance['state'] = STATE_CHANGED
+                instance['changes'] += 1
 
-                log.info(
-                    'Existing executable %s (PID %s) has changed' % (fl, pid))
+                log.info('Existing executable %s (PID %s) has '
+                         'changed' % (fl, pid))
 
             if instance['state'] == STATE_RUNNING:
-                process = instance['leash']
+                executable = instance['leash']
 
-                process.poll()
+                executable.poll()
 
-                if process.returncode is not None:
+                if executable.returncode is not None:
                     instance['state'] = STATE_DIED
+                    instance['stopped'] = time.time()
+                    instance['exits'] += 1
+
+                    uptime = int(
+                        time.time() - instance['started'] or time.time())
 
                     log.info(
                         'Executable %s (PID %s) has died '
-                        '(rc=%s)' % (fl, pid, process.returncode))
+                        '(rc=%s), uptime %s' % (fl, pid, executable.returncode,
+                                                uptime))
 
             existing_files.add(fl)
 
@@ -143,24 +178,37 @@ def manage_executables(watch_dir):
         for fl in removed_files:
             instance = known_instances[fl]
             instance['state'] = STATE_REMOVED
+            instance['changes'] += 1
 
             log.info(
-                'Existing executable %s (PID %s) has been removed' % (fl, pid))
+                'Existing executable %s (PID %s) has been '
+                'removed' % (fl, instance['pid']))
 
         for fl, instance in tuple(known_instances.items()):
             state = instance['state']
 
             if state in (STATE_ADDED, STATE_DIED):
+                if state == STATE_DIED:
+                    r, w = instance['pipe']
+
+                    try:
+                        os.close(r)
+                        os.close(w)
+
+                    except OSError as exc:
+                        log.error(exc)
+
                 r, w = os.pipe()
 
                 leash = _run_process(fl, w)
 
                 instance['leash'] = leash
-                instance['pipe'] = r
+                instance['pipe'] = r, w
 
                 if leash:
                     instance['state'] = STATE_RUNNING
                     instance['started'] = time.time()
+                    instance['pid'] = leash.pid
 
                     log.info(
                         'Executable %s (PID %s) has been '
@@ -176,25 +224,38 @@ def manage_executables(watch_dir):
                         'Executable %s (PID %s) has been '
                         'stopped' % (fl, leash.pid))
 
-                r = instance['pipe']
+                r, w = instance['pipe']
                 if r:
-                    os.close(r)
+                    try:
+                        os.close(r)
+                        os.close(w)
 
-                known_instances.pop(fl)
+                    except OSError as exc:
+                        log.error(exc)
 
-                log.info(
-                    'Stopped tracking executable %s' % fl)
+                if state == STATE_CHANGED:
+                    instance['state'] = STATE_DIED
+
+                else:
+                    known_instances.pop(fl)
+
+                    log.info(
+                        'Stopped tracking executable %s' % fl)
 
             elif state == STATE_RUNNING:
                 leash = instance['leash']
-                if not _process_is_running(leash):
+                if _process_is_running(leash):
+                    now = time.time()
+                    instance['runtime'] = lifecycle.Counter(
+                        now - instance['created'])
+
+                else:
                     instance['state'] = STATE_DIED
+                    instance['exits'] += 1
 
-                    uptime = int(
-                        time.time() - instance['started'] or time.time())
+                    log.info('Executable %s (PID %s) has '
+                             'died' % (fl, leash.pid))
 
-                    log.info(
-                        'Executable %s (PID %s) has died, uptime %s '
-                        'secs' % (fl, leash.pid, uptime))
+        ReportingManager.process_metrics(*known_instances.values())
 
         time.sleep(POLL_PERIOD)
