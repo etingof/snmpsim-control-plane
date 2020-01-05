@@ -52,6 +52,14 @@ class User(db.Model):
         'Engine', cascade="all,delete", secondary='engine_user',
         backref='user', lazy=True)
 
+    @validates('auth_proto')
+    def uppercase_auth_proto(self, key, proto):
+        return proto.upper()
+
+    @validates('priv_proto')
+    def uppercase_priv_proto(self, key, proto):
+        return proto.upper()
+
 
 class Engine(db.Model):
     id = db.Column(db.Integer(), primary_key=True)
