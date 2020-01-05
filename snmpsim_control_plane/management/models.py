@@ -42,12 +42,12 @@ class User(db.Model):
     name = db.Column(db.String(60))
     auth_key = db.Column(db.String(), nullable=True)
     auth_proto = db.Column(
-        db.Enum("md5", "sha", "sha224", "sha256", "sha384", "sha512",
-                "none"), default='none')
+        db.Enum("MD5", "SHA", "SHA224", "SHA256", "SHA384", "SHA512",
+                "NONE"), default='NONE')
     priv_key = db.Column(db.String(), nullable=True)
     priv_proto = db.Column(
-        db.Enum("des", "3des", "aes", "aes128", "aes192", "aes192blmt",
-                "aes256", "aes256blmt", "none"), default='none')
+        db.Enum("DES", "3DES", "AES", "AES128", "AES192", "AES192BLMT",
+                "AES256", "AES256BLMT", "NONE"), default='NONE')
     engines = db.relationship(
         'Engine', cascade="all,delete", secondary='engine_user',
         backref='user', lazy=True)

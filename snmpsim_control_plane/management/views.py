@@ -69,7 +69,7 @@ def all_exception_handler(exc):
     return response
 
 
-def cleanup_recorodings(f):
+def cleanup_recordings(f):
     @wraps(f)
     def rm_empty_dirs(top_dir, delete=False):
         entries = os.listdir(top_dir)
@@ -627,7 +627,7 @@ def new_recording(path):
 
 
 @app.route(PREFIX + '/recordings/<path:path>', methods=['DELETE'])
-@cleanup_recorodings
+@cleanup_recordings
 def del_recording(path):
     try:
         directory, file = recording.get_recording(
