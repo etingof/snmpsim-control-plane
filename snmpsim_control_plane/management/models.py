@@ -60,6 +60,23 @@ class User(db.Model):
     def uppercase_priv_proto(self, key, proto):
         return proto.upper()
 
+    __table_args__ = (
+        db.CheckConstraint(
+            "auth_key IS NULL AND auth_proto='NONE' OR "
+            "auth_key IS NOT NULL AND length(auth_key) > 7 "
+            "AND auth_proto!='NONE'",
+            name='auth_key_check'),
+        db.CheckConstraint(
+            "priv_key IS NULL AND priv_proto='NONE' OR "
+            "priv_key IS NOT NULL AND length(priv_key) > 7 "
+            "AND priv_proto!='NONE'",
+            name='priv_key_check'),
+        db.CheckConstraint(
+            "priv_proto='NONE' OR "
+            "priv_proto!='NONE' AND auth_proto!='NONE'",
+            name='auth_priv_check'),
+    )
+
 
 class Engine(db.Model):
     id = db.Column(db.Integer(), primary_key=True)
