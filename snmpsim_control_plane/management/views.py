@@ -11,6 +11,7 @@ import tempfile
 from functools import wraps
 
 import flask
+from sqlalchemy import func
 from werkzeug import exceptions
 
 from snmpsim_control_plane import error
@@ -98,17 +99,30 @@ def cleanup_recordings(f):
     return decorated_function
 
 
+def search_model(model, query):
+
+    for col_name in model.__table__.columns.keys():
+        search_terms = flask.request.args.getlist(col_name)
+        if search_terms:
+            search_terms = [term.lower() for term in search_terms]
+            query = query.filter(
+                func.lower(getattr(model, col_name)).in_(search_terms))
+
+    return query
+
+
 @app.route(PREFIX + '/endpoints')
 def show_endpoints():
-    endpoints = (
+    endpoints_query = (
         models.Endpoint
         .query
         .outerjoin(models.EngineEndpoint)
-        .outerjoin(models.Engine)
-        .all())
+        .outerjoin(models.Engine))
+
+    endpoints_query = search_model(models.Endpoint, endpoints_query)
 
     schema = schemas.EndpointSchema(many=True)
-    return schema.jsonify(endpoints)
+    return schema.jsonify(endpoints_query.all())
 
 
 @app.route(PREFIX + '/endpoints/<id>', methods=['GET'])
@@ -161,8 +175,14 @@ def del_endpoint(id):
 
 @app.route(PREFIX + '/users')
 def show_users():
+    users_query = (
+        models.User
+        .query)
+
+    users_query = search_model(models.User, users_query)
+
     schema = schemas.UserSchema(many=True)
-    return schema.jsonify(models.User.query.all()), 200
+    return schema.jsonify(users_query.all()), 200
 
 
 @app.route(PREFIX + '/users/<id>', methods=['GET'])
@@ -213,14 +233,16 @@ def del_user(id):
 
 @app.route(PREFIX + '/engines')
 def show_engines():
-    engines = (
+    engines_query = (
         models.Engine
         .query
         .outerjoin(models.EngineUser)
-        .outerjoin(models.User)
-        .all())
+        .outerjoin(models.User))
+
+    engines_query = search_model(models.Engine, engines_query)
+
     schema = schemas.EngineSchema(many=True)
-    return schema.jsonify(engines), 200
+    return schema.jsonify(engines_query.all()), 200
 
 
 @app.route(PREFIX + '/engines/<id>', methods=['GET'])
@@ -349,15 +371,16 @@ def del_engine_endpoint(id, endpoint_id):
 
 @app.route(PREFIX + '/agents')
 def show_agents():
-    agents = (
+    agents_query = (
         models.Agent
         .query
         .outerjoin(models.AgentEngine)
-        .outerjoin(models.Engine)
-        .all())
+        .outerjoin(models.Engine))
+
+    agents_query = search_model(models.Agent, agents_query)
 
     schema = schemas.AgentSchema(many=True)
-    return schema.jsonify(agents), 200
+    return schema.jsonify(agents_query.all()), 200
 
 
 @app.route(PREFIX + '/agents/<id>', methods=['GET'])
@@ -471,20 +494,21 @@ def del_agent_engine(id, engine_id):
 
 @app.route(PREFIX + '/selectors')
 def show_selectors():
-    selectors = (
+    selectors_query = (
         models.Selector
         .query
         .outerjoin(models.AgentSelector)
-        .outerjoin(models.Agent)
-        .all())
+        .outerjoin(models.Agent))
+
+    selectors_query = search_model(models.Selector, selectors_query)
 
     schema = schemas.SelectorSchema(many=True)
-    return schema.jsonify(selectors), 200
+    return schema.jsonify(selectors_query.all()), 200
 
 
 @app.route(PREFIX + '/selectors/<id>', methods=['GET'])
 def show_selector(id):
-    selector = (
+    selector_query = (
         models.Selector
         .query
         .filter_by(id=id)
@@ -492,11 +516,11 @@ def show_selector(id):
         .outerjoin(models.Agent)
         .first())
 
-    if not selector:
+    if not selector_query:
         raise exceptions.NotFound('Selector not found')
 
     schema = schemas.SelectorSchema()
-    return schema.jsonify(selector), 200
+    return schema.jsonify(selector_query), 200
 
 
 @app.route(PREFIX + '/selectors', methods=['POST'])
@@ -643,15 +667,16 @@ def del_recording(path):
 
 @app.route(PREFIX + '/labs')
 def show_labs():
-    labs = (
+    labs_query = (
         models.Lab
         .query
         .outerjoin(models.LabAgent)
-        .outerjoin(models.Agent)
-        .all())
+        .outerjoin(models.Agent))
+
+    labs_query = search_model(models.Lab, labs_query)
 
     schema = schemas.LabSchema(many=True)
-    return schema.jsonify(labs), 200
+    return schema.jsonify(labs_query.all()), 200
 
 
 @app.route(PREFIX + '/labs/<id>', methods=['GET'])
