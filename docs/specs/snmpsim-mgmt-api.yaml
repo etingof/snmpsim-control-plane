@@ -70,7 +70,7 @@ paths:
           required: false
           schema:
             type: string
-              enum: ["udpv4", "udpv6"]
+            enum: ["udpv4", "udpv6"]
       responses:
         "200":
           description: >
@@ -582,8 +582,6 @@ paths:
                 $ref: "#/components/schemas/Error"
     delete:
       summary: Remove SNMP USM user from SNMP engine
-      tags:
-        - engines
       parameters:
         - name: id
           in: path
@@ -638,8 +636,6 @@ paths:
                 $ref: "#/components/schemas/Error"
     post:
       summary: Create a new SNMP simulation data selector
-      tags:
-        - selectors
       requestBody:
         description: >
           New SNMP data selectors
@@ -663,8 +659,6 @@ paths:
       by `id`.
     get:
       summary: Info for a specific SNMP simulation data selector
-      tags:
-        - selectors
       parameters:
         - name: id
           in: path
@@ -687,8 +681,6 @@ paths:
                 $ref: "#/components/schemas/Error"
     delete:
       summary: Delete SNMP simulation data selector
-      tags:
-        - agents
       parameters:
         - name: id
           in: path
@@ -743,8 +735,6 @@ paths:
                 $ref: "#/components/schemas/Error"
     post:
       summary: Create a new SNMP agent
-      tags:
-        - agents
       requestBody:
         description: >
           New SNMP agent object
@@ -768,8 +758,6 @@ paths:
       by `id`.
     get:
       summary: Info for a specific SNMP agent
-      tags:
-        - agents
       parameters:
         - name: id
           in: path
@@ -792,8 +780,6 @@ paths:
                 $ref: "#/components/schemas/Error"
     delete:
       summary: Delete SNMP agent
-      tags:
-        - agents
       parameters:
         - name: id
           in: path
@@ -817,8 +803,6 @@ paths:
       associated with SNMP agent `id`.
     put:
       summary: Add existing SNMP engine to SNMP agent
-      tags:
-        - agents
       parameters:
         - name: id
           in: path
@@ -843,8 +827,6 @@ paths:
                 $ref: "#/components/schemas/Error"
     delete:
       summary: Remove SNMP engine from SNMP agent
-      tags:
-        - agents
       parameters:
         - name: id
           in: path
@@ -874,8 +856,6 @@ paths:
       `selector_id` associated with SNMP agent `id`.
     put:
       summary: Add existing simulation data selecltor to SNMP agent
-      tags:
-        - agents
       parameters:
         - name: id
           in: path
@@ -911,8 +891,6 @@ paths:
       `selector_id` associated with SNMP agent `id`.
     delete:
       summary: Remove simulation data selector from SNMP agent
-      tags:
-        - agents
       parameters:
         - name: id
           in: path
@@ -995,8 +973,6 @@ paths:
       This resource represents a virtual laboratory identified by `id`.
     get:
       summary: Info for a specific SNMP transport endpoint
-      tags:
-        - labs
       parameters:
         - name: id
           in: path
@@ -1019,8 +995,6 @@ paths:
                 $ref: "#/components/schemas/Error"
     delete:
       summary: Delete virtual laboratory
-      tags:
-        - labs
       parameters:
         - name: id
           in: path
@@ -1044,8 +1018,6 @@ paths:
       associated with a virtual laboratory identified by `id`.
     put:
       summary: Add existing SNMP agent to a virtual laboratory
-      tags:
-        - labs
       parameters:
         - name: id
           in: path
@@ -1070,8 +1042,6 @@ paths:
                 $ref: "#/components/schemas/Error"
     delete:
       summary: Remove SNMP agent from the virtual laboratory
-      tags:
-        - labs
       parameters:
         - name: id
           in: path
@@ -1102,8 +1072,6 @@ paths:
       queried and modified.
     put:
       summary: Change power state of the virtual laboratory
-      tags:
-        - labs
       parameters:
         - name: id
           in: path
