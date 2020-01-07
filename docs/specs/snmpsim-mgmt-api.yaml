@@ -48,8 +48,29 @@ paths:
         that can be used by SNMP agents.
       summary: >
         List all existing transport endpoints
-      tags:
-        - endpoints
+      parameters:
+        - name: name
+          in: query
+          description: >
+            Search transport endpoint by name
+          required: false
+          schema:
+            type: string
+        - name: protocol
+          in: query
+          description: >
+            Search transport endpoint by protocol
+          required: false
+          schema:
+            type: string
+        - name: address
+          in: query
+          description: >
+            Search transport endpoint by address
+          required: false
+          schema:
+            type: string
+              enum: ["udpv4", "udpv6"]
       responses:
         "200":
           description: >
@@ -66,8 +87,6 @@ paths:
                 $ref: "#/components/schemas/Error"
     post:
       summary: Create a new SNMP transport endpoint
-      tags:
-        - endpoints
       requestBody:
         description: >
           Receive a new endpoint object bound to an existing SNMP agent.
@@ -92,8 +111,6 @@ paths:
       by `id`.
     get:
       summary: Info for a specific SNMP transport endpoint
-      tags:
-        - endpoints
       parameters:
         - name: id
           in: path
@@ -116,8 +133,6 @@ paths:
                 $ref: "#/components/schemas/Error"
     delete:
       summary: Delete SNMP transport endpoint
-      tags:
-        - endpoints
       parameters:
         - name: id
           in: path
@@ -142,8 +157,6 @@ paths:
     get:
       summary: >
         List all existing simulation data recordings.
-      tags:
-        - recordings
       responses:
         "200":
           description: >
@@ -277,8 +290,38 @@ paths:
     get:
       summary: >
         List all existing SNMP USM users
-      tags:
-        - users
+      parameters:
+        - name: name
+          in: query
+          description: >
+            Search user by SNMP Secutory Name
+          required: false
+          schema:
+            type: string
+        - name: user
+          in: query
+          description: >
+            Search user by SNMP user name
+          required: false
+          schema:
+            type: string
+        - name: auth_proto
+          in: query
+          description: >
+            Search user by SNMPv3 authentication protocol
+          required: false
+          schema:
+            type: string
+            enum: ["MD5", "SHA", "SHA224", "SHA256", "SHA384", "SHA512", "NONE"]
+        - name: priv_proto
+          in: query
+          description: >
+            Search user by SNMPv3 privacy  protocol
+          required: false
+          schema:
+            type: string
+            enum: ["DES", "3DES", "AES", "AES128", "AES192", "AES192BLMT", "AES256",
+                   "AES256BLMT", "NONE"]
       responses:
         "200":
           description: >
@@ -295,8 +338,6 @@ paths:
                 $ref: "#/components/schemas/Error"
     post:
       summary: Create a new SNMP USM user
-      tags:
-        - users
       requestBody:
         description: >
           New SNMP engine object
@@ -320,8 +361,6 @@ paths:
       by `id`.
     get:
       summary: Info for a specific SNMP USM user entry
-      tags:
-        - users
       parameters:
         - name: id
           in: path
@@ -344,8 +383,6 @@ paths:
                 $ref: "#/components/schemas/Error"
     delete:
       summary: Delete SNMP USM user entry
-      tags:
-        - users
       parameters:
         - name: id
           in: path
@@ -369,8 +406,21 @@ paths:
     get:
       summary: >
         List all existing SNMP engines
-      tags:
-        - agents
+      parameters:
+        - name: name
+          in: query
+          description: >
+            Search engine by name
+          required: false
+          schema:
+            type: string
+        - name: engine_id
+          in: query
+          description: >
+            Search engine by SNMP Engine ID
+          required: false
+          schema:
+            type: string
       responses:
         "200":
           description: >
@@ -387,8 +437,6 @@ paths:
                 $ref: "#/components/schemas/Error"
     post:
       summary: Create a new SNMP engine
-      tags:
-        - engines
       requestBody:
         description: >
           New SNMP engine object
@@ -412,8 +460,6 @@ paths:
       by `id`.
     get:
       summary: Info for a specific SNMP engine endpoint
-      tags:
-        - engines
       parameters:
         - name: id
           in: path
@@ -436,8 +482,6 @@ paths:
                 $ref: "#/components/schemas/Error"
     delete:
       summary: Delete SNMP engine
-      tags:
-        - engines
       parameters:
         - name: id
           in: path
@@ -461,8 +505,6 @@ paths:
       associated with SNMP engine `id`.
     put:
       summary: Add existing SNMP USM user to SNMP engine
-      tags:
-        - engines
       parameters:
         - name: id
           in: path
@@ -487,8 +529,6 @@ paths:
                 $ref: "#/components/schemas/Error"
     delete:
       summary: Remove SNMP USM user from SNMP engine
-      tags:
-        - engines
       parameters:
         - name: id
           in: path
@@ -518,8 +558,6 @@ paths:
       `endpoint_id` associated with SNMP engine `id`.
     put:
       summary: Attach existing SNMP transport endpoint to SNMP engine
-      tags:
-        - engines
       parameters:
         - name: id
           in: path
@@ -576,8 +614,14 @@ paths:
     get:
       summary: >
         List all existing SNMP simulation data selectors
-      tags:
-        - selectors
+      parameters:
+        - name: comment
+          in: query
+          description: >
+            Search selectors by comment
+          required: false
+          schema:
+            type: string
       responses:
         "200":
           description: >
@@ -668,8 +712,21 @@ paths:
     get:
       summary: >
         List all existing SNMP agents
-      tags:
-        - agents
+      parameters:
+        - name: name
+          in: query
+          description: >
+            Search agents by name
+          required: false
+          schema:
+            type: string
+        - name: data_dir
+          in: query
+          description: >
+            Search agents by data directory
+          required: false
+          schema:
+            type: string
       responses:
         "200":
           description: >
@@ -885,8 +942,21 @@ paths:
         This resource represents a list of all existing virtual laboratories.
       summary: >
         List all existing virtual laboratories
-      tags:
-        - labs
+      parameters:
+        - name: name
+          in: query
+          description: >
+            Search labs by name
+          required: false
+          schema:
+            type: string
+        - name: power
+          in: query
+          description: >
+            Search labs by power state
+          required: false
+          schema:
+            type: string
       responses:
         "200":
           description: >
@@ -903,8 +973,6 @@ paths:
                 $ref: "#/components/schemas/Error"
     post:
       summary: Create new virtual laboratory
-      tags:
-        - labs
       requestBody:
         description: >
           New lab optionally containing SNMP agent IDs.
