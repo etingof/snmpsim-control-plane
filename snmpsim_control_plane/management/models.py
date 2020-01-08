@@ -19,8 +19,8 @@ class Endpoint(db.Model):
     protocol = db.Column(db.Enum('udpv4', 'udpv6'), nullable=False)
     address = db.Column(db.String(64), unique=True, nullable=False)
     engines = db.relationship(
-        'Engine', cascade="all,delete", secondary='engine_endpoint',
-        backref='endpoint', lazy=True)
+        'Engine', secondary='engine_endpoint',
+        back_populates='endpoints', lazy=True)
 
     @validates('address')
     def validate_address(self, key, address):
@@ -49,8 +49,7 @@ class User(db.Model):
         db.Enum("DES", "3DES", "AES", "AES128", "AES192", "AES192BLMT",
                 "AES256", "AES256BLMT", "NONE"), default='NONE')
     engines = db.relationship(
-        'Engine', cascade="all,delete", secondary='engine_user',
-        backref='user', lazy=True)
+        'Engine', secondary='engine_user', back_populates='users', lazy=True)
 
     @validates('auth_proto')
     def uppercase_auth_proto(self, key, proto):
@@ -83,14 +82,14 @@ class Engine(db.Model):
     name = db.Column(db.String(64), nullable=True)
     engine_id = db.Column(db.String(32), default='auto')
     users = db.relationship(
-        'User', cascade="all,delete", secondary='engine_user',
-        backref='engine', lazy=True)
+        'User', secondary='engine_user',
+        back_populates='engines', lazy=True)
     agents = db.relationship(
-        'Agent', cascade="all,delete", secondary='agent_engine',
-        backref='engine', lazy=True)
+        'Agent', secondary='agent_engine',
+        back_populates='engines', lazy=True)
     endpoints = db.relationship(
-        'Endpoint', cascade="all,delete", secondary='engine_endpoint',
-        backref='engine', lazy=True)
+        'Endpoint', secondary='engine_endpoint',
+        back_populates='engines', lazy=True)
 
 
 class EngineUser(db.Model):
@@ -120,7 +119,7 @@ class Selector(db.Model):
     comment = db.Column(db.String())
     template = db.Column(db.String())
     agents = db.relationship(
-        'Agent', cascade="all,delete", backref='selector', lazy=True)
+        'Agent', backref='selector', lazy=True)
 
 
 class Agent(db.Model):
@@ -130,14 +129,11 @@ class Agent(db.Model):
     engine_id = db.Column(db.Integer, db.ForeignKey('engine.id'))
     selector_id = db.Column(db.Integer, db.ForeignKey('selector.id'))
     engines = db.relationship(
-        'Engine', cascade="all,delete", secondary='agent_engine',
-        backref='agent', lazy=True)
+        'Engine', secondary='agent_engine', back_populates='agents', lazy=True)
     selectors = db.relationship(
-        'Selector', cascade="all,delete", secondary='agent_selector',
-        backref='agent', lazy=True)
+        'Selector', secondary='agent_selector', back_populates='agents', lazy=True)
     labs = db.relationship(
-        'Lab', cascade="all,delete", secondary='lab_agent',
-        backref='agent', lazy=True)
+        'Lab', secondary='lab_agent', back_populates='agents', lazy=True)
 
 
 class AgentEngine(db.Model):
@@ -168,8 +164,7 @@ class Lab(db.Model):
     name = db.Column(db.String(), nullable=True)
     power = db.Column(db.Enum('on', 'off'), default='off')
     agents = db.relationship(
-        'Agent', cascade="all,delete", secondary='lab_agent',
-        backref='lab', lazy=True)
+        'Agent', secondary='lab_agent', back_populates='labs', lazy=True)
 
 
 class LabAgent(db.Model):

@@ -13,6 +13,9 @@ Revision 0.0.1, released XX-01-2020
 - Added example systemd unit files for all control panel components.
 - Renamed REST API specs into `snmpsimd-mgmt` and `snmpsim-metrics` on Swagger
   and moved spec files into specs folder.
+- Removed SQL cascading from all management API models. That makes SNMP
+  simulator entities less dependent from each other when deleting some
+  of them what facilitates their reuse.
 
 Revision 0.0.0, released 01-01-2020
 -----------------------------------
