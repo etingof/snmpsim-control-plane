@@ -972,7 +972,7 @@ paths:
     description: >
       This resource represents a virtual laboratory identified by `id`.
     get:
-      summary: Info for a specific SNMP transport endpoint
+      summary: Virtual laboratory information
       parameters:
         - name: id
           in: path
@@ -1096,6 +1096,447 @@ paths:
               schema:
                 $ref: "#/components/schemas/Error"
 
+  /tags:
+    get:
+      description: >
+        This resource represents a list of tags
+      summary: >
+        List of tags.
+      parameters:
+        - name: name
+          in: query
+          description: >
+            Search tags by name
+          required: false
+          schema:
+            type: string
+      responses:
+        "200":
+          description: >
+            An array of tags
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Tags"
+        default:
+          description: Unspecified error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+    post:
+      summary: Create a new tag
+      requestBody:
+        description: >
+          New tag optionally linking other entities
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TagRequired"
+      responses:
+        "201":
+          description: Null response
+        default:
+          description: Unspecified error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /tags/{id}:
+    description: >
+      This resource represents a tag identified by `id`.
+    get:
+      summary: Tag information
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The ID of tag
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Updated tag information
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Tag"
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+    delete:
+      summary: Delete a tag
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The ID of the tag
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Null response
+        default:
+          description: Unspecified error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /tags/{id}/endpoint/{endpoint_id}:
+    description: >
+      This resource represents a SNMP transport endpoint identified by
+      `endpoint_id` tagged with a tag identified by `id`.
+    put:
+      summary: Tag SNMP transport endpoint
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The ID of the tag
+          schema:
+            type: integer
+        - name: endpoint_id
+          in: path
+          required: true
+          description: The ID of SNMP transport endpoint
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Updated tag information
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Tag"
+        default:
+          description: Unspecified error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+    delete:
+      summary: Untag SNMP transport endpoint
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The ID of the tag
+          schema:
+            type: integer
+        - name: endpoint_id
+          in: path
+          required: true
+          description: The ID of SNMP transport endoint
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Null response
+        default:
+          description: Unspecified error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /tags/{id}/user/{user_id}:
+    description: >
+      This resource represents a SNMP USM user identified by `user_id` tagged
+      with a tag identified by `id`.
+    put:
+      summary: Tag SNMP USM user
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The ID of the tag
+          schema:
+            type: integer
+        - name: user_id
+          in: path
+          required: true
+          description: The ID of SNMP USM user
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Updated tag information
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Tag"
+        default:
+          description: Unspecified error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+    delete:
+      summary: Untag SNMP USM user
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The ID of the tag
+          schema:
+            type: integer
+        - name: user_id
+          in: path
+          required: true
+          description: The ID of SNMP USM user
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Updated tag information
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Tag"
+        default:
+          description: Unspecified error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /tags/{id}/engine/{engine_id}:
+    description: >
+      This resource represents a SNMP engine identified by
+      `engine_id` tagged with a tag identified by `id`.
+    put:
+      summary: Tag SNMP engine
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The ID of the tag
+          schema:
+            type: integer
+        - name: engine_id
+          in: path
+          required: true
+          description: The ID of SNMP engine
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Updated tag information
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Tag"
+        default:
+          description: Unspecified error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+    delete:
+      summary: Untag SNMP engine
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The ID of tag
+          schema:
+            type: integer
+        - name: engine_id
+          in: path
+          required: true
+          description: The ID of SNMP engine
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Updated tag information
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Tag"
+        default:
+          description: Unspecified error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /tags/{id}/selector/{selector_id}:
+    description: >
+      This resource represents a SNMP simulation recording selector identified
+      by `selector_id` tagged with a tag identified by `id`.
+    put:
+      summary: Tag SNMP simulation recording selector
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The ID of the tag
+          schema:
+            type: integer
+        - name: selector_id
+          in: path
+          required: true
+          description: The ID of SNMP simulation recording selector
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Updated tag information
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Tag"
+        default:
+          description: Unspecified error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+    delete:
+      summary: Untag SNMP simulation recording selector
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The ID of tag
+          schema:
+            type: integer
+        - name: selector_id
+          in: path
+          required: true
+          description: The ID of SNMP simulation recording selector
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Null response
+        default:
+          description: Unspecified error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /tags/{id}/agent/{agent_id}:
+    description: >
+      This resource represents a SNMP agent identified by
+      `agent_id` tagged with a tag identified by `id`.
+    put:
+      summary: Tag SNMP agent
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The ID of the tag
+          schema:
+            type: integer
+        - name: agent_id
+          in: path
+          required: true
+          description: The ID of SNMP agent
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Updated tag information
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Tag"
+        default:
+          description: Unspecified error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+    delete:
+      summary: Untag SNMP agent
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The ID of tag
+          schema:
+            type: integer
+        - name: agent_id
+          in: path
+          required: true
+          description: The ID of SNMP agent
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Null response
+        default:
+          description: Unspecified error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /tags/{id}/lab/{lab_id}:
+    description: >
+      This resource represents a virtual SNMP laboratory identified by
+      `lab_id` tagged with a tag identified by `id`.
+    put:
+      summary: Tag virtual SNMP laboratory
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The ID of the tag
+          schema:
+            type: integer
+        - name: lab_id
+          in: path
+          required: true
+          description: The ID of virtual SNMP laboratory
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Updated tag information
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Tag"
+        default:
+          description: Unspecified error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+    delete:
+      summary: Untag virtual SNMP laboratory
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The ID of tag
+          schema:
+            type: integer
+        - name: lab_id
+          in: path
+          required: true
+          description: The ID of virtual SNMP laboratory
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Null response
+        default:
+          description: Unspecified error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
 components:
   schemas:
     EndpointRequired:
@@ -1129,6 +1570,12 @@ components:
           description: >
             Descriptive name of this transport endpoint e.g. "port123 at vif456"
           type: string
+        tags:
+          description: >
+            Tags tagging this SNMP transport endpoint
+          type: array
+          items:
+            $ref: "#/components/schemas/Tag"
 
     Endpoint:
       description: >
@@ -1195,6 +1642,12 @@ components:
           type: string
           enum: ["DES", "3DES", "AES", "AES128", "AES192", "AES192BLMT", "AES256",
                  "AES256BLMT", "NONE"]
+        tags:
+          description: >
+            Tags tagging this SNMP USM user
+          type: array
+          items:
+            $ref: "#/components/schemas/Tag"
 
     User:
       description: >
@@ -1241,15 +1694,19 @@ components:
             SNMP USM user entries associated with this SNMP engine
           type: array
           items:
-            type: integer
-            format: int64
+            $ref: "#/components/schemas/User"
         endpoints:
           description: >
             SNMP transport endpoint IDs associated with this SNMP engine
           type: array
           items:
-            type: integer
-            format: int64
+            $ref: "#/components/schemas/Endpoint"
+        tags:
+          description: >
+            Tags tagging this SNMP engine
+          type: array
+          items:
+            $ref: "#/components/schemas/Tag"
 
     Engine:
       description: >
@@ -1288,6 +1745,13 @@ components:
           description: >
             Am expandable template or a static path to simulation data file
           type: string
+
+        tags:
+          description: >
+            Tags tagging this SNMP simulation recording selector
+          type: array
+          items:
+            $ref: "#/components/schemas/Tag"
 
     Selector:
       description: >
@@ -1339,13 +1803,12 @@ components:
           description: >
             Simulation data directory for this agent to use
           type: string
-        engine:
+        engines:
           description: >
             SNMP engines associated with this SNMP agent
           type: array
           items:
-            type: integer
-            format: int64
+            $ref: "#/components/schemas/Agent"
         selectors:
           description: >
             Ordered list of selectors probed by the agent to find a simulation
@@ -1362,6 +1825,12 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/Selector"
+        tags:
+          description: >
+            Tags tagging this SNMP agent
+          type: array
+          items:
+            $ref: "#/components/schemas/Tag"
 
     Agent:
       description: >
@@ -1441,16 +1910,21 @@ components:
           type: string
         agents:
           description: >
-            SNMP agent IDs belonging to this lab
+            SNMP agents belonging to this lab
           type: array
           items:
-            type: integer
-            format: int64
+            $ref: "#/components/schemas/Agent"
         power:
+            description: >
+              Power state of SNMP agents in this lab
+            type: string
+            enum: ["on", "off"]
+        tags:
           description: >
-            Power state of SNMP agents in this lab
-          type: string
-          enum: ["on", "off"]
+            Tags tagging this SNMP lab
+          type: array
+          items:
+            $ref: "#/components/schemas/Tag"
 
     Lab:
       description: >
@@ -1467,6 +1941,79 @@ components:
       type: array
       items:
         $ref: "#/components/schemas/Lab"
+
+    TagRequired:
+      description: >
+        Required fields of Tag object.
+      type: object
+
+    TagOptional:
+      description: >
+        Optional fields of Tag object.
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          description: >
+            Name of this tag e.g. "labX"
+          type: string
+        description:
+          description: >
+            Descriptive name of this tag e.g. "All lab X resources"
+          type: string
+        endpoints:
+          description: >
+            SNMP transport endpoints tagged with this tag
+          type: array
+          items:
+            $ref: "#/components/schemas/Endpoint"
+        users:
+          description: >
+            SNMP USM users tagged with this tag
+          type: array
+          items:
+            $ref: "#/components/schemas/User"
+        engines:
+          description: >
+            SNMP engines tagged with this tag
+          type: array
+          items:
+            $ref: "#/components/schemas/Engine"
+        selectors:
+          description: >
+            SNMP selector tagged with this tag
+          type: array
+          items:
+            $ref: "#/components/schemas/Selector"
+        agent:
+          description: >
+            SNMP agent tagged with this tag
+          type: array
+          items:
+            $ref: "#/components/schemas/Agent"
+        lab:
+          description: >
+            SNMP lab tagged with this tag
+          type: array
+          items:
+            $ref: "#/components/schemas/Lab"
+
+    Tag:
+      description: >
+        Tag that tags a collection of SNMP simulator control plane resources.
+      type: object
+      allOf:
+        - $ref: "#/components/schemas/TagRequired"
+        - $ref: "#/components/schemas/TagOptional"
+
+    Tags:
+      description: >
+        A collection of tags.
+      type: array
+      items:
+        $ref: "#/components/schemas/Tag"
 
     Error:
       type: object
