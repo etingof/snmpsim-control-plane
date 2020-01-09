@@ -783,3 +783,175 @@ def change_lab_power(id, state):
 
     schema = schemas.LabSchema()
     return schema.jsonify(lab), 200
+
+
+def make_tags_query(tag_id=None):
+    tags_query = (
+        models.Tag
+        .query)
+
+    if tag_id is not None:
+        tags_query = tags_query.filter_by(id=tag_id)
+
+    tags_query = (
+        tags_query
+        .outerjoin(models.TagEndpoint)
+        .outerjoin(models.Endpoint)
+        .outerjoin(models.TagUser)
+        .outerjoin(models.User)
+        .outerjoin(models.TagEngine)
+        .outerjoin(models.Engine)
+        .outerjoin(models.TagSelector)
+        .outerjoin(models.Selector)
+        .outerjoin(models.TagAgent)
+        .outerjoin(models.Agent)
+        .outerjoin(models.TagLab)
+        .outerjoin(models.Lab))
+
+    return tags_query
+
+
+@app.route(PREFIX + '/tags')
+def show_tags():
+    tags_query = make_tags_query()
+
+    tags_query = search_model(models.Tag, tags_query)
+
+    schema = schemas.TagSchema(many=True)
+    return schema.jsonify(tags_query.all()), 200
+
+
+@app.route(PREFIX + '/tags/<id>', methods=['GET'])
+def show_tag(id):
+    tags_query = make_tags_query(id)
+
+    tag = tags_query.first()
+    if not tag:
+        raise exceptions.NotFound('Tag not found')
+
+    schema = schemas.TagSchema()
+    return schema.jsonify(tag), 200
+
+
+@app.route(PREFIX + '/tags', methods=['POST'])
+@render_config
+def new_tag():
+    req = flask.request.json
+
+    tag = models.Tag(**req)
+    db.session.add(tag)
+    db.session.commit()
+
+    tags_query = make_tags_query(tag.id)
+
+    schema = schemas.TagSchema()
+    return schema.jsonify(tags_query.first()), 201
+
+
+@app.route(PREFIX + '/tags/<id>', methods=['DELETE'])
+@render_config
+def del_tag(id):
+    tag_query = (
+        models.Tag
+        .query
+        .filter_by(id=id))
+
+    tag = tag_query.first()
+    if not tag:
+        raise exceptions.NotFound('Tag not found')
+
+    db.session.delete(tag)
+    db.session.commit()
+
+    return flask.Response(status=204)
+
+
+ENTITY_ADD_MAP = {
+    'endpoint': lambda x, y: models.TagEndpoint(tag_id=x, endpoint_id=y),
+    'user': lambda x, y: models.TagUser(tag_id=x, user_id=y),
+    'engine': lambda x, y: models.TagEngine(tag_id=x, engine_id=y),
+    'selector': lambda x, y: models.TagSelector(tag_id=x, selector_id=y),
+    'agent': lambda x, y: models.TagAgent(tag_id=x, agent_id=y),
+    'lab': lambda x, y: models.TagLab(tag_id=x, lab_id=y),
+}
+
+
+ENTITY_DEL_MAP = {
+    'endpoint': lambda x, y: (
+        models.TagEndpoint
+        .query
+        .filter_by(tag_id=x, endpoint_id=y)
+    ),
+    'user': lambda x, y: (
+        models.TagUser
+        .query
+        .filter_by(tag_id=x, user_id=y)
+    ),
+    'engine': lambda x, y: (
+        models.TagEngine
+        .query
+        .filter_by(tag_id=x, engine_id=y)
+    ),
+    'selector': lambda x, y: (
+        models.TagSelector
+        .query
+        .filter_by(tag_id=x, selector_id=y)
+    ),
+    'agent': lambda x, y: (
+        models
+        .TagAgent
+        .query
+        .filter_by(tag_id=x, agent_id=y)
+    ),
+    'lab': lambda x, y: (
+        models
+        .TagLab
+        .query
+        .filter_by(tag_id=x, lab_id=y)
+    ),
+}
+
+
+@app.route(PREFIX + '/tags/<id>/<entity>/<entity_id>', methods=['PUT'])
+@render_config
+def add_tag_entity(id, entity, entity_id):
+    try:
+        tag_entity = ENTITY_ADD_MAP[entity]
+
+    except KeyError:
+        raise exceptions.NotFound('Entity %s not found' % entity)
+
+    tag_entity = tag_entity(id, entity_id)
+
+    db.session.add(tag_entity)
+    db.session.commit()
+
+    tags_query = make_tags_query(id)
+
+    schema = schemas.TagSchema()
+    return schema.jsonify(tags_query.first()), 200
+
+
+@app.route(PREFIX + '/tags/<id>/<entity>/<entity_id>', methods=['DELETE'])
+@render_config
+def del_tag_entity(id, entity, entity_id):
+    try:
+        entity_query = ENTITY_DEL_MAP[entity]
+
+    except KeyError:
+        raise exceptions.NotFound('Entity %s not found' % entity)
+
+    entity_query = entity_query(id, entity_id)
+
+    entity_instance = entity_query.first()
+
+    if not entity_instance:
+        raise exceptions.NotFound('Tag <-> %s binding not found' % entity)
+
+    db.session.delete(entity_instance)
+    db.session.commit()
+
+    entity_query = make_tags_query(id)
+
+    schema = schemas.TagSchema()
+    return schema.jsonify(entity_query.first()), 200

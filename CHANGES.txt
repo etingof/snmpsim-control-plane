@@ -16,6 +16,9 @@ Revision 0.0.1, released XX-01-2020
 - Removed SQL cascading from all management API models. That makes SNMP
   simulator entities less dependent from each other when deleting some
   of them what facilitates their reuse.
+- Added a new feature of tagging to Management API. Every Management API object
+  can be tagged with zero or more tags. The REST API client can then obtain
+  all tagged objects at once searching by tag.
 
 Revision 0.0.0, released 01-01-2020
 -----------------------------------
