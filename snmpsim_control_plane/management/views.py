@@ -138,7 +138,7 @@ def show_endpoint(id):
     if not endpoint:
         raise exceptions.NotFound('Endpoint not found')
 
-    schema = schemas.EndpointSchema(many=True)
+    schema = schemas.EndpointSchema()
     return schema.jsonify(endpoint), 200
 
 
