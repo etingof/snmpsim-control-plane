@@ -143,13 +143,20 @@ def show_endpoint(id):
 
 
 @app.route(PREFIX + '/endpoints', methods=['POST'])
+@app.route(PREFIX + '/tags/<tag_id>/endpoint', methods=['POST'])
 @render_config
-def new_endpoint():
+def new_endpoint(tag_id=None):
     req = flask.request.json
 
     endpoint = models.Endpoint(**req)
     db.session.add(endpoint)
     db.session.commit()
+
+    if tag_id:
+        tag_endpoint = models.TagEndpoint(
+            tag_id=tag_id, endpoint_id=endpoint.id)
+        db.session.add(tag_endpoint)
+        db.session.commit()
 
     schema = schemas.EndpointSchema()
     return schema.jsonify(endpoint), 201
@@ -201,13 +208,19 @@ def show_user(id):
 
 
 @app.route(PREFIX + '/users', methods=['POST'])
+@app.route(PREFIX + '/tags/<tag_id>/user', methods=['POST'])
 @render_config
-def new_user():
+def new_user(tag_id=None):
     req = flask.request.json
 
     user = models.User(**req)
     db.session.add(user)
     db.session.commit()
+
+    if tag_id:
+        tag_user = models.TagUser(tag_id=tag_id, user_id=user.id)
+        db.session.add(tag_user)
+        db.session.commit()
 
     schema = schemas.UserSchema()
     return schema.jsonify(user), 201
@@ -263,14 +276,19 @@ def show_engine(id):
 
 
 @app.route(PREFIX + '/engines', methods=['POST'])
+@app.route(PREFIX + '/tags/<tag_id>/engine', methods=['POST'])
 @render_config
-def new_engine():
+def new_engine(tag_id=None):
     req = flask.request.json
 
     engine = models.Engine(**req)
     db.session.add(engine)
-
     db.session.commit()
+
+    if tag_id:
+        tag_engine = models.TagEngine(tag_id=tag_id, engine_id=engine.id)
+        db.session.add(tag_engine)
+        db.session.commit()
 
     schema = schemas.EngineSchema()
     return schema.jsonify(engine), 201
@@ -401,8 +419,9 @@ def show_agent(id):
 
 
 @app.route(PREFIX + '/agents', methods=['POST'])
+@app.route(PREFIX + '/tags/<tag_id>/agent', methods=['POST'])
 @render_config
-def new_agent():
+def new_agent(tag_id=None):
     req = flask.request.json
 
     data_dir = req.get('data_dir')
@@ -423,6 +442,11 @@ def new_agent():
     agent = models.Agent(**req)
     db.session.add(agent)
     db.session.commit()
+
+    if tag_id:
+        tag_agent = models.TagAgent(tag_id=tag_id, agent_id=agent.id)
+        db.session.add(tag_agent)
+        db.session.commit()
 
     schema = schemas.AgentSchema()
     return schema.jsonify(agent), 201
@@ -524,13 +548,20 @@ def show_selector(id):
 
 
 @app.route(PREFIX + '/selectors', methods=['POST'])
+@app.route(PREFIX + '/tags/<tag_id>/selector', methods=['POST'])
 @render_config
-def new_selector():
+def new_selector(tag_id=None):
     req = flask.request.json
 
     selector = models.Selector(**req)
     db.session.add(selector)
     db.session.commit()
+
+    if tag_id:
+        tag_selector = models.TagSelector(
+            tag_id=tag_id, selector_id=selector.id)
+        db.session.add(tag_selector)
+        db.session.commit()
 
     schema = schemas.SelectorSchema()
     return schema.jsonify(selector), 201
@@ -697,13 +728,19 @@ def show_lab(id):
 
 
 @app.route(PREFIX + '/labs', methods=['POST'])
+@app.route(PREFIX + '/tags/<tag_id>/lab', methods=['POST'])
 @render_config
-def new_lab():
+def new_lab(tag_id=None):
     req = flask.request.json
 
     lab = models.Lab(**req)
     db.session.add(lab)
     db.session.commit()
+
+    if tag_id:
+        tag_lab = models.TagLab(tag_id=tag_id, lab_id=lab.id)
+        db.session.add(tag_lab)
+        db.session.commit()
 
     schema = schemas.LabSchema()
     return schema.jsonify(lab), 201

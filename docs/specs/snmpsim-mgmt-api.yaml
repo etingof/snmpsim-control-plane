@@ -1187,6 +1187,34 @@ paths:
               schema:
                 $ref: "#/components/schemas/Error"
 
+  /tags/{id}/endpoint:
+    post:
+      summary: Create a new taggd SNMP transport endpoint
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The ID of the tag
+          schema:
+            type: integer
+      requestBody:
+        description: >
+          Receive a new endpoint object bound to an existing SNMP agent.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/EndpointRequired"
+      responses:
+        "201":
+          description: Null response
+        default:
+          description: Unspecified error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
   /tags/{id}/endpoint/{endpoint_id}:
     description: >
       This resource represents a SNMP transport endpoint identified by
@@ -1236,6 +1264,33 @@ paths:
             type: integer
       responses:
         "204":
+          description: Null response
+        default:
+          description: Unspecified error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /tags/{id}/user:
+    post:
+      summary: Create a new tagged SNMP USM user
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The ID of the tag
+          schema:
+            type: integer
+      requestBody:
+        description: >
+          New SNMP engine object
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserRequired"
+      responses:
+        "201":
           description: Null response
         default:
           description: Unspecified error
@@ -1305,6 +1360,33 @@ paths:
               schema:
                 $ref: "#/components/schemas/Error"
 
+  /tags/{id}/engine:
+    post:
+      summary: Create a new SNMP engine
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The ID of the tag
+          schema:
+            type: integer
+      requestBody:
+        description: >
+          New SNMP engine object
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/EngineRequired"
+      responses:
+        "201":
+          description: Null response
+        default:
+          description: Unspecified error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
   /tags/{id}/engine/{engine_id}:
     description: >
       This resource represents a SNMP engine identified by
@@ -1359,6 +1441,33 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Tag"
+        default:
+          description: Unspecified error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /tags/{id}/selector:
+    post:
+      summary: Create a new tagged SNMP simulation data selector
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The ID of the tag
+          schema:
+            type: integer
+      requestBody:
+        description: >
+          New SNMP data selectors
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SelectorRequired"
+      responses:
+        "201":
+          description: Null response
         default:
           description: Unspecified error
           content:
@@ -1423,6 +1532,33 @@ paths:
               schema:
                 $ref: "#/components/schemas/Error"
 
+  /tags/{id}/agent:
+    post:
+      summary: Create a new tagged SNMP agent
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The ID of the tag
+          schema:
+            type: integer
+      requestBody:
+        description: >
+          New SNMP agent object
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AgentRequired"
+      responses:
+        "201":
+          description: Null response
+        default:
+          description: Unspecified error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
   /tags/{id}/agent/{agent_id}:
     description: >
       This resource represents a SNMP agent identified by
@@ -1472,6 +1608,33 @@ paths:
             type: integer
       responses:
         "204":
+          description: Null response
+        default:
+          description: Unspecified error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /tags/{id}/lab:
+    post:
+      summary: Create new tagged virtual laboratory
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The ID of the tag
+          schema:
+            type: integer
+      requestBody:
+        description: >
+          New lab optionally containing SNMP agent IDs.
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LabRequired"
+      responses:
+        "201":
           description: Null response
         default:
           description: Unspecified error
@@ -1726,7 +1889,6 @@ components:
     SelectorRequired:
       description: >
         Required fields of Selector object.
-      type: object
 
     SelectorOptional:
       description: >
