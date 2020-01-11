@@ -150,13 +150,14 @@ def new_endpoint(tag_id=None):
 
     endpoint = models.Endpoint(**req)
     db.session.add(endpoint)
-    db.session.commit()
 
     if tag_id:
+        db.session.flush()
         tag_endpoint = models.TagEndpoint(
             tag_id=tag_id, endpoint_id=endpoint.id)
         db.session.add(tag_endpoint)
-        db.session.commit()
+
+    db.session.commit()
 
     schema = schemas.EndpointSchema()
     return schema.jsonify(endpoint), 201
@@ -215,12 +216,14 @@ def new_user(tag_id=None):
 
     user = models.User(**req)
     db.session.add(user)
-    db.session.commit()
 
     if tag_id:
-        tag_user = models.TagUser(tag_id=tag_id, user_id=user.id)
+        db.session.flush()
+        tag_user = models.TagUser(
+            tag_id=tag_id, user_id=user.id)
         db.session.add(tag_user)
-        db.session.commit()
+
+    db.session.commit()
 
     schema = schemas.UserSchema()
     return schema.jsonify(user), 201
@@ -283,12 +286,14 @@ def new_engine(tag_id=None):
 
     engine = models.Engine(**req)
     db.session.add(engine)
-    db.session.commit()
 
     if tag_id:
-        tag_engine = models.TagEngine(tag_id=tag_id, engine_id=engine.id)
+        db.session.flush()
+        tag_engine = models.TagEngine(
+            tag_id=tag_id, engine_id=engine.id)
         db.session.add(tag_engine)
-        db.session.commit()
+
+    db.session.commit()
 
     schema = schemas.EngineSchema()
     return schema.jsonify(engine), 201
@@ -441,12 +446,14 @@ def new_agent(tag_id=None):
 
     agent = models.Agent(**req)
     db.session.add(agent)
-    db.session.commit()
 
     if tag_id:
-        tag_agent = models.TagAgent(tag_id=tag_id, agent_id=agent.id)
+        db.session.flush()
+        tag_agent = models.TagAgent(
+            tag_id=tag_id, agent_id=agent.id)
         db.session.add(tag_agent)
-        db.session.commit()
+
+    db.session.commit()
 
     schema = schemas.AgentSchema()
     return schema.jsonify(agent), 201
@@ -555,13 +562,14 @@ def new_selector(tag_id=None):
 
     selector = models.Selector(**req)
     db.session.add(selector)
-    db.session.commit()
 
     if tag_id:
+        db.session.flush()
         tag_selector = models.TagSelector(
             tag_id=tag_id, selector_id=selector.id)
         db.session.add(tag_selector)
-        db.session.commit()
+
+    db.session.commit()
 
     schema = schemas.SelectorSchema()
     return schema.jsonify(selector), 201
@@ -735,12 +743,14 @@ def new_lab(tag_id=None):
 
     lab = models.Lab(**req)
     db.session.add(lab)
-    db.session.commit()
 
     if tag_id:
-        tag_lab = models.TagLab(tag_id=tag_id, lab_id=lab.id)
+        db.session.flush()
+        tag_lab = models.TagLab(
+            tag_id=tag_id, lab_id=lab.id)
         db.session.add(tag_lab)
-        db.session.commit()
+
+    db.session.commit()
 
     schema = schemas.LabSchema()
     return schema.jsonify(lab), 201
