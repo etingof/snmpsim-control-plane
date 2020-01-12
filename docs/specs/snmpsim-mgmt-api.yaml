@@ -1700,6 +1700,34 @@ paths:
               schema:
                 $ref: "#/components/schemas/Error"
 
+  /tags/{id}/objects:
+    description: >
+      This resource represents all SNMP simulator control plane objects
+       tagged with a tag identified by `id`.
+    delete:
+      summary: Delete all tagged objects
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The ID of tag
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Updated tag information
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Tag"
+        default:
+          description: Unspecified error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+
 components:
   schemas:
     EndpointRequired:

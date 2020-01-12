@@ -1002,3 +1002,29 @@ def del_tag_entity(id, entity, entity_id):
 
     schema = schemas.TagSchema()
     return schema.jsonify(entity_query.first()), 200
+
+
+DELETABLE_ENTITIES = (
+    'endpoints', 'users', 'engines', 'selectors', 'agents', 'labs'
+)
+
+
+@app.route(PREFIX + '/tags/<id>/objects', methods=['DELETE'])
+@render_config
+def del_tagged_objects(id):
+    tags_query = make_tags_query(id)
+
+    tag = tags_query.first()
+    if not tag:
+        raise exceptions.NotFound('Tag with ID %s not found' % id)
+
+    for entity_name in DELETABLE_ENTITIES:
+        for entity in getattr(tag, entity_name):
+            db.session.delete(entity)
+
+    db.session.commit()
+
+    entity_query = make_tags_query(id)
+
+    schema = schemas.TagSchema()
+    return schema.jsonify(entity_query.first()), 200
