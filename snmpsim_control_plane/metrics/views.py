@@ -62,8 +62,15 @@ QS_COLUMN_MAP.update(MESSAGES_QS_COLUMN_MAP)
 
 
 def filter_by(query, *fields):
+    search_columns = flask.request.args
+
+    unknown_columns = set(search_columns).difference(fields)
+    if unknown_columns:
+        raise exceptions.NotFound(
+            'Search term(s) %s not supported' % ', '.join(unknown_columns))
+
     for field in fields:
-        args = flask.request.args.getlist(field)
+        args = search_columns.getlist(field)
         if args:
             query = query.filter(
                 QS_COLUMN_MAP[field].in_(args))

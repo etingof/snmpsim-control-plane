@@ -71,7 +71,7 @@ paths:
         and unsuccessful SNMP commands.
 
       parameters:
-        - name: transport_protocol
+        - name: protocol
           in: query
           description: >
             Report activity for this transport protocol.
@@ -79,7 +79,7 @@ paths:
           schema:
             type: string
             enum: ["udpv4", "udpv6"]
-        - name: endpoint
+        - name: local_address
           in: query
           description: >
             Report activity for this transport endpoint (local network address
@@ -87,7 +87,7 @@ paths:
           required: false
           schema:
             type: string
-        - name: peer
+        - name: peer_address
           in: query
           description: >
             Report activity for this network peer (remote network address
@@ -130,7 +130,7 @@ paths:
         recordings. Reports metrics that only include successful SNMP commands,
 
       parameters:
-        - name: transport_protocol
+        - name: protocol
           in: query
           description: >
             Report activity for this transport protocol.
@@ -138,7 +138,7 @@ paths:
           schema:
             type: string
             enum: ["udpv4", "udpv6"]
-        - name: endpoint
+        - name: local_address
           in: query
           description: >
             Report activity for this transport endpoint (local network address
@@ -146,7 +146,7 @@ paths:
           required: false
           schema:
             type: string
-        - name: peer
+        - name: peer_address
           in: query
           description: >
             Report activity for this network peer (remote network address
@@ -154,7 +154,7 @@ paths:
           required: false
           schema:
             type: string
-        - name: engine
+        - name: engine_id
           in: query
           description: >
             Report activity for this SNMP engine ID.
@@ -180,7 +180,7 @@ paths:
           schema:
             type: string
             enum: ["1", "2", "3"]
-        - name: context_engine
+        - name: context_engine_id
           in: query
           description: >
             Report activity for this SNMP ContextEngineId. More often then not,
@@ -196,7 +196,7 @@ paths:
           required: false
           schema:
             type: string
-        - name: pdu
+        - name: pdu_type
           in: query
           description: >
             Report activity for this SNMP PDU type.

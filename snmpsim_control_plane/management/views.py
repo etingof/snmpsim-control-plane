@@ -101,12 +101,18 @@ def cleanup_recordings(f):
 
 def search_model(model, query):
 
-    for col_name in model.__table__.columns.keys():
-        search_terms = flask.request.args.getlist(col_name)
+    known_columns = model.__table__.columns.keys()
+
+    for search_column in flask.request.args:
+        if search_column not in known_columns:
+            raise exceptions.NotFound(
+                'Search term %s is not supported' % search_column)
+
+        search_terms = flask.request.args.getlist(search_column)
         if search_terms:
             search_terms = [term.lower() for term in search_terms]
             query = query.filter(
-                func.lower(getattr(model, col_name)).in_(search_terms))
+                func.lower(getattr(model, search_column)).in_(search_terms))
 
     return query
 
