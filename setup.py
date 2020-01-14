@@ -15,7 +15,7 @@ import sys
 import setuptools
 
 classifiers = """\
-Development Status :: 3 - Alpha
+Development Status :: 4 - Beta
 Environment :: Console
 Intended Audience :: Developers
 Intended Audience :: Information Technology
