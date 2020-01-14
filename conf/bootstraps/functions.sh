@@ -53,7 +53,7 @@ function upload_recording() {
 
   curl -s -d "@$filename" \
       -H "Content-Type: text/plain" \
-      -X POST \
+      -X PUT \
       $endpoint
 
   if [ $? -ne 0 ]; then

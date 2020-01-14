@@ -16,4 +16,5 @@ install:
   - pip install -e .
 script:
   - if [[ $TRAVIS_PYTHON_VERSION == '3.8' ]]; then (make -C docs html); fi
-  - bash runtests.sh
+  - bash tests/integration/management.sh
+  - bash tests/integration/metrics.sh

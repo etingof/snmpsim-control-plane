@@ -18,9 +18,11 @@ snmpsim-mgmt-restapi \
     --recreate-db
 
 RESTAPI_DST_DIR=$(mktemp -d /tmp/snmpsimd.XXXXXX)
+RESTAPI_DATA_ROOT=$(mktemp -d /tmp/snmpsimd.XXXXXX)
 
 snmpsim-mgmt-restapi \
     --config $RESTAPI_CONF \
+    --data-root $RESTAPI_DATA_ROOT \
     --destination "$RESTAPI_DST_DIR" &
 
 RESTAPI_PID=$!
@@ -28,7 +30,7 @@ RESTAPI_PID=$!
 function cleanup()
 {
     rm -fr "$RESTAPI_DST_DIR" $RESTAPI_CONF
-    kill $RESTAPI_PID && exit 0
+    kill $RESTAPI_PID && true
 }
 
 trap cleanup EXIT
@@ -37,5 +39,7 @@ sleep 10
 
 bash conf/bootstraps/minimal.sh
 
-[ -z RESTAPI_DST_DIR/snmpsim-run-labs.sh ] && {
+[ -z $RESTAPI_DST_DIR/snmpsim-run-labs.sh ] && {
     echo "Empty/none `snmpsim-run-labs.sh` generated"; exit 1 ; }
+
+exit 0
