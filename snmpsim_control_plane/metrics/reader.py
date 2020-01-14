@@ -50,8 +50,8 @@ def watch_metrics(watch_dir):
             log.info('Processing %s' % filename)
 
             try:
-                with open(filename, 'rb') as fl:
-                    jsondoc = json.load(fl)
+                with open(filename) as fl:
+                    jsondoc = json.loads(fl.read())
 
             except Exception as exc:
                 log.error('Error reading file %s: %s' % (filename, exc))
