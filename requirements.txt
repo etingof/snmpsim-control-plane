@@ -8,3 +8,4 @@ marshmallow<=2.20.5; python_version < '3.0'
 marshmallow<=2.20.5; python_version >= '3.0'
 marshmallow-sqlalchemy<=0.18.0; python_version < '3.0'
 marshmallow-sqlalchemy<=0.18.0; python_version >= '3.0'
+psutil

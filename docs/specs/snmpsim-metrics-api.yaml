@@ -391,58 +391,86 @@ components:
 
     ProcessMetrics:
       description: >
-        SNMP simulator system is composed of many running processes.
-        This object describes common properties of a process.
+        SNMP simulator system is composed of potentially many running
+        processes. Each process is created by running the executable.
+
+        This object describes resources consumption for the currently
+        running process and accumulated for all processes created from
+        this executable from the time of its first introduction to the
+        system.
       type: object
       properties:
-        cmdline:
+        executable:
           description: >
             Path to process executable and its command-line parameters.
           type: string
-        uptime:
+        runtime:
           description: >
-            How long this process has been up (in seconds).
+            For how long all processes created from this executable has been
+            running so far (in seconds).
           type: integer
-        owner:
-          description: >
-            OS user:group owning this process.
-          type: string
         memory:
           description: >
-            How much virtual memory this process is consuming.
+            How much virtual memory current process is consuming (in MB).
           type: integer
         cpu:
           description: >
-            How much CPU this process is putting on CPU (last 1, 5, and
-            15 minutes).
+            How much CPU all processes for this executable have consumed so
+            far (in milliseconds).
           type: integer
         files:
           description: >
-            How many open files this process has.
+            How many open files currently running process has.
           type: integer
-        stdout:
+        exits:
           description: >
-            The latest collected process stdout data.
-          type: string
-        stderr:
+            How many times the processes for this executable exited and
+            needed to be started.
+          type: integer
+        changes:
           description: >
-            The latests collected process stderr data.
-          type: string
-        lifecycle:
+            How many times this executable has been changed and restarted.
+          type: integer
+        endpoints:
           description: >
-            How this process has being doing.
+            Network endpoints the currently running process has opened.
           type: object
           properties:
-            exits:
+            udpv4:
               description: >
-                How many times this process exited on its own and needed to be
-                started again.
-              type: integer
-            restarts:
+                UDP/IPv4 endpoints
+              type: array
+              items:
+                description:
+                  IP:port
+                type: string
+            udpv6:
               description: >
-                How many times executable file changes have been noticed by the
-                supervisor that led to process restart by the supervisor.
-              type: integer
+                UDP/IPv6 endpoints
+              type: array
+              items:
+                description:
+                  IP:port
+                type: string
+        console:
+          description: >
+            Pages of text that appeared so far on process stdout&stderr organized
+            in sequentially numbered pages. Older pages might be dropped from the
+            underlying database.
+          type: array
+          items:
+            type: object
+            description: >
+              A single console page
+            properties:
+              page:
+                description: >
+                  Page number, ever increasing
+                type: integer
+              text:
+                description: >
+                  Page text
+                type: string
 
     ProcessesMetrics:
       description: >

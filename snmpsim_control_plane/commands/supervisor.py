@@ -15,6 +15,7 @@ from snmpsim_control_plane import daemon
 from snmpsim_control_plane import log
 from snmpsim_control_plane import error
 from snmpsim_control_plane.supervisor import manager
+from snmpsim_control_plane.supervisor.reporting.manager import ReportingManager
 
 
 DESCRIPTION = """\
@@ -59,6 +60,13 @@ def parse_args():
         '--watch-dir', metavar='<DIR>', type=str, required=True,
         help='Location of the executables to herd.')
 
+
+    parser.add_argument(
+        '--reporting-method', type=lambda x: x.split(':'),
+        metavar='=<%s[:args]>]' % '|'.join(ReportingManager.REPORTERS),
+        default='null', help='SNMP Simulator instance metrics '
+                             'reporting method.')
+
     return parser.parse_args()
 
 
@@ -70,6 +78,13 @@ def main():
 
         if args.log_level:
             log.set_level(args.log_level)
+
+    except error.ControlPlaneError as exc:
+        sys.stderr.write('%s\r\n' % exc)
+        return 1
+
+    try:
+        ReportingManager.configure(*args.reporting_method)
 
     except error.ControlPlaneError as exc:
         sys.stderr.write('%s\r\n' % exc)
