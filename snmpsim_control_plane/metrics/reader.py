@@ -11,7 +11,7 @@ import json
 import time
 
 from snmpsim_control_plane import log
-from snmpsim_control_plane.metrics.importers import manager
+from snmpsim_control_plane.metrics import manager
 
 POLL_PERIOD = 10
 

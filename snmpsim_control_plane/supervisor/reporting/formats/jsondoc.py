@@ -52,6 +52,7 @@ class JsonDocReporter(base.BaseReporter):
                 'console': [
                     {
                         'page': 0,
+                        'timestamp': 0,
                         'text': '{text}'
                     }
                 ]
@@ -101,7 +102,9 @@ class JsonDocReporter(base.BaseReporter):
     def _json_serializer(obj):
         if isinstance(obj, lifecycle.ConsoleLog):
             return [
-                {'page': page, 'text': obj[page]}
+                {'page': page,
+                 'text': obj.text(page),
+                 'timestamp': obj.timestamp(page)}
                 for page in range(obj.first_page, obj.last_page + 1)
             ]
 

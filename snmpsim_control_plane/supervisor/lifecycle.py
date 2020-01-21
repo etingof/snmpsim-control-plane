@@ -73,6 +73,7 @@ class ConsoleLog(AbstractGrowingValue):
         self._first_page = first_page
         self._last_page = first_page
         self._text = {}
+        self._timestamps = {}
 
     @property
     def first_page(self):
@@ -82,20 +83,21 @@ class ConsoleLog(AbstractGrowingValue):
     def last_page(self):
         return self._last_page - 1
 
-    def add(self, text):
+    def add(self, text, timestamp):
         self._text[self._last_page] = text
+        self._timestamps[self._last_page] = timestamp
         self._last_page += 1
 
         if len(self._text) > self.MAX_CONSOLES:
             self._text.pop(self._first_page)
+            self._timestamps.pop(self._first_page)
             self._first_page += 1
 
-    def __getitem__(self, item):
-        try:
-            return self._text[item]
+    def text(self, page):
+        return self._text.get(page, '')
 
-        except KeyError as exc:
-            raise IndexError(exc)
+    def timestamp(self, page):
+        return self._timestamps.get(page, '')
 
     @property
     def latest(self):
@@ -105,8 +107,8 @@ class ConsoleLog(AbstractGrowingValue):
         first_page = relative_to or 0
         console = self.__class__(first_page=first_page)
 
-        for page in range(first_page, self.last_page + 1):
-            console.add(self[page])
+        for page in range(first_page, self.last_page):
+            console.add(self.text(page), self.timestamp(page))
 
         return console
 
