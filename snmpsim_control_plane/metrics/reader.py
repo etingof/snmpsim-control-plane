@@ -11,7 +11,7 @@ import json
 import time
 
 from snmpsim_control_plane import log
-from snmpsim_control_plane.metrics import importer
+from snmpsim_control_plane.metrics.importers import manager
 
 POLL_PERIOD = 10
 
@@ -61,7 +61,7 @@ def watch_metrics(watch_dir):
                 os.unlink(filename)
 
             try:
-                importer.import_metrics(jsondoc)
+                manager.import_metrics(jsondoc)
 
             except Exception as exc:
                 log.error('Error processing file %s: %s' % (filename, exc))
