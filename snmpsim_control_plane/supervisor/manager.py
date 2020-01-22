@@ -91,6 +91,8 @@ def manage_executables(watch_dir):
             if not r:
                 break
 
+            timestamp = int(time.time())
+
             for fd in r:
                 executable = rlist[fd]
                 instance = known_instances[executable]
@@ -101,7 +103,7 @@ def manage_executables(watch_dir):
                 page_text = os.read(fd, console.MAX_CONSOLE_SIZE)
                 page_text = page_text.decode(errors='ignore')
 
-                console.add(page_text)
+                console.add(page_text, timestamp)
 
                 log.msg(page_text)
                 log.msg('Output from process "%s" ends' % executable)

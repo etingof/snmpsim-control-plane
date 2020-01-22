@@ -6,12 +6,15 @@
 #
 # SNMP Agent Simulator Control Plane: metrics importer manager
 #
-from snmpsim_control_plane.metrics.importers import fulljson
-from snmpsim_control_plane import log
+from snmpsim_control_plane.metrics import db
 
+from snmpsim_control_plane import log
+from snmpsim_control_plane.metrics.importers import snmpagent
+from snmpsim_control_plane.metrics.importers import process
 
 KNOWN_IMPORTERS = {
-    'fulljson': fulljson.import_metrics,
+    'fulljson': snmpagent.import_metrics,
+    'jsondoc': process.import_metrics,
 }
 
 
@@ -28,4 +31,10 @@ def import_metrics(jsondoc):
                   'ignoring' % flavor or '<unspecified>')
         return
 
-    importer(jsondoc)
+    try:
+        importer(jsondoc)
+
+    except Exception as exc:
+        log.error('Metric importer %s failed: %s' % (flavor, exc))
+        log.debug('JSON document causing failure is: %s' % jsondoc)
+        db.session.rollback()

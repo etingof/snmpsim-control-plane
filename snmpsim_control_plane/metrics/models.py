@@ -126,3 +126,71 @@ class Variation(db.Model):
             'pdu_id', 'name'
         ),
     )
+
+
+class Endpoint(db.Model):
+    protocol = db.Column(db.String(), nullable=False)
+    address = db.Column(db.String(), nullable=False)
+    process_id = db.Column(db.Integer(), db.ForeignKey('process.id'))
+
+    __table_args__ = (
+        db.PrimaryKeyConstraint('protocol', 'address', 'process_id'),
+    )
+
+
+class ConsolePage(db.Model):
+    page = db.Column(db.Integer(), nullable=False)
+    text = db.Column(db.String(), nullable=False)
+    timestamp = db.Column(db.Integer(), nullable=False)
+    process_id = db.Column(db.Integer(), db.ForeignKey('process.id'))
+
+    __table_args__ = (
+        db.PrimaryKeyConstraint('process_id', 'page'),
+    )
+
+
+class Process(db.Model):
+    id = db.Column(db.Integer(), unique=True)
+    runtime = db.Column(db.Integer())
+    memory = db.Column(db.Integer())
+    cpu = db.Column(db.Integer())
+    files = db.Column(db.Integer())
+    exits = db.Column(db.Integer())
+    changes = db.Column(db.Integer())
+    last_update = db.Column(db.Integer())
+    executable_id = db.Column(db.Integer(), db.ForeignKey('executable.id'))
+
+    endpoints = db.relationship(
+        'Endpoint', backref='process', lazy=True)
+    console_pages = db.relationship(
+        'ConsolePage', backref='process', lazy=True)
+
+    __table_args__ = (
+        db.PrimaryKeyConstraint('executable_id'),
+    )
+
+
+class Executable(db.Model):
+    id = db.Column(db.Integer(), unique=True)
+    path = db.Column(db.String(), nullable=False)
+    supervisor_id = db.Column(db.Integer(), db.ForeignKey('supervisor.id'))
+
+    process = db.relationship(
+        'Process', uselist=False, backref='executable', lazy=True)
+
+    __table_args__ = (
+        db.PrimaryKeyConstraint('path', 'supervisor_id'),
+    )
+
+
+class Supervisor(db.Model):
+    id = db.Column(db.Integer(), unique=True)
+    hostname = db.Column(db.String(), nullable=False)
+    producer = db.Column(db.String(), nullable=False)
+
+    executables = db.relationship(
+        'Executable', backref='supervisor', lazy=True)
+
+    __table_args__ = (
+        db.PrimaryKeyConstraint('hostname', 'producer'),
+    )
