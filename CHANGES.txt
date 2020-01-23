@@ -2,7 +2,9 @@
 Revision 0.0.2, released XX-01-2020
 -----------------------------------
 
-No changes yet
+- Added SNMP simulator processes runtime metrics collection by the
+  `supervisor` process. Gathered information is stored in the DB
+  and served via newly introduced REST API endpoints.
 
 Revision 0.0.1, released 14-01-2020
 -----------------------------------

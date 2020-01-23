@@ -6,12 +6,14 @@
 #
 # SNMP simulator metrics: supervisor metrics importer
 #
+import datetime
+import time
+
 from snmpsim_control_plane.metrics import db
 from snmpsim_control_plane.metrics import models
 from snmpsim_control_plane.metrics.utils import autoincrement
 
-
-MAX_CONSOLE_PAGES = 50
+MAX_CONSOLE_PAGE_AGE = 86400  # one day
 
 
 def import_metrics(jsondoc):
@@ -28,7 +30,8 @@ def import_metrics(jsondoc):
         'format': 'jsondoc',
         'version': 1,
         'host': '{hostname}',
-        'producer': <UUID>,
+        'watch_dir': {dir},
+        'started': '{timestamp}',
         'first_update': '{timestamp}',
         'last_update': '{timestamp}',
         'executables': [
@@ -50,7 +53,6 @@ def import_metrics(jsondoc):
                 ],
                 'console': [
                     {
-                        'page': 0,
                         'timestamp': 0,
                         'text': '{text}'
                     }
@@ -59,9 +61,15 @@ def import_metrics(jsondoc):
         ]
     }
     """
+    old_times = int(time.time() - MAX_CONSOLE_PAGE_AGE)
+
+    timestamp = datetime.datetime.utcfromtimestamp(
+        jsondoc['started'])
+
     supervisor_model = models.Supervisor(
         hostname=jsondoc['host'],
-        producer=jsondoc['producer']
+        watch_dir=jsondoc['watch_dir'],
+        started=timestamp
     )
 
     supervisor_model = db.session.merge(supervisor_model)
@@ -70,17 +78,9 @@ def import_metrics(jsondoc):
 
     for executable in jsondoc['executables']:
 
-        executable_model = models.Executable(
+        process_model = models.Process(
             path=executable['executable'],
             supervisor_id=supervisor_model.id
-        )
-
-        executable_model = db.session.merge(executable_model)
-
-        autoincrement(executable_model, models.Executable)
-
-        process_model = models.Process(
-            executable_id=executable_model.id
         )
 
         process_model = db.session.merge(process_model)
@@ -103,47 +103,73 @@ def import_metrics(jsondoc):
         process_model.changes = process_model.changes or 0
         process_model.changes += executable['changes']
 
-        process_model.last_update = jsondoc['last_update']
+        process_model.update_interval = (
+                jsondoc['last_update'] - jsondoc['first_update'])
+
+        timestamp = datetime.datetime.utcfromtimestamp(
+            jsondoc['last_update'])
+
+        process_model.last_update = timestamp
 
         query = (
             models.Endpoint
             .query
-            .filter_by(process_id=process_model.id)
-        )
-        query.delete()
+            .filter_by(process_id=process_model.id))
 
-        for protocol, addresses in executable['endpoints']:
+        existing_endpoints = set(
+            (x.protocol, x.address) for x in query.all())
 
+        reported_endpoints = set()
+
+        for protocol, addresses in executable['endpoints'].items():
             for address in addresses:
-                endpoint_model = models.Endpoint(
-                    protocol=protocol,
-                    address=address,
-                    process_id=process_model.id
-                )
+                reported_endpoints.add((protocol, address))
 
-                db.session.add(endpoint_model)
+        new_endpoints = reported_endpoints.difference(existing_endpoints)
+
+        for protocol, address in new_endpoints:
+            endpoint_model = models.Endpoint(
+                protocol=protocol,
+                address=address,
+                process_id=process_model.id
+            )
+
+            autoincrement(endpoint_model, models.Endpoint)
+            db.session.add(endpoint_model)
+
+        removed_endpoints = existing_endpoints.difference(reported_endpoints)
+
+        for protocol, address in removed_endpoints:
+            query = (
+                db.session
+                .query(models.Endpoint)
+                .filter_by(protocol=protocol)
+                .filter_by(address=address)
+                .filter_by(process_id=process_model.id))
+
+            query.delete()
 
         query = (
-            models.ConsolePage
-            .query
-            .filter_by(process_id=process_model.id)
-            .order_by(models.ConsolePage.timestamp.asc())
+            db.session
+            .query(models.ConsolePage)
+            .filter(models.ConsolePage.process_id == process_model.id)
+            .filter(models.ConsolePage.timestamp < old_times)
         )
-        console_pages_count = query.count()
 
-        while console_pages_count > MAX_CONSOLE_PAGES:
-            console_page = query.first()
-            db.session.delete(console_page)
-            console_pages_count -= 1
+        query.delete()
 
         for console_page in executable['console']:
 
+            timestamp = datetime.datetime.utcfromtimestamp(
+                console_page['timestamp'])
+
             console_page_model = models.ConsolePage(
-                page=console_page['page'],
-                timestamp=console_page['timestamp'],
+                timestamp=timestamp,
                 text=console_page['text'],
                 process_id=process_model.id
             )
+
+            autoincrement(console_page_model, models.ConsolePage)
 
             db.session.add(console_page_model)
 

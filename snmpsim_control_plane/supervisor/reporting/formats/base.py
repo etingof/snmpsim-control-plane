@@ -14,7 +14,8 @@ class BaseReporter(object):
     def __init__(self, *args, **kwargs):
         pass
 
-    def dump_metrics(self, metrics, begin=None, end=None):
+    def dump_metrics(self, metrics, watch_dir=None,
+                     started=None, begin=None, end=None):
         """Dump metrics in a reporter-specific way.
         """
 

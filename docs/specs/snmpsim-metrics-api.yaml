@@ -243,38 +243,328 @@ paths:
   /processes:
     get:
       description: >
-        Collection of SNMP simulator system process information.
+        Collection of SNMP simulator process information.
       summary: >
-        Search for and list process information.
+        A list of SNMP simulator process information.
+      responses:
+        "200":
+          description: >
+            An array of process information objects
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProcessesMetricsArray"
+        default:
+          description: Unspecified error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /processes/{id}:
+    get:
+      description: >
+        SNMP simulator process information identified by `id`.
+      summary: >
+        SNMP simulator process information.
       parameters:
-        - name: newer
-          in: query
-          description: >
-            Select processes with uptime lesser than specified.
-          required: false
+        - name: id
+          in: path
+          required: true
+          description: The ID of the SNMP simulator process
           schema:
             type: integer
-        - name: larger
-          in: query
+      responses:
+        "200":
           description: >
-            Select processes with the amount of consumed memory larger
-            than specified.
-          required: false
+            Process information object
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProcessMetrics"
+        default:
+          description: Unspecified error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /processes/{id}/endpoints:
+    get:
+      description: >
+        List of transport endpoints bound by SNMP simulator process identified
+        by `id`.
+      summary: >
+        SNMP simulator transport endpoint information.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The ID of the SNMP simulator process
           schema:
             type: integer
-        - name: hotter
-          in: query
+      responses:
+        "200":
           description: >
-            Select processes with CPU utilization higher than specified.
-          required: false
+            An array of transport endpoints information objects
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EndpointMetricsArray"
+        default:
+          description: Unspecified error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /processes/{id}/endpoints/{endpoint_id}:
+    get:
+      description: >
+        Returns specific transport endpoint information identified by
+        `endpoint_id` bound by SNMP simulator process identified
+        by `id`.
+      summary: >
+        SNMP simulator transport endpoint information.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The ID of the SNMP simulator process
           schema:
             type: integer
-        - name: sicker
-          in: query
+        - name: endpoint_id
+          in: path
+          required: true
+          description: The ID of the SNMP simulator transport endpoint
+          schema:
+            type: integer
+      responses:
+        "200":
           description: >
-            Select processes with fatal, critical and warning counters
-            greater than specified.
-          required: false
+            Transport endpoint information object
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EndpointMetrics"
+        default:
+          description: Unspecified error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /processes/{id}/console:
+    get:
+      description: >
+        Returns the contents of all SNMP simulator process console pages for
+        SNMP simulator process identified by `id`.
+      summary: >
+        SNMP simulator console pages.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The ID of the SNMP simulator process
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: >
+            List of console page objects.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ConsolePageArray"
+        default:
+          description: Unspecified error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /processes/{id}/console/{page_id}:
+    get:
+      description: >
+        Returns the contents of one SNMP simulator process console page
+        identified by `page_id` for SNMP simulator process identified
+        by `id`.
+      summary: >
+        SNMP simulator console page.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The ID of the SNMP simulator process
+          schema:
+            type: integer
+        - name: page_id
+          in: path
+          required: true
+          description: The ID of the SNMP simulator console page
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: >
+            Console page object.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ConsolePage"
+        default:
+          description: Unspecified error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /consoles/{id}:
+    get:
+      description: >
+        Returns the contents of all SNMP simulator process console pages for
+        SNMP simulator process identified by `id`.
+      summary: >
+        SNMP simulator console pages.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The ID of the SNMP simulator process
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: >
+            List of console page objects.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ConsolePageArray"
+        default:
+          description: Unspecified error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /consoles/{id}/page/{page_id}:
+    get:
+      description: >
+        Returns the contents of one SNMP simulator process console page
+        identified by `page_id` for SNMP simulator process identified
+        by `id`.
+      summary: >
+        SNMP simulator console page.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The ID of the SNMP simulator process
+          schema:
+            type: integer
+        - name: page_id
+          in: path
+          required: true
+          description: The ID of the SNMP simulator console page
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: >
+            Console page object.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ConsolePage"
+        default:
+          description: Unspecified error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /endpoints:
+    get:
+      description: >
+        List of transport endpoints bound by all SNMP simulator processes.
+      summary: >
+        SNMP simulator transport endpoint information.
+      responses:
+        "200":
+          description: >
+            An array of SNMP simulator transport endpoint information objects
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EndpointMetricsArray"
+        default:
+          description: Unspecified error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /endpoints/{id}:
+    get:
+      description: >
+        Return SNMP simulator transport endpoint information identified
+        by `id`.
+      summary: >
+        SNMP simulator transport endpoint information
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The ID of the transport endpoint
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: >
+            SNMP simulator transport information object
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EndpointMetrics"
+        default:
+          description: Unspecified error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /supervisors:
+    get:
+      description: >
+        Collection of SNMP simulator supervisor process information.
+      summary: >
+        A list of supervisor process information.
+      responses:
+        "200":
+          description: >
+            An array of supervisor information objects
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SupervisorMetricsArray"
+        default:
+          description: Unspecified error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /supervisors/{id}:
+    get:
+      description: >
+        SNMP simulator supervisor process information.
+      summary: >
+        Individual supervisor process information.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The ID of the supervisor process
           schema:
             type: integer
       responses:
@@ -284,7 +574,36 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ProcessesMetrics"
+                $ref: "#/components/schemas/SupervisorMetrics"
+        default:
+          description: Unspecified error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /supervisors/{id}/processes:
+    get:
+      description: >
+        SNMP simulator process information for processes belonging to the
+        supervisor identified by `id`.
+      summary: >
+        SNMP simulator process information.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The ID of the supervisor process
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: >
+            An array of process information objects
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProcessesMetricsArray"
         default:
           description: Unspecified error
           content:
@@ -389,10 +708,44 @@ components:
       additionalProperties:
         type: string
 
+    SupervisorMetrics:
+      description: >
+        SNMP simulator system is composed of potentially many running
+        processes. These processes are collectively managed by a single
+        `supervisor` process.
+
+        This object describes `supervisor` process setup and activity.
+      type: object
+      properties:
+        hostname:
+          description: >
+            Hostname of the host where this `supervisor` process is running.
+          type: string
+        watch_dir:
+          description: >
+            The directory being watched by this `supervisor` process for
+            executables to invoke and keep running. The pair of `hostname` and
+            `watch_dir` should uniquely identify each `supervisor` instance (if
+            more than one is running).
+          type: string
+        started:
+          description: >
+            Time stamp indicating when this `supervisor` instance has been
+            started.
+          type: string
+
+    SupervisorMetricsArray:
+      description: >
+        An array of process information objects.
+      type: array
+      items:
+        $ref: "#/components/schemas/SupervisorMetrics"
+
     ProcessMetrics:
       description: >
         SNMP simulator system is composed of potentially many running
-        processes. Each process is created by running the executable.
+        processes. Each process is created by `supervisor` by running the
+        executable.
 
         This object describes resources consumption for the currently
         running process and accumulated for all processes created from
@@ -400,14 +753,14 @@ components:
         system.
       type: object
       properties:
-        executable:
+        path:
           description: >
-            Path to process executable and its command-line parameters.
+            Path to process executable.
           type: string
         runtime:
           description: >
             For how long all processes created from this executable has been
-            running so far (in seconds).
+            running (in seconds).
           type: integer
         memory:
           description: >
@@ -431,53 +784,79 @@ components:
           description: >
             How many times this executable has been changed and restarted.
           type: integer
-        endpoints:
+        last_update:
           description: >
-            Network endpoints the currently running process has opened.
-          type: object
-          properties:
-            udpv4:
-              description: >
-                UDP/IPv4 endpoints
-              type: array
-              items:
-                description:
-                  IP:port
-                type: string
-            udpv6:
-              description: >
-                UDP/IPv6 endpoints
-              type: array
-              items:
-                description:
-                  IP:port
-                type: string
-        console:
-          description: >
-            Pages of text that appeared so far on process stdout&stderr organized
-            in sequentially numbered pages. Older pages might be dropped from the
-            underlying database.
-          type: array
-          items:
-            type: object
-            description: >
-              A single console page
-            properties:
-              page:
-                description: >
-                  Page number, ever increasing
-                type: integer
-              text:
-                description: >
-                  Page text
-                type: string
+            Time stamp indicating when process information is last updated.
+          type: string
 
-    ProcessesMetrics:
+        endpoints:
+          $ref: "#/components/schemas/EndpointMetricsArray"
+
+        console:
+          $ref: "#/components/schemas/ConsolePageArray"
+
+    ProcessesMetricsArray:
       description: >
-        An array of process information.
+        An array of process information objects.
       type: array
       items:
         $ref: "#/components/schemas/ProcessMetrics"
+
+    EndpointMetrics:
+      description: >
+        SNMP simulator process binds and listens on one or many transport
+        endpoints (local network interfaces and UDP ports).
+
+        This object describes transport endpoints being used by any given
+        SNMP simulator process.
+      type: object
+      properties:
+        protocol:
+          description: >
+            Network protocol used by this endpoint
+          type: string
+          enum: ['udpv4', 'udpv6']
+
+        address:
+          description: >
+            Network address used by this endpoint (IP:port)
+          type: string
+
+    EndpointMetricsArray:
+      description: >
+        An array of transport endpoint information objects.
+      type: array
+      items:
+        $ref: "#/components/schemas/EndpointMetrics"
+
+    ConsolePage:
+      description: >
+        SNMP simulator process can output some diagnostics on its stdout/stderr
+        streams. The `supervisor` process will capture that and place into the
+        database. Process output is chunked onto imaginary console "pages",
+        each addressable individually.
+
+        Console information is automatically expired over time.
+
+        This object describes a single console output page of a SNMP simulator
+        process.
+      type: object
+      properties:
+        timestamp:
+          description: >
+            Time indicating when this page has been captured
+          type: integer
+        text:
+          description: >
+            Page text
+          type: string
+
+    ConsolePageArray:
+      description: >
+        An array of console page objects.
+      type: array
+      items:
+        $ref: "#/components/schemas/ConsolePage"
 
     Error:
       type: object

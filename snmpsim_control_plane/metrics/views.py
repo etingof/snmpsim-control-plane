@@ -220,3 +220,110 @@ def show_packets():
 @app.route(PREFIX + '/activity/messages')
 def show_messages():
     return _show_packets_or_messages(show_messages=True)
+
+
+@app.route(PREFIX + '/processes')
+@app.route(PREFIX + '/processes/<id>')
+@app.route(PREFIX + '/supervisors/<supervisor_id>/processes')
+def show_processes(id=None, supervisor_id=None):
+    process_query = (
+        models.Process
+        .query
+        .outerjoin(models.Endpoint)
+        .outerjoin(models.ConsolePage))
+
+    if supervisor_id is not None:
+        process_query = (
+            process_query
+            .filter(models.Process.supervisor_id == supervisor_id))
+
+    if id is None:
+        processes = process_query.all()
+
+    else:
+        process_query = (
+            process_query
+            .filter(models.Process.id == id))
+
+        processes = process_query.first()
+
+        if not processes:
+            raise exceptions.NotFound('Process not found')
+
+    schema = schemas.ProcessSchema(many=id is None)
+    return schema.jsonify(processes), 200
+
+
+@app.route(PREFIX + '/supervisors')
+@app.route(PREFIX + '/supervisors/<id>')
+def show_supervisors(id=None):
+    supervisor_query = (
+        models.Supervisor
+        .query
+        .outerjoin(models.Process))
+
+    if id is None:
+        supervisors = supervisor_query.all()
+
+    else:
+        supervisor_query = (
+            supervisor_query
+            .filter(models.Supervisor.id == id))
+
+        supervisors = supervisor_query.first()
+
+        if not supervisors:
+            raise exceptions.NotFound('Supervisor not found')
+
+    schema = schemas.SupervisorSchema(many=id is None)
+    return schema.jsonify(supervisors), 200
+
+
+@app.route(PREFIX + '/endpoints')
+@app.route(PREFIX + '/endpoints/<endpoint_id>')
+@app.route(PREFIX + '/processes/<id>/endpoints')
+@app.route(PREFIX + '/processes/<id>/endpoints/<endpoint_id>')
+def show_endpoints(id=None, endpoint_id=None):
+    endpoint_query = (
+        models.Endpoint
+        .query
+        .join(models.Process))
+
+    if id is not None:
+        endpoint_query = (
+            endpoint_query
+            .filter(models.Process.id == id))
+
+    if endpoint_id is not None:
+        endpoint_query = (
+            endpoint_query
+            .filter(models.Endpoint.id == id))
+
+    schema = schemas.EndpointSchema(many=True)
+    return schema.jsonify(endpoint_query.all()), 200
+
+
+@app.route(PREFIX + '/consoles/<id>')
+@app.route(PREFIX + '/consoles/<id>/page/<page_id>')
+@app.route(PREFIX + '/processes/<id>/console')
+@app.route(PREFIX + '/processes/<id>/console/<page_id>')
+def show_console(id, page_id=None):
+    console_query = (
+        models.ConsolePage
+        .query
+        .join(models.Process)
+        .filter(models.Process.id == id)
+        .order_by(models.ConsolePage.timestamp.asc()))
+
+    if page_id is None:
+        pages = console_query.all()
+
+    else:
+        console_query = (
+            console_query
+            .filter(models.ConsolePage.id == page_id))
+
+        pages = console_query.first()
+
+    schema = schemas.ConsoleSchema(many=page_id is None)
+    return schema.jsonify(pages), 200

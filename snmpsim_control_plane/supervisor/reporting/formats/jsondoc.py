@@ -30,6 +30,8 @@ class JsonDocReporter(base.BaseReporter):
         'version': 1,
         'host': '{hostname}',
         'producer': <UUID>,
+        'watch_dir': '{dir}',
+        'uptime': 0,
         'first_update': '{timestamp}',
         'last_update': '{timestamp}',
         'executables': [
@@ -51,7 +53,6 @@ class JsonDocReporter(base.BaseReporter):
                 ],
                 'console': [
                     {
-                        'page': 0,
                         'timestamp': 0,
                         'text': '{text}'
                     }
@@ -110,7 +111,8 @@ class JsonDocReporter(base.BaseReporter):
 
         return obj
 
-    def dump_metrics(self, metrics, begin=None, end=None):
+    def dump_metrics(self, metrics, watch_dir=None,
+                     started=None, begin=None, end=None):
         """Dump metrics into a JSON file.
         """
         json_metrics = self._format_metrics(metrics)
@@ -119,6 +121,8 @@ class JsonDocReporter(base.BaseReporter):
         json_metrics['version'] = self.REPORTING_VERSION
         json_metrics['host'] = self.PRODUCER_HOST
         json_metrics['producer'] = self.PRODUCER_UUID
+        json_metrics['watch_dir'] = watch_dir
+        json_metrics['started'] = started
         json_metrics['first_update'] = int(begin)
         json_metrics['last_update'] = int(end)
 

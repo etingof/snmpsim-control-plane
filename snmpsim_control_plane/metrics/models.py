@@ -129,6 +129,7 @@ class Variation(db.Model):
 
 
 class Endpoint(db.Model):
+    id = db.Column(db.Integer(), unique=True)
     protocol = db.Column(db.String(), nullable=False)
     address = db.Column(db.String(), nullable=False)
     process_id = db.Column(db.Integer(), db.ForeignKey('process.id'))
@@ -139,26 +140,28 @@ class Endpoint(db.Model):
 
 
 class ConsolePage(db.Model):
-    page = db.Column(db.Integer(), nullable=False)
+    id = db.Column(db.Integer(), unique=True)
     text = db.Column(db.String(), nullable=False)
-    timestamp = db.Column(db.Integer(), nullable=False)
+    timestamp = db.Column(db.DateTime(), nullable=False)
     process_id = db.Column(db.Integer(), db.ForeignKey('process.id'))
 
     __table_args__ = (
-        db.PrimaryKeyConstraint('process_id', 'page'),
+        db.PrimaryKeyConstraint('id', 'process_id'),
     )
 
 
 class Process(db.Model):
     id = db.Column(db.Integer(), unique=True)
+    path = db.Column(db.String(), nullable=False)
     runtime = db.Column(db.Integer())
     memory = db.Column(db.Integer())
     cpu = db.Column(db.Integer())
     files = db.Column(db.Integer())
     exits = db.Column(db.Integer())
     changes = db.Column(db.Integer())
-    last_update = db.Column(db.Integer())
-    executable_id = db.Column(db.Integer(), db.ForeignKey('executable.id'))
+    last_update = db.Column(db.DateTime())
+    update_interval = db.Column(db.Integer())
+    supervisor_id = db.Column(db.Integer(), db.ForeignKey('supervisor.id'))
 
     endpoints = db.relationship(
         'Endpoint', backref='process', lazy=True)
@@ -166,31 +169,19 @@ class Process(db.Model):
         'ConsolePage', backref='process', lazy=True)
 
     __table_args__ = (
-        db.PrimaryKeyConstraint('executable_id'),
-    )
-
-
-class Executable(db.Model):
-    id = db.Column(db.Integer(), unique=True)
-    path = db.Column(db.String(), nullable=False)
-    supervisor_id = db.Column(db.Integer(), db.ForeignKey('supervisor.id'))
-
-    process = db.relationship(
-        'Process', uselist=False, backref='executable', lazy=True)
-
-    __table_args__ = (
-        db.PrimaryKeyConstraint('path', 'supervisor_id'),
+        db.PrimaryKeyConstraint('supervisor_id', 'path'),
     )
 
 
 class Supervisor(db.Model):
     id = db.Column(db.Integer(), unique=True)
     hostname = db.Column(db.String(), nullable=False)
-    producer = db.Column(db.String(), nullable=False)
+    watch_dir = db.Column(db.String(), nullable=False)
+    started = db.Column(db.DateTime())
 
-    executables = db.relationship(
-        'Executable', backref='supervisor', lazy=True)
+    processes = db.relationship(
+        'Process', backref='supervisor', lazy=True)
 
     __table_args__ = (
-        db.PrimaryKeyConstraint('hostname', 'producer'),
+        db.PrimaryKeyConstraint('hostname'),
     )
