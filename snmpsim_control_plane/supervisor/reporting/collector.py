@@ -54,7 +54,7 @@ def collect_metrics(*instances):
             },
             'console': [
                 {
-                    'page': 0,  # page number
+                    'timestamp': {time},
                     'text': '{text}
                 }
             ]

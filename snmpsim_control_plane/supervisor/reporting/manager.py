@@ -35,6 +35,8 @@ class ReportingManager(object):
         'jsondoc': jsondoc.JsonDocReporter,
     }
 
+    STARTED = int(time.time())
+
     _last_reportings = collections.defaultdict(dict)
 
     _reporter = null.NullReporter()
@@ -56,7 +58,7 @@ class ReportingManager(object):
                  'params %s' % (cls._reporter, ', '.join(args)))
 
     @classmethod
-    def process_metrics(cls, *instances):
+    def process_metrics(cls, watch_dir, *instances):
         now = int(time.time())
 
         if cls._next_dump > now:
@@ -86,4 +88,5 @@ class ReportingManager(object):
                 metrics[metric] = current_value.added_content(previous_value)
 
         cls._reporter.dump_metrics(
-            all_metrics, begin=int(last_dump), end=int(now))
+            all_metrics, watch_dir=watch_dir, started=cls.STARTED,
+            begin=int(last_dump), end=int(now))

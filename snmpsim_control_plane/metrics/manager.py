@@ -36,5 +36,5 @@ def import_metrics(jsondoc):
 
     except Exception as exc:
         log.error('Metric importer %s failed: %s' % (flavor, exc))
-        log.debug('JSON document causing failure is: %s' % jsondoc)
+        log.error('JSON document causing failure is: %s' % jsondoc)
         db.session.rollback()

@@ -7,6 +7,10 @@
 # SNMP simulator metrics: REST API view schemas
 #
 import marshmallow
+import flask
+
+from snmpsim_control_plane.metrics import ma
+from snmpsim_control_plane.metrics import models
 
 
 class EnsureZeroMixIn(object):
@@ -33,3 +37,117 @@ class MessagesSchema(marshmallow.Schema, EnsureZeroMixIn):
 class VariationsSchema(marshmallow.Schema, EnsureZeroMixIn):
     class Meta:
         fields = ('name', 'total', 'failures')
+
+
+class ConsoleSchema(ma.ModelSchema):
+    class Meta:
+        model = models.ConsolePage
+        fields = ('timestamp', 'text', 'process', '_links')
+
+    class ProcessSchema(ma.ModelSchema):
+        class Meta:
+            model = models.Process
+            fields = ('path', '_links')
+
+        _links = ma.Hyperlinks({
+            'self': ma.URLFor('show_processes', id='<id>'),
+        })
+
+    process = ma.Nested(ProcessSchema)
+
+    _links = ma.Hyperlinks({
+        'self': ma.URLFor('show_console', id='<process_id>', page_id='<id>'),
+        'collection': ma.URLFor('show_console', id='<process_id>')
+    })
+
+
+class EndpointSchema(ma.ModelSchema):
+    class Meta:
+        model = models.Endpoint
+        fields = ('protocol', 'address', 'process', '_links')
+
+    class ProcessSchema(ma.ModelSchema):
+        class Meta:
+            model = models.Process
+            fields = ('path', '_links')
+
+        _links = ma.Hyperlinks({
+            'self': ma.URLFor('show_processes', id='<id>'),
+        })
+
+    process = ma.Nested(ProcessSchema)
+
+    _links = ma.Hyperlinks({
+        'self': ma.URLFor('show_endpoints', id='<process_id>', endpoint_id='<id>'),
+        'collection': ma.URLFor('show_endpoints', id='<process_id>')
+    })
+
+
+class ProcessSchema(ma.ModelSchema):
+    class Meta:
+        model = models.Process
+        fields = ('id', 'path', 'runtime', 'memory', 'cpu', 'files',
+                  'exits', 'changes', 'last_update', 'update_interval',
+                  'endpoints', 'supervisor', '_links')
+
+    class EndpointsSummarySchema(ma.ModelSchema):
+        class Meta:
+            fields = ('count', '_links')
+
+        count = marshmallow.fields.Method('get_count')
+        _links = marshmallow.fields.Method('get_links')
+
+        def get_count(self, endpoints):
+            return len(endpoints)
+
+        def get_links(self, endpoints):
+            if endpoints:
+                return {
+                    'self': flask.url_for(
+                        'show_endpoints', id=endpoints[0].process_id)
+                }
+
+            else:
+                return {}
+
+    endpoints = ma.Nested(EndpointsSummarySchema)
+
+    class SupervisorSummarySchema(ma.ModelSchema):
+        class Meta:
+            model = models.Supervisor
+            fields = ('hostname', 'watch_dir', '_links')
+
+        _links = ma.Hyperlinks({
+            'self': ma.URLFor('show_supervisors', id='<id>'),
+            'collection': ma.URLFor('show_supervisors')
+        })
+
+    supervisor = ma.Nested(SupervisorSummarySchema)
+
+    _links = ma.Hyperlinks({
+        'self': ma.URLFor('show_processes', id='<id>'),
+        'collection': ma.URLFor('show_processes')
+    })
+
+
+class SupervisorSchema(ma.ModelSchema):
+    class Meta:
+        model = models.Supervisor
+        fields = ('hostname', 'watch_dir', 'started',
+                  'processes', '_links')
+
+    class ProcessSchema(ma.ModelSchema):
+        class Meta:
+            model = models.Process
+            fields = ('path', '_links')
+
+        _links = ma.Hyperlinks({
+            'self': ma.URLFor('show_processes', id='<id>'),
+        })
+
+    processes = ma.Nested(ProcessSchema, many=True)
+
+    _links = ma.Hyperlinks({
+        'self': ma.URLFor('show_supervisors', id='<id>'),
+        'collection': ma.URLFor('show_supervisors')
+    })
