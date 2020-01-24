@@ -28,7 +28,7 @@ class ReportingManager(object):
     them.
     """
 
-    REPORTING_PERIOD = 60
+    REPORTING_PERIOD = 15
 
     REPORTERS = {
         'null': null.NullReporter,

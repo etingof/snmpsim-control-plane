@@ -1,0 +1,204 @@
+{
+  "executables": [
+    {
+      "memory": 4178,
+      "cpu": 0,
+      "endpoints": {
+        "udpv4": [
+          "127.0.0.1:161",
+          "127.0.0.2:161"
+        ],
+        "udpv6": [
+          "::1:161",
+          "::2:1611"
+        ]
+      },
+      "files": 4,
+      "executable": "/tmp/watch/run2.sh",
+      "runtime": 60,
+      "exits": 6,
+      "changes": 0,
+      "console": [
+        {
+          "page": 24,
+          "text": "Hello\n",
+          "timestamp": 1579887314
+        },
+        {
+          "page": 25,
+          "text": "goodbye\n",
+          "timestamp": 1579887323
+        },
+        {
+          "page": 26,
+          "text": "Hello\n",
+          "timestamp": 1579887324
+        },
+        {
+          "page": 27,
+          "text": "goodbye\n",
+          "timestamp": 1579887333
+        },
+        {
+          "page": 28,
+          "text": "Hello\n",
+          "timestamp": 1579887334
+        },
+        {
+          "page": 29,
+          "text": "goodbye\n",
+          "timestamp": 1579887343
+        },
+        {
+          "page": 30,
+          "text": "Hello\n",
+          "timestamp": 1579887344
+        },
+        {
+          "page": 31,
+          "text": "goodbye\n",
+          "timestamp": 1579887353
+        },
+        {
+          "page": 32,
+          "text": "Hello\n",
+          "timestamp": 1579887354
+        },
+        {
+          "page": 33,
+          "text": "goodbye\n",
+          "timestamp": 1579887363
+        },
+        {
+          "page": 34,
+          "text": "Hello\n",
+          "timestamp": 1579887364
+        },
+        {
+          "page": 35,
+          "text": "goodbye\n",
+          "timestamp": 1579887373
+        }
+      ]
+    },
+    {
+      "memory": 4169,
+      "cpu": 1,
+      "endpoints": {
+        "udpv4": [
+          "127.0.0.1:161",
+          "127.0.0.2:161"
+        ],
+        "udpv6": [
+          "::1:161",
+          "::2:1611"
+        ]
+      },
+      "files": 4,
+      "executable": "/tmp/watch/run.sh",
+      "runtime": 60,
+      "exits": 9,
+      "changes": 0,
+      "console": [
+        {
+          "page": 36,
+          "text": "Hello\n",
+          "timestamp": 1579887314
+        },
+        {
+          "page": 37,
+          "text": "goodbye\n",
+          "timestamp": 1579887320
+        },
+        {
+          "page": 38,
+          "text": "Hello\n",
+          "timestamp": 1579887321
+        },
+        {
+          "page": 39,
+          "text": "goodbye\n",
+          "timestamp": 1579887326
+        },
+        {
+          "page": 40,
+          "text": "Hello\n",
+          "timestamp": 1579887327
+        },
+        {
+          "page": 41,
+          "text": "goodbye\n",
+          "timestamp": 1579887333
+        },
+        {
+          "page": 42,
+          "text": "Hello\n",
+          "timestamp": 1579887334
+        },
+        {
+          "page": 43,
+          "text": "goodbye\n",
+          "timestamp": 1579887339
+        },
+        {
+          "page": 44,
+          "text": "Hello\n",
+          "timestamp": 1579887341
+        },
+        {
+          "page": 45,
+          "text": "goodbye\n",
+          "timestamp": 1579887346
+        },
+        {
+          "page": 46,
+          "text": "Hello\n",
+          "timestamp": 1579887347
+        },
+        {
+          "page": 47,
+          "text": "goodbye\n",
+          "timestamp": 1579887353
+        },
+        {
+          "page": 48,
+          "text": "Hello\n",
+          "timestamp": 1579887354
+        },
+        {
+          "page": 49,
+          "text": "goodbye\n",
+          "timestamp": 1579887359
+        },
+        {
+          "page": 50,
+          "text": "Hello\n",
+          "timestamp": 1579887361
+        },
+        {
+          "page": 51,
+          "text": "goodbye\n",
+          "timestamp": 1579887366
+        },
+        {
+          "page": 52,
+          "text": "Hello\n",
+          "timestamp": 1579887367
+        },
+        {
+          "page": 53,
+          "text": "goodbye\n",
+          "timestamp": 1579887373
+        }
+      ]
+    }
+  ],
+  "format": "jsondoc",
+  "version": 1,
+  "host": "igarlic",
+  "producer": "991eacc4-3ecf-11ea-b09d-88e9fe67f638",
+  "watch_dir": "/tmp/watch",
+  "started": 1579887193,
+  "first_update": 1579887314,
+  "last_update": 1579887374
+}

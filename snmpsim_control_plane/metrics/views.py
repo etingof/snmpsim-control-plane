@@ -294,13 +294,18 @@ def show_endpoints(id=None, endpoint_id=None):
             endpoint_query
             .filter(models.Process.id == id))
 
-    if endpoint_id is not None:
+    if endpoint_id is None:
+        endpoints = endpoint_query.all()
+
+    else:
         endpoint_query = (
             endpoint_query
             .filter(models.Endpoint.id == id))
 
-    schema = schemas.EndpointSchema(many=True)
-    return schema.jsonify(endpoint_query.all()), 200
+        endpoints = endpoint_query.first()
+
+    schema = schemas.EndpointSchema(many=endpoint_id is None)
+    return schema.jsonify(endpoints), 200
 
 
 @app.route(PREFIX + '/consoles/<id>')

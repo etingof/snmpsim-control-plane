@@ -69,12 +69,14 @@ trap cleanup EXIT
 
 sleep 10
 
-cp $(pwd)/tests/integration/samples/fulljson.json $RESTAPI_WATCH_DIR
+cp $(pwd)/tests/integration/samples/*.json $RESTAPI_WATCH_DIR
 
 sleep 10
 
-[ -f $RESTAPI_WATCH_DIR/fulljson.json ] && {
-    echo "Metrics not consumed"; exit 1 ; }
+if compgen -G "$RESTAPI_WATCH_DIR/*"; then
+    echo "Metrics not consumed"
+    exit 1
+fi
 
 total=$(get_field "$ENDPOINT/activity/packets" "total")
 
@@ -101,6 +103,34 @@ failures=$(get_field "$ENDPOINT/activity/messages" "failures")
 
 if [ $failures -ne 0 ]; then
     echo "Wrong total failures count $failures"
+    exit 1
+fi
+
+hostname=$(get_field "$ENDPOINT/supervisors/1" "hostname")
+
+if [ $hostname != "igarlic" ]; then
+    echo "Wrong supervisor hostname $hostname"
+    exit 1
+fi
+
+memory=$(get_field "$ENDPOINT/processes/1" "memory")
+
+if [ $memory -ne 4178 ]; then
+    echo "Wrong process memory metrics $memory"
+    exit 1
+fi
+
+protocol=$(get_field "$ENDPOINT/processes/1/endpoints/1" "protocol")
+
+if [ $protocol != "udpv6" ]; then
+    echo "Wrong process endpoint protocol $protocol"
+    exit 1
+fi
+
+text=$(get_field "$ENDPOINT/processes/1/console/1" "text")
+
+if [ $text != "Hello" ]; then
+    echo "Wrong process console output $text"
     exit 1
 fi
 
