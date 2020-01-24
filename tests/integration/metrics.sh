@@ -122,7 +122,7 @@ fi
 
 protocol=$(get_field "$ENDPOINT/processes/1/endpoints/1" "protocol")
 
-if [ $protocol != "udpv6" ]; then
+if [ $protocol != "udpv4" -a  $protocol != "udpv6" ]; then
     echo "Wrong process endpoint protocol $protocol"
     exit 1
 fi
