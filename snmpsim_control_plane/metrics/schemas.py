@@ -88,9 +88,9 @@ class ProcessSchema(ma.ModelSchema):
         model = models.Process
         fields = ('id', 'path', 'runtime', 'memory', 'cpu', 'files',
                   'exits', 'changes', 'last_update', 'update_interval',
-                  'endpoints', 'supervisor', '_links')
+                  'endpoints', 'supervisor', 'console_pages', '_links')
 
-    class EndpointsSummarySchema(ma.ModelSchema):
+    class EndpointsSchema(ma.ModelSchema):
         class Meta:
             fields = ('count', '_links')
 
@@ -110,9 +110,39 @@ class ProcessSchema(ma.ModelSchema):
             else:
                 return {}
 
-    endpoints = ma.Nested(EndpointsSummarySchema)
+    endpoints = ma.Nested(EndpointsSchema)
 
-    class SupervisorSummarySchema(ma.ModelSchema):
+    class ConsoleSchema(ma.ModelSchema):
+        class Meta:
+            model = models.ConsolePage
+            fields = ('count', 'last_update', '_links')
+
+        count = marshmallow.fields.Method('get_count')
+        last_update = marshmallow.fields.Method('get_last_update')
+        _links = marshmallow.fields.Method('get_links')
+
+        def get_count(self, console_pages):
+            return len(console_pages)
+
+        def get_last_update(self, console_pages):
+            if console_pages:
+                return console_pages[-1].timestamp.isoformat() + '+00:00'
+
+            return 0
+
+        def get_links(self, console_pages):
+            if console_pages:
+                return {
+                    'self': flask.url_for(
+                        'show_console', id=console_pages[0].process_id)
+                }
+
+            else:
+                return {}
+
+    console_pages = ma.Nested(ConsoleSchema)
+
+    class SupervisorSchema(ma.ModelSchema):
         class Meta:
             model = models.Supervisor
             fields = ('hostname', 'watch_dir', '_links')
@@ -122,7 +152,7 @@ class ProcessSchema(ma.ModelSchema):
             'collection': ma.URLFor('show_supervisors')
         })
 
-    supervisor = ma.Nested(SupervisorSummarySchema)
+    supervisor = ma.Nested(SupervisorSchema)
 
     _links = ma.Hyperlinks({
         'self': ma.URLFor('show_processes', id='<id>'),

@@ -222,6 +222,13 @@ To get specific SNMP simulator instance process metrics:
         "self": "/snmpsim/metrics/v1/processes/1"
       },
       "changes": 3,
+      "console_pages": {
+        "_links": {
+          "self": "/snmpsim/metrics/v1/processes/1/console"
+        },
+        "count": 12,
+        "last_update": "2020-01-24T17:36:13+00:00"
+      },
       "cpu": 12,
       "endpoints": {
         "_links": {

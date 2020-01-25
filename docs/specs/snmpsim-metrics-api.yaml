@@ -792,7 +792,7 @@ components:
         endpoints:
           $ref: "#/components/schemas/EndpointMetricsArray"
 
-        console:
+        console_pages:
           $ref: "#/components/schemas/ConsolePageArray"
 
     ProcessesMetricsArray:
