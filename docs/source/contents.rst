@@ -16,8 +16,8 @@ Documentation
    :maxdepth: 2
 
    /architecture
-   /usage
    /deployment
+   /usage
 
 Download & Changelog
 --------------------

@@ -1,9 +1,14 @@
 
+.. _usage:
+
+
 Usage
 -----
 
 From user's perspective, SNMP Simulator Control Plane has two loosely coupled
 APIs - Management and Metrics.
+
+.. _simulator_management:
 
 Simulator management
 ++++++++++++++++++++
@@ -59,6 +64,8 @@ simulation data recording:
 Direct links to the above `script <./../conf/bootstraps/minimal.sh>`_ and
 its supporting `library <./../conf/bootstraps/functions.sh>`_.
 
+.. _gathering_metrics:
+
 Gathering metrics
 +++++++++++++++++
 
@@ -66,14 +73,17 @@ Metrics part of Control Plane provides ever growing counters reflecting
 the operations of SNMP Simulator Command Responder instances running under
 the supervision of `snmpsim-mgmt-supervisor` tool.
 
+Besides that, `snmpsim-mgmt-supervisor` process collects OS-level metrics
+on SNMP simulator instance processes.
+
 The consumer of this service can follow
 `Metrics <https://app.swaggerhub.com/apis/etingof/snmpsim-metrics/1.0.0>`_
 OpenAPI specification to build queries requesting slices of data.
 
-Examples
-~~~~~~~~
+SNMP agent metrics
+~~~~~~~~~~~~~~~~~~
 
-To get overall SNMP simulator activity:
+To get overall simulated SNMP agents activity:
 
 .. code-block:: bash
 
@@ -164,3 +174,124 @@ SNMPv3 context names *public* and *private*:
       "var_binds": 1692,
       "variations": []
     }
+
+Process metricss
+~~~~~~~~~~~~~~~~
+
+Process management metrics are taken at the OS-level, they have no ties with
+SNMP whatsoever.
+
+Supervisor tool metrics can be seen like this:
+
+.. code-block:: bash
+
+    $ curl http://127.0.0.1:5001/snmpsim/metrics/v1/supervisors
+    [
+      {
+        "_links": {
+          "collection": "/snmpsim/metrics/v1/supervisors",
+          "self": "/snmpsim/metrics/v1/supervisors/1"
+        },
+        "hostname": "igarlic",
+        "processes": [
+          {
+            "_links": {
+              "self": "/snmpsim/metrics/v1/processes/1"
+            },
+            "path": "/opt/snmpsim/supervised/snmpsimd.sh"
+          }
+        ],
+        "started": "2020-01-24T17:33:13+00:00",
+        "watch_dir": "/opt/snmpsim/supervised"
+        }
+      }
+    ]
+
+To get specific SNMP simulator instance process metrics:
+
+.. code-block:: bash
+
+    $ curl http://127.0.0.1:5001/snmpsim/metrics/v1/processes/1
+    {
+      "_links": {
+        "collection": "/snmpsim/metrics/v1/processes",
+        "self": "/snmpsim/metrics/v1/processes/1"
+      },
+      "changes": 3,
+      "cpu": 12,
+      "endpoints": {
+        "_links": {
+          "self": "/snmpsim/metrics/v1/processes/1/endpoints"
+        },
+        "count": 4
+      },
+      "exits": 0,
+      "files": 4,
+      "id": 1,
+      "last_update": "2020-01-24T17:36:14+00:00",
+      "memory": 4178,
+      "path": "/opt/snmpsim/supervised/snmpsimd.sh",
+      "runtime": 60,
+      "supervisor": {
+        "_links": {
+          "collection": "/snmpsim/metrics/v1/supervisors",
+          "self": "/snmpsim/metrics/v1/supervisors/1"
+        },
+        "hostname": "igarlic",
+        "watch_dir": "/opt/snmpsim/supervised"
+      },
+      "update_interval": 15
+    }
+
+Network interfaces and ports bound by SNMP simulator process can be
+requested:
+
+.. code-block:: bash
+
+    $ curl http://127.0.0.1:5001/snmpsim/metrics/v1/processes/1/endpoints
+    [
+      {
+        "_links": {
+          "collection": "/snmpsim/metrics/v1/processes/1/endpoints",
+          "self": "/snmpsim/metrics/v1/processes/1/endpoints/1"
+        },
+        "address": "::1:161",
+        "process": {
+          "_links": {
+            "self": "/snmpsim/metrics/v1/processes/1"
+          },
+          "path": "/opt/snmpsim/supervised/snmpsimd.sh"
+        },
+        "protocol": "udpv6"
+      },
+      ...
+
+Simulator process console output is collected and served:
+
+.. code-block:: bash
+
+    $ curl http://127.0.0.1:5001/snmpsim/metrics/v1/processes/1/console
+    [
+      {
+        "_links": {
+          "collection": "/snmpsim/metrics/v1/processes/1/console",
+          "self": "/snmpsim/metrics/v1/processes/1/console/1"
+        },
+        "process": {
+          "_links": {
+            "self": "/snmpsim/metrics/v1/processes/1"
+          },
+          "path": "/opt/snmpsim/supervised/snmpsimd.sh"
+        },
+        "text": "Initializing variation modules...\n\
+    --- SNMP Engine configuration\n\
+    SNMPv3 EngineID: 0x80004fb805696761726c6963761cb1b8\n\
+      --- Simulation data recordings configuration\n\
+      SNMPv3 Context Engine ID: 0x80004fb805696761726c6963761cb1b8\n\
+      Scanning "/opt/snmpsim/data" directory for  *.sapwalk, *.dump, *.MVC, *.snmprec, *.snm",\n",
+        "timestamp": "2020-01-24T17:35:14+00:00"
+      },
+      ...
+
+Metrics collection is a periodic, discreet process, by default metrics
+traveling through the collection pipeline hit REST API DB every 15 seconds.

@@ -1,4 +1,6 @@
 
+.. _deployment:
+
 Deployment
 ----------
 
@@ -148,10 +150,10 @@ For example, for `gunicorn <https://gunicorn.org>`_:
       --daemon \
       snmpsim_control_plane.wsgi.metrics:app
 
-Work flow daemons
-+++++++++++++++++
+Infrastructure daemons
+++++++++++++++++++++++
 
-Then bring up the rest of the daemons:
+Then bring up process supervision and metrics importer daemons:
 
 .. code-block:: bash
 
@@ -159,7 +161,8 @@ Then bring up the rest of the daemons:
      --watch-dir /var/snmpsim/supervised \
      --daemonize \
      --pid-file /var/run/snmpsim/supervisor.pid \
-     --logging-method file:/var/log/snmpsim/supervisor.log
+     --logging-method file:/var/log/snmpsim/supervisor.log \
+     --reporting-method jsondoc:/var/log/snmpsim/metrics
 
    snmpsim-metrics-importer \
      --config /etc/snmpsim/snmpsim-metrics.conf \
@@ -172,8 +175,9 @@ Perhaps it's better to configure all process invocation commands within
 `systemd unit files <https://github.com/etingof/snmpsim-control-plane/tree/master/conf/systemd>`_
 or alike.
 
-By this point you should be able to run REST API calls against Management
-and Metrics REST API endpoints.
+By this point you should be able to run REST API calls against
+:ref:`Management <simulator_management>` and
+:ref:`Metrics <gathering_metrics>` REST API endpoints.
 
 Calling REST APIs
 +++++++++++++++++
@@ -198,4 +202,4 @@ To start using Control Plane, try uploading a simulation recording:
       -X POST \
       http://127.0.0.1:5000/snmpsim/mgmt/v1/recordings/public.snmprec
 
-Followed by :doc:`configuring <usage>` and powering on a virtual laboratory.
+Followed by :ref:`configuring <simulator_management>` and powering on a virtual laboratory.
