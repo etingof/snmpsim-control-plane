@@ -80,6 +80,8 @@ The consumer of this service can follow
 `Metrics <https://app.swaggerhub.com/apis/etingof/snmpsim-metrics/1.0.0>`_
 OpenAPI specification to build queries requesting slices of data.
 
+.. _agent_metrics:
+
 SNMP agent metrics
 ~~~~~~~~~~~~~~~~~~
 
@@ -175,8 +177,10 @@ SNMPv3 context names *public* and *private*:
       "variations": []
     }
 
-Process metricss
-~~~~~~~~~~~~~~~~
+.. _process_metrics:
+
+Process metrics
+~~~~~~~~~~~~~~~
 
 Process management metrics are taken at the OS-level, they have no ties with
 SNMP whatsoever.
