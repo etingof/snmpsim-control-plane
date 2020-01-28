@@ -6,20 +6,39 @@ info:
   title: 'SNMP Simulator Metrics REST API'
   description: >
     Metrics API provides the insight for the operator to how SNMP Simulator
-    is doing. That includes health reporting and operational statistics.
-    The data is provided by running SNMP Simulator, REST API is essentially
-    read-only.
+    is doing. That includes SNMP-related and OS process related information.
 
 
-    The `/processes` endpoint exposes the details on SNMP simulator health
-    as a set of UNIX processes. It's mostly concern with processes being
-    present, resources being consumed reasonably and internal faults noted.
+    The data is provided by running SNMP Simulator supervisor(s) and SNMP
+    Simulator processes, metrics REST API is essentially read-only.
 
 
-    Typical use of the `/processes` endpoint by some monitoring application
-    can be a parameterized REST API call designed to reveal crashing processes,
-    overly consumed system resources or serious application-specific errors
-    occurring in SNMP simulator.
+    Although reported counters are designed as ever growing, the consumer
+    should be prepared to handle the situation when the counters are reset
+    to zero abruptly (likely on REST API DB respin).
+
+
+    **OS process metrics**
+
+
+    SNMP Simulator instances are invoked, teared down and looked after by
+    one or more `supervisor` processes. The `/supervisors` endpoint reveals
+    some basic runtime information on each of the running supervisors.
+
+    The `/processes` endpoint exposes the details on SNMP Simulator processes
+    resource consumption, overall health and lifecycle.
+
+    Also linked from each process object, `/endpoints/<id>` reports local
+    network ports being allocated by each SNMP Simulator process.
+
+    Finally, `/process/<id>/console` lists virtual console pages of the
+    process. Each page is a wall of text of up to a fixed size (80*24
+    characters), as appeared on process's stdout and stderr at a point of time
+    identified by an accompanying timestamp. Older console pages automatically
+    expire.
+
+
+    **SNMP activity metrics**
 
 
     The `/activity` endpoints report SNMP traffic counters optionally filtered
@@ -53,11 +72,6 @@ info:
     The consumer of `/activity/*` endpoints is expected to poll the API
     periodically pushing collected data into a time-series database for
     dynamics computing and data aggregation.
-
-
-    Although reported counters are ever growing, the consumer should be
-    prepared to handle the situation when the counters are reset to zero
-    abruptly.
 
 servers:
   - url: http://127.0.0.1:5001/snmpsim/metrics/v1
@@ -733,6 +747,23 @@ components:
             Time stamp indicating when this `supervisor` instance has been
             started.
           type: string
+        processes:
+          description: >
+            An array of processes references.
+          type: array
+          items:
+            description: >
+              Process console pages summary object
+            type: object
+            properties:
+              path:
+                description: >
+                  Path to process executable
+                type: string
+              _links:
+                $ref: "#/components/schemas/Links"
+        _links:
+          $ref: "#/components/schemas/Links"
 
     SupervisorMetricsArray:
       description: >
@@ -790,10 +821,49 @@ components:
           type: string
 
         endpoints:
-          $ref: "#/components/schemas/EndpointMetricsArray"
+          description: >
+            An array of process endpoints references.
+          type: array
+          items:
+            description: >
+              Process endpoints summary object
+            type: object
+            properties:
+              count:
+                description: >
+                  Number of allocated endpoints
+                type: integer
+              _links:
+                $ref: "#/components/schemas/Links"
 
         console_pages:
-          $ref: "#/components/schemas/ConsolePageArray"
+          description: >
+            An array of process console pages references.
+          type: array
+          items:
+            description: >
+              Process console pages summary object
+            type: object
+            properties:
+              timestamp:
+                description: >
+                  When this page has been captured
+                type: string
+              text:
+                description: >
+                  Process stdout & stderr
+                type: string
+              process:
+                type: object
+                properties:
+                  path:
+                    description: >
+                      Path to process executable
+                    type: string
+                  _links:
+                    $ref: "#/components/schemas/Links"
+              _links:
+                $ref: "#/components/schemas/Links"
 
     ProcessesMetricsArray:
       description: >
@@ -816,11 +886,21 @@ components:
             Network protocol used by this endpoint
           type: string
           enum: ['udpv4', 'udpv6']
-
         address:
           description: >
             Network address used by this endpoint (IP:port)
           type: string
+        process:
+          type: object
+          properties:
+            path:
+              description: >
+                Path to process executable
+              type: string
+            _links:
+              $ref: "#/components/schemas/Links"
+        _links:
+          $ref: "#/components/schemas/Links"
 
     EndpointMetricsArray:
       description: >
@@ -850,6 +930,17 @@ components:
           description: >
             Page text
           type: string
+        process:
+          type: object
+          properties:
+            path:
+              description: >
+                Path to process executable
+              type: string
+            _links:
+              $ref: "#/components/schemas/Links"
+        _links:
+          $ref: "#/components/schemas/Links"
 
     ConsolePageArray:
       description: >
@@ -857,6 +948,18 @@ components:
       type: array
       items:
         $ref: "#/components/schemas/ConsolePage"
+
+    Links:
+      type: object
+      properties:
+        self:
+          description: >
+            URI pointing to the instance of one object in a collection
+          type: string
+        collection:
+          description: >
+            URI pointing to the entire collection of similar objects
+          type: string
 
     Error:
       type: object

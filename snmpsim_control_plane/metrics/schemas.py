@@ -86,7 +86,7 @@ class EndpointSchema(ma.ModelSchema):
 class ProcessSchema(ma.ModelSchema):
     class Meta:
         model = models.Process
-        fields = ('id', 'path', 'runtime', 'memory', 'cpu', 'files',
+        fields = ('path', 'runtime', 'memory', 'cpu', 'files',
                   'exits', 'changes', 'last_update', 'update_interval',
                   'endpoints', 'supervisor', 'console_pages', '_links')
 
