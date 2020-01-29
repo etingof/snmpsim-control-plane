@@ -38,6 +38,7 @@ info:
        `/labs` endpoint.
 
 servers:
+  - url: https://virtserver.swaggerhub.com/etingof/snmpsim-mgmt/1.0.0
   - url: http://127.0.0.1:5000/snmpsim/mgmt/v1
 
 paths:

@@ -74,6 +74,7 @@ info:
     dynamics computing and data aggregation.
 
 servers:
+  - url: https://virtserver.swaggerhub.com/etingof/snmpsim-metrics/1.0.0
   - url: http://127.0.0.1:5001/snmpsim/metrics/v1
 
 paths:
