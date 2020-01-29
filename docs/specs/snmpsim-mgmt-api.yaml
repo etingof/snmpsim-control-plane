@@ -1767,7 +1767,12 @@ components:
             Tags tagging this SNMP transport endpoint
           type: array
           items:
-            $ref: "#/components/schemas/Tag"
+            type: object
+            properties:
+              name:
+                type: string
+              _links:
+                $ref: "#/components/schemas/Links"
 
     Endpoint:
       description: >
@@ -1839,7 +1844,12 @@ components:
             Tags tagging this SNMP USM user
           type: array
           items:
-            $ref: "#/components/schemas/Tag"
+            type: object
+            properties:
+              name:
+                type: string
+              _links:
+                $ref: "#/components/schemas/Links"
 
     User:
       description: >
@@ -1898,7 +1908,12 @@ components:
             Tags tagging this SNMP engine
           type: array
           items:
-            $ref: "#/components/schemas/Tag"
+            type: object
+            properties:
+              name:
+                type: string
+              _links:
+                $ref: "#/components/schemas/Links"
 
     Engine:
       description: >
@@ -1942,7 +1957,12 @@ components:
             Tags tagging this SNMP simulation recording selector
           type: array
           items:
-            $ref: "#/components/schemas/Tag"
+            type: object
+            properties:
+              name:
+                type: string
+              _links:
+                $ref: "#/components/schemas/Links"
 
     Selector:
       description: >
@@ -2021,7 +2041,12 @@ components:
             Tags tagging this SNMP agent
           type: array
           items:
-            $ref: "#/components/schemas/Tag"
+            type: object
+            properties:
+              name:
+                type: string
+              _links:
+                $ref: "#/components/schemas/Links"
 
     Agent:
       description: >
@@ -2115,7 +2140,12 @@ components:
             Tags tagging this SNMP lab
           type: array
           items:
-            $ref: "#/components/schemas/Tag"
+            type: object
+            properties:
+              name:
+                type: string
+              _links:
+                $ref: "#/components/schemas/Links"
 
     Lab:
       description: >
@@ -2159,37 +2189,55 @@ components:
             SNMP transport endpoints tagged with this tag
           type: array
           items:
-            $ref: "#/components/schemas/Endpoint"
+            type: object
+            properties:
+              _links:
+                $ref: "#/components/schemas/Links"
         users:
           description: >
             SNMP USM users tagged with this tag
           type: array
           items:
-            $ref: "#/components/schemas/User"
+            type: object
+            properties:
+              _links:
+                $ref: "#/components/schemas/Links"
         engines:
           description: >
             SNMP engines tagged with this tag
           type: array
           items:
-            $ref: "#/components/schemas/Engine"
+            type: object
+            properties:
+              _links:
+                $ref: "#/components/schemas/Links"
         selectors:
           description: >
-            SNMP selector tagged with this tag
+            SNMP selectors tagged with this tag
           type: array
           items:
-            $ref: "#/components/schemas/Selector"
-        agent:
+            type: object
+            properties:
+              _links:
+                $ref: "#/components/schemas/Links"
+        agents:
           description: >
-            SNMP agent tagged with this tag
+            SNMP agents tagged with this tag
           type: array
           items:
-            $ref: "#/components/schemas/Agent"
-        lab:
+            type: object
+            properties:
+              _links:
+                $ref: "#/components/schemas/Links"
+        labs:
           description: >
-            SNMP lab tagged with this tag
+            Virtual SNMP labs tagged with this tag
           type: array
           items:
-            $ref: "#/components/schemas/Lab"
+            type: object
+            properties:
+              _links:
+                $ref: "#/components/schemas/Links"
 
     Tag:
       description: >
@@ -2205,6 +2253,18 @@ components:
       type: array
       items:
         $ref: "#/components/schemas/Tag"
+
+    Links:
+      type: object
+      properties:
+        self:
+          description: >
+            URI pointing to the instance of one object in a collection
+          type: string
+        collection:
+          description: >
+            URI pointing to the entire collection of similar objects
+          type: string
 
     Error:
       type: object
