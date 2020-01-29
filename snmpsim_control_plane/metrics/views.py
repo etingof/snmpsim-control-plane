@@ -321,6 +321,9 @@ def show_endpoints(id=None, endpoint_id=None):
 
         endpoints = endpoint_query.first()
 
+        if not endpoints:
+            raise exceptions.NotFound('Endpoint not found')
+
     schema = schemas.EndpointSchema(many=endpoint_id is None)
     return schema.jsonify(endpoints), 200
 
@@ -346,6 +349,9 @@ def show_console(id, page_id=None):
             .filter(models.ConsolePage.id == page_id))
 
         pages = console_query.first()
+
+        if not pages:
+            raise exceptions.NotFound('Console page not found')
 
     schema = schemas.ConsoleSchema(many=page_id is None)
     return schema.jsonify(pages), 200

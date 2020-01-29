@@ -42,12 +42,12 @@ class VariationsSchema(marshmallow.Schema, EnsureZeroMixIn):
 class ConsoleSchema(ma.ModelSchema):
     class Meta:
         model = models.ConsolePage
-        fields = ('timestamp', 'text', 'process', '_links')
+        fields = ('id', 'timestamp', 'text', 'process', '_links')
 
     class ProcessSchema(ma.ModelSchema):
         class Meta:
             model = models.Process
-            fields = ('path', '_links')
+            fields = ('id', 'path', '_links')
 
         _links = ma.Hyperlinks({
             'self': ma.URLFor('show_processes', id='<id>'),
@@ -64,12 +64,12 @@ class ConsoleSchema(ma.ModelSchema):
 class EndpointSchema(ma.ModelSchema):
     class Meta:
         model = models.Endpoint
-        fields = ('protocol', 'address', 'process', '_links')
+        fields = ('id', 'protocol', 'address', 'process', '_links')
 
     class ProcessSchema(ma.ModelSchema):
         class Meta:
             model = models.Process
-            fields = ('path', '_links')
+            fields = ('id', 'path', '_links')
 
         _links = ma.Hyperlinks({
             'self': ma.URLFor('show_processes', id='<id>'),
@@ -86,7 +86,7 @@ class EndpointSchema(ma.ModelSchema):
 class ProcessSchema(ma.ModelSchema):
     class Meta:
         model = models.Process
-        fields = ('path', 'runtime', 'memory', 'cpu', 'files',
+        fields = ('id', 'path', 'runtime', 'memory', 'cpu', 'files',
                   'exits', 'changes', 'last_update', 'update_interval',
                   'endpoints', 'supervisor', 'console_pages', '_links')
 
@@ -145,7 +145,7 @@ class ProcessSchema(ma.ModelSchema):
     class SupervisorSchema(ma.ModelSchema):
         class Meta:
             model = models.Supervisor
-            fields = ('hostname', 'watch_dir', '_links')
+            fields = ('id', 'hostname', 'watch_dir', '_links')
 
         _links = ma.Hyperlinks({
             'self': ma.URLFor('show_supervisors', id='<id>'),
@@ -163,13 +163,13 @@ class ProcessSchema(ma.ModelSchema):
 class SupervisorSchema(ma.ModelSchema):
     class Meta:
         model = models.Supervisor
-        fields = ('hostname', 'watch_dir', 'started',
+        fields = ('id', 'hostname', 'watch_dir', 'started',
                   'processes', '_links')
 
     class ProcessSchema(ma.ModelSchema):
         class Meta:
             model = models.Process
-            fields = ('path', '_links')
+            fields = ('id', 'path', '_links')
 
         _links = ma.Hyperlinks({
             'self': ma.URLFor('show_processes', id='<id>'),
