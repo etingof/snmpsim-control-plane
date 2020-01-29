@@ -23,8 +23,8 @@ class EnsureZeroMixIn(object):
 class PacketsSchema(marshmallow.Schema, EnsureZeroMixIn):
     class Meta:
         fields = (
-            'total', 'parse_failures',
-            'auth_failures', 'context_failures')
+            'total', 'parse_failures', 'auth_failures',
+            'context_failures')
 
 
 class MessagesSchema(marshmallow.Schema, EnsureZeroMixIn):

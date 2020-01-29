@@ -95,7 +95,11 @@ def show_activity():
 
 def _make_filter_hyperlinks(target):
     return {
-        flt: flask.url_for('show_filter', target=target, flt=flt)
+        flt: {
+            'self': {
+                '_links': flask.url_for('show_filter', target=target, flt=flt)
+            }
+        }
         for flt in (PACKETS_QS_COLUMN_MAP
                     if target == 'packets' else QS_COLUMN_MAP)
     }
@@ -142,6 +146,9 @@ def _show_packets_or_messages(show_messages=False):
 
     transport_query = filter_by(transport_query, *PACKETS_QS_COLUMN_MAP)
 
+    # We have to build JSON response by hand because here it's a mix of
+    # ORM models and custom dicts. Marshmallow does not seem to be well-suited
+    # for handling that.
     metrics = {}
 
     if show_messages:
@@ -185,12 +192,17 @@ def _show_packets_or_messages(show_messages=False):
                 for field in QS_COLUMN_MAP))
 
         links = {
-            'filters': flask.url_for('show_messages_filters'),
             'self': _self
         }
 
+        filters = {
+            '_links': {
+                'self': flask.url_for('show_messages_filters')
+            }
+        }
+
         metrics.update(
-            variations=variations, _links=links, **messages)
+            variations=variations, _links=links, filters=filters, **messages)
 
     else:
         packets = transport_query.first()
@@ -203,11 +215,16 @@ def _show_packets_or_messages(show_messages=False):
                 for field in PACKETS_QS_COLUMN_MAP))
 
         links = {
-            'filters': flask.url_for('show_packets_filters'),
             'self': _self
         }
 
-        metrics.update(_links=links, **packets)
+        filters = {
+            '_links': {
+                'self': flask.url_for('show_packets_filters')
+            }
+        }
+
+        metrics.update(_links=links, filters=filters, **packets)
 
     return metrics
 

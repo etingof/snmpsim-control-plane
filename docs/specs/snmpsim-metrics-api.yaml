@@ -634,10 +634,6 @@ components:
         as well as SNMP messages failed to get processed at the later stages.
       type: object
       properties:
-        first_hit:
-          type: integer
-        last_hit:
-          type: integer
         total:
           description: >
             Total number of requests.
@@ -660,16 +656,21 @@ components:
             valid queries that can't be routed to any recording.
           type: integer
           format: int64
+        filters:
+          description: >
+            Links to available packet filters
+          type: object
+          properties:
+            _links:
+              $ref: "#/components/schemas/Links"
+        _links:
+          $ref: "#/components/schemas/Links"
 
     MessageMetrics:
       description: >
         SNMP message level metrics.
       type: object
       properties:
-        first_hit:
-          type: integer
-        last_hit:
-          type: integer
         pdus:
           description: >
             Total number of PDUs.
@@ -687,20 +688,25 @@ components:
           format: int64
         variations:
           description: >
-            Dictionary of variation modules metrics
+            Array of variation modules metrics
           type: array
           items:
             $ref: "#/components/schemas/VariationMetrics"
+        filters:
+          description: >
+            Links to available message filters
+          type: object
+          properties:
+            _links:
+              $ref: "#/components/schemas/Links"
+        _links:
+          $ref: "#/components/schemas/Links"
 
     VariationMetrics:
       description: >
         Variation module metrics.
       type: object
       properties:
-        first_hit:
-          type: integer
-        last_hit:
-          type: integer
         name:
           description: >
             Name of the variation module
@@ -721,7 +727,12 @@ components:
         A hashmap of filter names and endpoint URIs
       type: object
       additionalProperties:
-        type: string
+        description: >
+          Links to available filters
+        type: object
+        properties:
+          _links:
+            $ref: "#/components/schemas/Links"
 
     SupervisorMetrics:
       description: >
