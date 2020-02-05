@@ -144,8 +144,6 @@ def _show_packets_or_messages(show_messages=False):
             func.sum(models.Packet.auth_failures).label("auth_failures"),
             func.sum(models.Packet.context_failures).label("context_failures")))
 
-    transport_query = filter_by(transport_query, *PACKETS_QS_COLUMN_MAP)
-
     # We have to build JSON response by hand because here it's a mix of
     # ORM models and custom dicts. Marshmallow does not seem to be well-suited
     # for handling that.
@@ -159,7 +157,7 @@ def _show_packets_or_messages(show_messages=False):
             .join(models.Recording)
             .join(models.Pdu))
 
-        agent_query = filter_by(agent_query, *MESSAGES_QS_COLUMN_MAP)
+        agent_query = filter_by(agent_query, *QS_COLUMN_MAP)
 
         var_binds_query = (
             agent_query
@@ -205,6 +203,8 @@ def _show_packets_or_messages(show_messages=False):
             variations=variations, _links=links, filters=filters, **messages)
 
     else:
+        transport_query = filter_by(transport_query, *PACKETS_QS_COLUMN_MAP)
+
         packets = transport_query.first()
         schema = schemas.PacketsSchema()
         packets = schema.dump(packets).data
