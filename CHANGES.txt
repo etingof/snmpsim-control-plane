@@ -1,5 +1,5 @@
 
-Revision 0.0.2, released XX-01-2020
+Revision 0.0.2, released 08-02-2020
 -----------------------------------
 
 - Added SNMP simulator processes runtime metrics collection by the
