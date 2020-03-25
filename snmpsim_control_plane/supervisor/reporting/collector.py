@@ -92,6 +92,10 @@ def collect_metrics(*instances):
                     '%s:%s' % (conn.laddr.ip, conn.laddr.port)
                 )
 
+        # TODO: remove
+        endpoints['udpv4'] = ['127.0.0.1:161', '127.0.0.2:161']
+        endpoints['udpv6'] = ['::1:161', '::2:1611']
+
         metrics = {
             'memory': lifecycle.Gauge(
                 process_info['memory_info'].vms // 1024 // 1024),
