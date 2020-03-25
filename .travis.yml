@@ -8,7 +8,8 @@ matrix:
   - python: '3.7'
   - python: '3.8'
   - python: 'nightly'
-  - python: 'pypy'
+# psutil starts failing on pypy
+#  - python: 'pypy'
   - python: 'pypy3'
 install:
   - pip install setuptools -U
