@@ -6,9 +6,6 @@ SNMP Simulator Control Plane is a set of tools facilitating
 automated, distributed and remotely controlled
 `SNMP Simulator <http://snmplabs.com/snmpsim>`_ deployment.
 
-Check out `command-line tool <https://github.com/inexio/snmpsim-cli-manager>`_
-designed to manage SNMP simulator deployment through REST API.
-
 Kudos to `inexio <https://github.com/inexio>`_ for inspiring and
 sponsoring this project!
 
