@@ -25,7 +25,7 @@ def to_dict():
     query = (
         models.Lab
         .query
-        .filter_by(power='on').all()
+        .filter_by(power='on')
     )
 
     for orm_lab in query:
@@ -35,16 +35,7 @@ def to_dict():
         lab.update(agents=agents)
         labs.append(lab)
 
-        query = (
-            models.Agent
-            .query
-            .join(models.LabAgent,
-                  and_(models.LabAgent.agent_id == models.Agent.id,
-                       models.LabAgent.lab_id == orm_lab.id))
-            .all()
-        )
-
-        for orm_agent in query:
+        for orm_agent in orm_lab.agents:
             engines = []
             selectors = []
 
@@ -52,16 +43,7 @@ def to_dict():
             agent.update(engines=engines, selectors=selectors)
             agents.append(agent)
 
-            query = (
-                models.Engine
-                .query
-                .join(models.AgentEngine,
-                      and_(models.AgentEngine.engine_id == models.Engine.id,
-                           models.AgentEngine.agent_id == orm_agent.id))
-                .all()
-            )
-
-            for orm_engine in query:
+            for orm_engine in orm_agent.engines:
                 users = []
                 endpoints = []
 
@@ -69,42 +51,15 @@ def to_dict():
                 engine.update(users=users, endpoints=endpoints)
                 engines.append(engine)
 
-                query = (
-                    models.User
-                    .query
-                    .join(models.EngineUser,
-                          and_(models.EngineUser.user_id == models.User.id,
-                               models.EngineUser.engine_id == orm_engine.id))
-                    .all()
-                )
-
-                for orm_user in query:
+                for orm_user in orm_engine.users:
                     user = object_as_dict(orm_user)
                     users.append(user)
 
-                query = (
-                    models.Endpoint
-                    .query
-                    .join(models.EngineEndpoint,
-                          and_(models.EngineEndpoint.endpoint_id == models.Endpoint.id,
-                               models.EngineEndpoint.engine_id == orm_engine.id))
-                    .all()
-                )
-
-                for orm_endpoint in query:
+                for orm_endpoint in orm_engine.endpoints:
                     endpoint = object_as_dict(orm_endpoint)
                     endpoints.append(endpoint)
 
-            query = (
-                models.Selector
-                .query
-                .join(models.AgentSelector,
-                      and_(models.AgentSelector.selector_id == models.Selector.id,
-                           models.AgentSelector.agent_id == orm_agent.id))
-                .all()
-            )
-
-            for orm_selector in query:
+            for orm_selector in orm_agent.selectors:
                 selector = object_as_dict(orm_selector)
                 selectors.append(selector)
 
@@ -114,4 +69,3 @@ def to_dict():
         context.update(labs=labs)
 
     return context
-

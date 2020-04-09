@@ -1,8 +1,10 @@
 
-Revision 0.0.3, released XX-02-2020
+Revision 0.0.3, released XX-04-2020
 -----------------------------------
 
-No changes yet
+- Fix SQL/ORM problem in SNMP Simulator invocation script generation that
+  manifested itself as extreme slowness with the increasing number of powered
+  on labs.
 
 Revision 0.0.2, released 08-02-2020
 -----------------------------------
