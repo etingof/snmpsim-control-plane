@@ -150,7 +150,6 @@ def show_endpoint(id):
 
 @app.route(PREFIX + '/endpoints', methods=['POST'])
 @app.route(PREFIX + '/tags/<tag_id>/endpoint', methods=['POST'])
-@render_config
 def new_endpoint(tag_id=None):
     req = flask.request.json
 
@@ -170,7 +169,6 @@ def new_endpoint(tag_id=None):
 
 
 @app.route(PREFIX + '/endpoints/<id>', methods=['DELETE'])
-@render_config
 def del_endpoint(id):
     endpoint = (
         models.Endpoint
@@ -216,7 +214,6 @@ def show_user(id):
 
 @app.route(PREFIX + '/users', methods=['POST'])
 @app.route(PREFIX + '/tags/<tag_id>/user', methods=['POST'])
-@render_config
 def new_user(tag_id=None):
     req = flask.request.json
 
@@ -236,7 +233,6 @@ def new_user(tag_id=None):
 
 
 @app.route(PREFIX + '/users/<id>', methods=['DELETE'])
-@render_config
 def del_user(id):
     user = (
         models.User
@@ -286,7 +282,6 @@ def show_engine(id):
 
 @app.route(PREFIX + '/engines', methods=['POST'])
 @app.route(PREFIX + '/tags/<tag_id>/engine', methods=['POST'])
-@render_config
 def new_engine(tag_id=None):
     req = flask.request.json
 
@@ -306,7 +301,6 @@ def new_engine(tag_id=None):
 
 
 @app.route(PREFIX + '/engines/<id>', methods=['DELETE'])
-@render_config
 def del_engine(id):
     engine = (
         models
@@ -325,7 +319,6 @@ def del_engine(id):
 
 
 @app.route(PREFIX + '/engines/<id>/user/<user_id>', methods=['PUT'])
-@render_config
 def add_engine_user(id, user_id):
     engine_user = models.EngineUser(user_id=user_id, engine_id=id)
 
@@ -338,7 +331,6 @@ def add_engine_user(id, user_id):
 
 
 @app.route(PREFIX + '/engines/<id>/user/<user_id>', methods=['DELETE'])
-@render_config
 def del_engine_user(id, user_id):
     engine_user = (
         models
@@ -359,7 +351,6 @@ def del_engine_user(id, user_id):
 
 
 @app.route(PREFIX + '/engines/<id>/endpoint/<endpoint_id>', methods=['PUT'])
-@render_config
 def add_engine_endpoint(id, endpoint_id):
     engine_endpoint = models.EngineEndpoint(
         endpoint_id=endpoint_id, engine_id=id)
@@ -378,7 +369,6 @@ def add_engine_endpoint(id, endpoint_id):
 
 
 @app.route(PREFIX + '/engines/<id>/endpoint/<endpoint_id>', methods=['DELETE'])
-@render_config
 def del_engine_endpoint(id, endpoint_id):
     engine_endpoint = (
         models
@@ -431,7 +421,6 @@ def show_agent(id):
 
 @app.route(PREFIX + '/agents', methods=['POST'])
 @app.route(PREFIX + '/tags/<tag_id>/agent', methods=['POST'])
-@render_config
 def new_agent(tag_id=None):
     req = flask.request.json
 
@@ -466,7 +455,6 @@ def new_agent(tag_id=None):
 
 
 @app.route(PREFIX + '/agents/<id>', methods=['DELETE'])
-@render_config
 def del_agent(id):
     agent = (
         models
@@ -485,7 +473,6 @@ def del_agent(id):
 
 
 @app.route(PREFIX + '/agents/<id>/engine/<engine_id>', methods=['PUT'])
-@render_config
 def add_agent_engine(id, engine_id):
     agent_engine = (
         models
@@ -505,7 +492,6 @@ def add_agent_engine(id, engine_id):
 
 
 @app.route(PREFIX + '/agents/<id>/engine/<engine_id>', methods=['DELETE'])
-@render_config
 def del_agent_engine(id, engine_id):
     agent_engine = (
         models
@@ -562,7 +548,6 @@ def show_selector(id):
 
 @app.route(PREFIX + '/selectors', methods=['POST'])
 @app.route(PREFIX + '/tags/<tag_id>/selector', methods=['POST'])
-@render_config
 def new_selector(tag_id=None):
     req = flask.request.json
 
@@ -582,7 +567,6 @@ def new_selector(tag_id=None):
 
 
 @app.route(PREFIX + '/selectors/<id>', methods=['DELETE'])
-@render_config
 def del_selector(id):
     selector = (
         models.Selector
@@ -601,7 +585,6 @@ def del_selector(id):
 
 @app.route(PREFIX + '/agents/<id>/selector/<selector_id>/<order>',
            methods=['PUT'])
-@render_config
 def add_agent_selector(id, selector_id, order):
     agent_selector = (
         models
@@ -621,7 +604,6 @@ def add_agent_selector(id, selector_id, order):
 
 
 @app.route(PREFIX + '/agents/<id>/selector/<selector_id>', methods=['DELETE'])
-@render_config
 def del_agent_selector(id, selector_id):
     agent_selector = (
         models
@@ -743,7 +725,6 @@ def show_lab(id):
 
 @app.route(PREFIX + '/labs', methods=['POST'])
 @app.route(PREFIX + '/tags/<tag_id>/lab', methods=['POST'])
-@render_config
 def new_lab(tag_id=None):
     req = flask.request.json
 
@@ -763,7 +744,6 @@ def new_lab(tag_id=None):
 
 
 @app.route(PREFIX + '/labs/<id>', methods=['DELETE'])
-@render_config
 def del_lab(id):
     lab = (
         models
@@ -782,7 +762,6 @@ def del_lab(id):
 
 
 @app.route(PREFIX + '/labs/<id>/agent/<agent_id>', methods=['PUT'])
-@render_config
 def add_lab_agent(id, agent_id):
     lab_agent = models.LabAgent(agent_id=agent_id, lab_id=id)
 
@@ -796,7 +775,6 @@ def add_lab_agent(id, agent_id):
 
 
 @app.route(PREFIX + '/labs/<id>/agent/<agent_id>', methods=['DELETE'])
-@render_config
 def del_lab_agent(id, agent_id):
     lab_agent = (
         models
@@ -887,7 +865,6 @@ def show_tag(id):
 
 
 @app.route(PREFIX + '/tags', methods=['POST'])
-@render_config
 def new_tag():
     req = flask.request.json
 
@@ -902,7 +879,6 @@ def new_tag():
 
 
 @app.route(PREFIX + '/tags/<id>', methods=['DELETE'])
-@render_config
 def del_tag(id):
     tag_query = (
         models.Tag
@@ -966,7 +942,6 @@ ENTITY_DEL_MAP = {
 
 
 @app.route(PREFIX + '/tags/<id>/<entity>/<entity_id>', methods=['PUT'])
-@render_config
 def add_tag_entity(id, entity, entity_id):
     try:
         tag_entity = ENTITY_ADD_MAP[entity]
@@ -986,7 +961,6 @@ def add_tag_entity(id, entity, entity_id):
 
 
 @app.route(PREFIX + '/tags/<id>/<entity>/<entity_id>', methods=['DELETE'])
-@render_config
 def del_tag_entity(id, entity, entity_id):
     try:
         entity_query = ENTITY_DEL_MAP[entity]
@@ -1016,7 +990,6 @@ DELETABLE_ENTITIES = (
 
 
 @app.route(PREFIX + '/tags/<id>/objects', methods=['DELETE'])
-@render_config
 def del_tagged_objects(id):
     tags_query = make_tags_query(id)
 
