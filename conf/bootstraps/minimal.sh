@@ -63,9 +63,22 @@ endpoint_id=$(create_resource "$req" $ENDPOINT/endpoints)
 # Bind SNMP transport endpoint to SNMP engine
 update_resource $ENDPOINT/engines/$engine_id/endpoint/$endpoint_id
 
-
 # Bind SNMP agent to virtual lab
 update_resource $ENDPOINT/labs/$lab_id/agent/$agent_id
+
+# Create new tag
+req='{
+  "name": "Test tag"
+}'
+
+tag_id=$(create_resource "$req" $ENDPOINT/tags)
+
+# Tag all the created components
+update_resource $ENDPOINT/tags/$tag_id/lab/$lab_id
+update_resource $ENDPOINT/tags/$tag_id/agent/$agent_id
+update_resource $ENDPOINT/tags/$tag_id/engine/$engine_id
+update_resource $ENDPOINT/tags/$tag_id/endpoint/$endpoint_id
+update_resource $ENDPOINT/tags/$tag_id/user/$user_id
 
 # Upload a sample .snmprec file
 snmprec_file=/tmp/public.snmprec
@@ -85,3 +98,7 @@ upload_recording $ENDPOINT/recordings/public.snmprec $snmprec_file
 
 # Power ON the lab
 update_resource $ENDPOINT/labs/$lab_id/power/on
+
+# Delete everything we've created by tag & tag itself
+#delete_resource $ENDPOINT/tags/$tag_id/objects
+#delete_resource $ENDPOINT/tags/$tag_id

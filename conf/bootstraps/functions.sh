@@ -46,6 +46,20 @@ function update_resource() {
   fi
 }
 
+# Delete REST API resource
+function delete_resource() {
+  endpoint=$1
+
+  curl -s -d "{}" \
+      -H "Content-Type: application/json" \
+      -X DELETE \
+      $endpoint
+
+  if [ $? -ne 0 ]; then
+      return 1
+  fi
+}
+
 # Upload recording
 function upload_recording() {
   endpoint=$1
