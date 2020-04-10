@@ -10,13 +10,13 @@
 set -e
 
 USAGE=$(
-cat <<EOF
+cat <<ENDOFUSAGE
 Usage: $0 [options]
   --help                          Usage help message
   --run-tests                     Run end-to-end tests
   --keep-running                  Keep REST API server running
   --repo-root                     Root directory of package repo
-EOF
+ENDOFUSAGE
 )
 
 keep_running=no
@@ -57,7 +57,7 @@ restapi_conf=$(mktemp $repo_root/.tmp/mgmt-restapi.XXXXXX)
 dst_dir=$(mktemp -d $repo_root/.tmp/snmpsimd.XXXXXX)
 data_dir=$(mktemp -d $repo_root/.tmp/snmpsimd.XXXXXX)
 
-cat > $restapi_conf <<EOF
+cat > $restapi_conf <<ENDOFCONFIG
 SQLALCHEMY_DATABASE_URI = "sqlite:///$repo_root/.tmp/snmpsim-mgmt-restapi.db"
 SQLALCHEMY_ECHO = False
 SQLALCHEMY_TRACK_MODIFICATIONS = False
@@ -72,7 +72,7 @@ SNMPSIM_MGMT_DATAROOT = "$data_dir"
 SNMPSIM_MGMT_TEMPLATE = 'snmpsim-command-responder.j2'
 SNMPSIM_MGMT_DESTINATION = "$dst_dir"
 
-EOF
+ENDOFCONFIG
 
 snmpsim-mgmt-restapi \
     --config $restapi_conf \
