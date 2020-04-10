@@ -12,10 +12,8 @@ matrix:
 #  - python: 'pypy'
   - python: 'pypy3'
 install:
-  - pip install setuptools -U
-  - pip install -r requirements.txt -r devel-requirements.txt
-  - pip install -e .
+  - pip install tox setuptools -U
 script:
-  - if [[ $TRAVIS_PYTHON_VERSION == '3.8' ]]; then (make -C docs html); fi
-  - bash tests/integration/management.sh
-  - bash tests/integration/metrics.sh
+  - tox
+  - tox -e mgmt-restapi -- --run-tests
+  - tox -e metrics-restapi -- --run-tests

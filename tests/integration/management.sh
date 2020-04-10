@@ -9,37 +9,101 @@
 
 set -e
 
-RESTAPI_CONF=$(mktemp /tmp/snmpsimd.XXXXXX)
+USAGE=$(cat << EOF
+Usage: $0 [options]
+  --help                          Usage help message
+  --run-tests                     Run end-to-end tests
+  --keep-running                  Keep REST API server running
+  --repo-root                     Root directory of package repo
+EOF)
 
-sed -e 's/DEBUG = True/DEBUG = False/g' $(pwd)/conf/snmpsim-management.conf > $RESTAPI_CONF
+keep_running=no
+run_tests=no
+repo_root=$(pwd)
+
+POSITIONAL=()
+while [[ $# -gt 0 ]]
+do
+    key="$1"
+
+    case $key in
+        --help)
+            echo Synopsis: invoke REST API server, optionally initialize
+            echo the underlying DB.
+            echo "$USAGE"
+            exit 0
+            ;;
+        --repo-root)
+            repo_root=$2
+            shift # past argument
+            shift # past value
+            ;;
+        --run-tests)
+            run_tests=yes
+            shift # past argument
+            ;;
+        --keep-running)
+            keep_running=yes
+            shift # past argument
+            ;;
+    esac
+done
+
+mkdir -p $repo_root/.tmp
+
+restapi_conf=$(mktemp $repo_root/.tmp/mgmt-restapi.XXXXXX)
+dst_dir=$(mktemp -d $repo_root/.tmp/snmpsimd.XXXXXX)
+data_dir=$(mktemp -d $repo_root/.tmp/snmpsimd.XXXXXX)
+
+cat > $restapi_conf <<EOF
+SQLALCHEMY_DATABASE_URI = "sqlite:///$repo_root/.tmp/snmpsim-mgmt-restapi.db"
+SQLALCHEMY_ECHO = False
+SQLALCHEMY_TRACK_MODIFICATIONS = False
+DEBUG = False
+
+SNMPSIM_MGMT_LISTEN_IP = '127.0.0.1'
+SNMPSIM_MGMT_LISTEN_PORT = 5000
+
+SNMPSIM_MGMT_SSL_CERT = None
+SNMPSIM_MGMT_SSL_KEY = None
+SNMPSIM_MGMT_DATAROOT = "$data_dir"
+SNMPSIM_MGMT_TEMPLATE = 'snmpsim-command-responder.j2'
+SNMPSIM_MGMT_DESTINATION = "$dst_dir"
+
+EOF
 
 snmpsim-mgmt-restapi \
-    --config $RESTAPI_CONF \
+    --config $restapi_conf \
     --recreate-db
 
-RESTAPI_DST_DIR=$(mktemp -d /tmp/snmpsimd.XXXXXX)
-RESTAPI_DATA_ROOT=$(mktemp -d /tmp/snmpsimd.XXXXXX)
-
 snmpsim-mgmt-restapi \
-    --config $RESTAPI_CONF \
-    --data-root $RESTAPI_DATA_ROOT \
-    --destination "$RESTAPI_DST_DIR" &
+    --config $restapi_conf \
+    --data-root $data_dir \
+    --destination "$dst_dir" &
 
-RESTAPI_PID=$!
+restapi_pid=$!
 
 function cleanup()
 {
-    rm -fr "$RESTAPI_DST_DIR" $RESTAPI_CONF
-    kill $RESTAPI_PID && true
+    rm -fr $repo_root/.tmp
+    kill $restapi_pid && true
 }
 
 trap cleanup EXIT
 
-sleep 10
+sleep 5
 
-bash conf/bootstraps/minimal.sh
+if [ $run_tests = "yes" ]; then
+    $repo_root/conf/bootstraps/minimal.sh
 
-[ -z $RESTAPI_DST_DIR/snmpsim-run-labs.sh ] && {
-    echo "Empty/none `snmpsim-run-labs.sh` generated"; exit 1 ; }
+    if [ ! -f $dst_dir/snmpsim-run-labs.sh ]; then
+        echo "Empty/none snmpsim-run-labs.sh generated"
+        exit 1
+    fi
+fi
+
+if [ $keep_running = "yes" ]; then
+    cat -
+fi
 
 exit 0
