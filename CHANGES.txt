@@ -7,6 +7,7 @@ Revision 0.0.3, released XX-04-2020
   script has been generated on every change in the DB. This was
   causing unnecessary SNMP simulator restarts and REST API server
   slowness.
+- Add tox runner with some basic jobs.
 - Fix SQL/ORM problem in SNMP Simulator invocation script generation that
   manifested itself as extreme slowness with the increasing number of powered
   on labs.

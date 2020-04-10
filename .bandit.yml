@@ -1,0 +1,5 @@
+skips:
+- B404  # Ignore subprocess use concern
+- B603  # Ignore warnings about calling subprocess.Popen without shell=True
+- B607  # Ignore warnings about calling subprocess.Popen without a full path to executable
+- B701  # Ignore HTML escaping in Jinja template concern
