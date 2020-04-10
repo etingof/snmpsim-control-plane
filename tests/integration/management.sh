@@ -7,7 +7,7 @@
 # Fail the entire script on any failure.
 #
 
-set -ex
+set -e
 
 USAGE=$(
 cat <<ENDOFUSAGE

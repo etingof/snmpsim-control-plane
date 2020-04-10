@@ -80,7 +80,7 @@ def main():
     args = parse_args()
 
     if args.config:
-        os.environ['SNMPSIM_MGMT_CONFIG'] = args.config
+        os.environ['SNMPSIM_MGMT_CONFIG'] = os.path.abspath(args.config)
 
     config_file = os.environ.get('SNMPSIM_MGMT_CONFIG')
     if config_file:

@@ -58,7 +58,7 @@ def main():
     args = parse_args()
 
     if args.config:
-        os.environ['SNMPSIM_METRICS_CONFIG'] = args.config
+        os.environ['SNMPSIM_METRICS_CONFIG'] = os.path.abspath(args.config)
 
     config_file = os.environ.get('SNMPSIM_METRICS_CONFIG')
     if config_file:
