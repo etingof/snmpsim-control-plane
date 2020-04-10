@@ -9,13 +9,15 @@
 
 set -e
 
-USAGE=$(cat << EOF
+USAGE=$(
+cat <<EOF
 Usage: $0 [options]
   --help                          Usage help message
   --run-tests                     Run end-to-end tests
   --keep-running                  Keep REST API server running
   --repo-root                     Root directory of package repo
-EOF)
+EOF
+)
 
 keep_running=no
 run_tests=no
