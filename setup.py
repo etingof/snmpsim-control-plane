@@ -4,17 +4,18 @@
 # Copyright (c) 2019-2020, Ilya Etingof <etingof@gmail.com>
 # License: http://snmplabs.com/snmpsim-control-plane/license.html
 #
-"""SNMP Simulator Control Plane
+"""SNMP Simulator Control Plane.
 
 REST API driven management and monitoring supervisor to
 remotely operate SNMP simulator.
 """
+
 import os
 import sys
 
 import setuptools
 
-classifiers = """\
+CLASSIFIERS = """\
 Development Status :: 4 - Beta
 Environment :: Console
 Intended Audience :: Developers
@@ -49,27 +50,31 @@ with open(os.path.join('snmpsim_control_plane', '__init__.py')) as fl:
 with open('requirements.txt') as fl:
     requirements = fl.readlines()
 
-doclines = [x.strip() for x in (__doc__ or '').split('\n') if x]
+DOCLINES = [x.strip() for x in (__doc__ or '').split('\n') if x]
 
-params = {
+PARAMS = {
     'name': 'snmpsim-control-plane',
     'version': version,
-    'description': doclines[0],
-    'long_description': ' '.join(doclines[1:]),
+    'description': DOCLINES[0],
+    'long_description': ' '.join(DOCLINES[1:]),
     'maintainer': 'Ilya Etingof <etingof@gmail.com>',
     'author': 'Ilya Etingof',
     'author_email': 'etingof@gmail.com',
     'url': 'http://snmplabs.com/snmpsim-control-plane',
     'license': 'BSD',
     'platforms': ['any'],
-    'classifiers': [x for x in classifiers.split('\n') if x],
+    'classifiers': [x for x in CLASSIFIERS.split('\n') if x],
     'packages': setuptools.find_packages(),
     'entry_points': {
         'console_scripts': [
-            'snmpsim-mgmt-restapi = snmpsim_control_plane.commands.management:main',
-            'snmpsim-mgmt-supervisor = snmpsim_control_plane.commands.supervisor:main',
-            'snmpsim-metrics-importer = snmpsim_control_plane.commands.importer:main',
-            'snmpsim-metrics-restapi = snmpsim_control_plane.commands.metrics:main',
+            'snmpsim-mgmt-restapi = snmpsim_control_plane.commands'
+            '.management:main',
+            'snmpsim-mgmt-supervisor = snmpsim_control_plane.commands'
+            '.supervisor:main',
+            'snmpsim-metrics-importer = snmpsim_control_plane.commands'
+            '.importer:main',
+            'snmpsim-metrics-restapi = snmpsim_control_plane.commands'
+            '.metrics:main',
         ]
     },
     'install_requires': requirements,
@@ -77,4 +82,4 @@ params = {
     'include_package_data': True
 }
 
-setuptools.setup(**params)
+setuptools.setup(**PARAMS)

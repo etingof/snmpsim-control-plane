@@ -25,4 +25,3 @@ def autoincrement(obj, model):
         obj.id = max_id
 
         db.session.commit()
-

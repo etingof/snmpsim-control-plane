@@ -92,7 +92,7 @@ def get_recording(data_dir, filename, exists=False,
                 os.makedirs(directory)
 
             except OSError as exc:
-                log.error('Failed to create %s: exc' % directory)
+                log.error('Failed to create %s: %s', directory, exc)
                 raise error.ControlPlaneError('No such recording')
 
         elif not os.path.isdir(directory):

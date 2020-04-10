@@ -9,8 +9,7 @@
 
 
 class AbstractGrowingValue(object):
-    """Interface for computing how much a value has grown.
-    """
+    """Interface for computing how much a value has grown."""
 
     @property
     def latest(self):
@@ -25,6 +24,7 @@ class Gauge(AbstractGrowingValue, int):
 
     Gauge objects can increase and decrease in value over time.
     """
+
     @property
     def latest(self):
         return 0
@@ -47,6 +47,7 @@ class Counter(AbstractGrowingValue, int):
 
     Counter object can only increase in value over time.
     """
+
     @property
     def latest(self):
         return self
@@ -66,6 +67,7 @@ class ConsoleLog(AbstractGrowingValue):
     Text pages can be added at the end of the log, and automatically
     expire.
     """
+
     MAX_CONSOLES = 50
     MAX_CONSOLE_SIZE = 80 * 24  # tribute to VT100
 
@@ -111,4 +113,3 @@ class ConsoleLog(AbstractGrowingValue):
             console.add(self.text(page), self.timestamp(page))
 
         return console
-

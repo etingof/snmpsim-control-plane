@@ -12,7 +12,7 @@ from snmpsim_control_plane.metrics.utils import autoincrement
 
 
 def import_metrics(fulljson):
-    """Update metrics DB from `dict` data structure
+    """Update metrics DB from `dict` data structure.
 
     The input data structure is expected to be the one produced by SNMP
     simulator's command responder `fulljson` reporting module.
@@ -62,13 +62,12 @@ def import_metrics(fulljson):
         }
     }
     """
+    for tr_proto, tr_endpoints in fulljson.items():
 
-    for transport_protocol, transport_endpoints in fulljson.items():
-
-        if not isinstance(transport_endpoints, dict):
+        if not isinstance(tr_endpoints, dict):
             continue
 
-        for transport_endpoint, peers in transport_endpoints.items():
+        for tr_endpoint, peers in tr_endpoints.items():
 
             if not isinstance(peers, dict):
                 continue
@@ -78,50 +77,55 @@ def import_metrics(fulljson):
                 if not isinstance(engines, dict):
                     continue
 
-                transport_model = models.Transport(
-                    transport_protocol=transport_protocol,
-                    endpoint=transport_endpoint,
+                tr_mdl = models.Transport(
+                    transport_protocol=tr_proto,
+                    endpoint=tr_endpoint,
                     peer=peer_adddress,
                 )
 
-                transport_model = db.session.merge(transport_model)
+                tr_mdl = db.session.merge(tr_mdl)
 
-                autoincrement(transport_model, models.Transport)
+                autoincrement(tr_mdl, models.Transport)
 
-                packet_model = models.Packet(
-                    transport_id=transport_model.id)
+                packet_mdl = models.Packet(
+                    transport_id=tr_mdl.id)
 
-                packet_model = db.session.merge(packet_model)
+                packet_mdl = db.session.merge(packet_mdl)
 
-                packet_model.total = packet_model.total or 0
-                packet_model.total += engines['packets']
+                packet_mdl.total = packet_mdl.total or 0
+                packet_mdl.total += engines['packets']
 
-                packet_model.parse_failures = packet_model.parse_failures or 0
-                packet_model.parse_failures += engines['parse_failures']
+                packet_mdl.parse_failures = packet_mdl.parse_failures or 0
+                packet_mdl.parse_failures += engines['parse_failures']
 
-                packet_model.auth_failures = packet_model.auth_failures or 0
-                packet_model.auth_failures += engines['auth_failures']
+                packet_mdl.auth_failures = packet_mdl.auth_failures or 0
+                packet_mdl.auth_failures += engines['auth_failures']
 
-                packet_model.context_failures = packet_model.context_failures or 0
-                packet_model.context_failures += engines['context_failures']
+                packet_mdl.context_failures = (
+                    packet_mdl.context_failures or 0)
+                packet_mdl.context_failures += engines['context_failures']
 
                 for engine_id, security_models in engines.items():
                     if not isinstance(security_models, dict):
                         continue
 
-                    for security_model, security_levels in security_models.items():
+                    for security_model, security_levels in (
+                            security_models.items()):
                         if not isinstance(security_levels, dict):
                             continue
 
-                        for security_level, context_engines in security_levels.items():
+                        for security_level, context_engines in (
+                                security_levels.items()):
                             if not isinstance(context_engines, dict):
                                 continue
 
-                            for context_engine_id, context_names in context_engines.items():
-                                if not isinstance(context_names, dict):
+                            for ctx_engine_id, ctx_names in (
+                                    context_engines.items()):
+                                if not isinstance(ctx_names, dict):
                                     continue
 
-                                for context_name, pdus in context_names.items():
+                                for context_name, pdus in (
+                                        ctx_names.items()):
                                     if not isinstance(pdus, dict):
                                         continue
 
@@ -129,60 +133,86 @@ def import_metrics(fulljson):
                                         if not isinstance(recordings, dict):
                                             continue
 
-                                        for recording, counters in recordings.items():
-                                            agent_model = models.Agent(
-                                                transport_id=transport_model.id,
+                                        for recording, counters in (
+                                                recordings.items()):
+                                            agent_mdl = models.Agent(
+                                                transport_id=tr_mdl.id,
                                                 engine=engine_id,
                                                 security_model=security_model,
                                                 security_level=security_level,
-                                                context_engine=context_engine_id,
+                                                context_engine=ctx_engine_id,
                                                 context_name=context_name,
                                             )
 
-                                            agent_model = db.session.merge(agent_model)
+                                            agent_mdl = db.session.merge(
+                                                agent_mdl)
 
-                                            autoincrement(agent_model, models.Agent)
+                                            autoincrement(
+                                                agent_mdl, models.Agent)
 
-                                            recording_model = models.Recording(
-                                                agent_id=agent_model.id, path=recording)
+                                            recording_mdl = models.Recording(
+                                                agent_id=agent_mdl.id,
+                                                path=recording)
 
-                                            recording_model = db.session.merge(recording_model)
+                                            recording_mdl = db.session.merge(
+                                                recording_mdl)
 
-                                            autoincrement(recording_model, models.Recording)
+                                            autoincrement(
+                                                recording_mdl,
+                                                models.Recording)
 
-                                            pdu_model = models.Pdu(
-                                                recording_id=recording_model.id, name=pdu_type)
+                                            pdu_mdl = models.Pdu(
+                                                recording_id=recording_mdl.id,
+                                                name=pdu_type)
 
-                                            pdu_model = db.session.merge(pdu_model)
+                                            pdu_mdl = db.session.merge(
+                                                pdu_mdl)
 
-                                            pdu_model.total = pdu_model.total or 0
-                                            pdu_model.total += counters['pdus']
+                                            pdu_mdl.total = (
+                                                pdu_mdl.total or 0)
+                                            pdu_mdl.total += counters['pdus']
 
-                                            autoincrement(pdu_model, models.Pdu)
+                                            autoincrement(
+                                                pdu_mdl, models.Pdu)
 
-                                            varbind_model = models.VarBind(pdu_id=pdu_model.id)
+                                            varbind_mdl = models.VarBind(
+                                                pdu_id=pdu_mdl.id)
 
-                                            varbind_model = db.session.merge(varbind_model)
+                                            varbind_mdl = db.session.merge(
+                                                varbind_mdl)
 
-                                            varbind_model.total = varbind_model.total or 0
-                                            varbind_model.total += counters['varbinds']
+                                            varbind_mdl.total = (
+                                                varbind_mdl.total or 0)
+                                            varbind_mdl.total += (
+                                                counters['varbinds'])
 
-                                            varbind_model.failures = varbind_model.failures or 0
-                                            varbind_model.failures += counters['failures']
+                                            varbind_mdl.failures = (
+                                                varbind_mdl.failures or 0)
+                                            varbind_mdl.failures += (
+                                                counters['failures'])
 
-                                            variations = counters.get('variations', ())
+                                            variations = counters.get(
+                                                'variations', ())
 
-                                            for name, counters in variations.items():
+                                            for name, counters in (
+                                                variations.items()):
 
-                                                variation_model = models.Variation(
-                                                    pdu_id=pdu_model.id, name=name)
+                                                vartn_mdl = models.Variation(
+                                                    pdu_id=pdu_mdl.id,
+                                                    name=name)
 
-                                                variation_model = db.session.merge(variation_model)
+                                                vartn_mdl = (
+                                                    db.session.merge(
+                                                        vartn_mdl))
 
-                                                variation_model.total = variation_model.total or 0
-                                                variation_model.total += counters['calls']
+                                                vartn_mdl.total = (
+                                                    vartn_mdl.total or 0)
+                                                vartn_mdl.total += (
+                                                    counters['calls'])
 
-                                                variation_model.failures = variation_model.failures or 0
-                                                variation_model.failures += counters['failures']
+                                                vartn_mdl.failures = (
+                                                    vartn_mdl.failures or 0)
+                                                vartn_mdl.failures += (
+                                                    counters['failures'])
 
                                             db.session.commit()

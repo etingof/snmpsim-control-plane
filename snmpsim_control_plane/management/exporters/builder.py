@@ -6,7 +6,6 @@
 #
 # SNMP simulator management: turn ORM data into a tree of dicts
 #
-from sqlalchemy import and_
 from sqlalchemy import inspect
 
 from snmpsim_control_plane.management import models

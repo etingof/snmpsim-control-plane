@@ -21,7 +21,6 @@ else:
     import signal
     import tempfile
 
-
     def daemonize(pidfile):
         try:
             pid = os.fork()

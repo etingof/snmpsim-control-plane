@@ -10,5 +10,4 @@ from snmpsim_control_plane.supervisor.reporting.formats import base
 
 
 class NullReporter(base.BaseReporter):
-    """No-op activity metrics reporter.
-    """
+    """No-op activity metrics reporter."""

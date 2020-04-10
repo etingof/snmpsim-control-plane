@@ -7,7 +7,6 @@
 # SNMP Agent Simulator Control Plane: metrics importer manager
 #
 from snmpsim_control_plane.metrics import db
-
 from snmpsim_control_plane import log
 from snmpsim_control_plane.metrics.importers import snmpagent
 from snmpsim_control_plane.metrics.importers import process
@@ -19,7 +18,7 @@ KNOWN_IMPORTERS = {
 
 
 def import_metrics(jsondoc):
-    """Update metrics DB from `dict` data structure
+    """Update metrics DB from `dict` data structure.
 
     The input data structure is expected to be the one produced by SNMP
     simulator's command responder `fulljson` reporting module.

@@ -60,7 +60,6 @@ def parse_args():
         '--watch-dir', metavar='<DIR>', type=str, required=True,
         help='Location of the executables to herd.')
 
-
     parser.add_argument(
         '--reporting-method', type=lambda x: x.split(':'),
         metavar='=<%s[:args]>]' % '|'.join(ReportingManager.REPORTERS),

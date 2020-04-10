@@ -9,15 +9,14 @@
 
 
 class BaseReporter(object):
-    """Maintain activity metrics.
-    """
+    """Maintain activity metrics."""
+
     def __init__(self, *args, **kwargs):
         pass
 
     def dump_metrics(self, metrics, watch_dir=None,
                      started=None, begin=None, end=None):
-        """Dump metrics in a reporter-specific way.
-        """
+        """Dump metrics in a reporter-specific way."""
 
     def __str__(self):
         return self.__class__.__name__

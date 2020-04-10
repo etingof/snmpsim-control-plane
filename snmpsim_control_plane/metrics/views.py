@@ -142,7 +142,8 @@ def _show_packets_or_messages(show_messages=False):
             func.sum(models.Packet.total).label("total"),
             func.sum(models.Packet.parse_failures).label("parse_failures"),
             func.sum(models.Packet.auth_failures).label("auth_failures"),
-            func.sum(models.Packet.context_failures).label("context_failures")))
+            func.sum(models.Packet.context_failures).label(
+                "context_failures")))
 
     # We have to build JSON response by hand because here it's a mix of
     # ORM models and custom dicts. Marshmallow does not seem to be well-suited

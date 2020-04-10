@@ -31,7 +31,7 @@ LIFECYCLE_METRICS = (
 
 
 def collect_metrics(*instances):
-    """Collect process metrics
+    """Collect process metrics.
 
     Example
     -------
@@ -43,9 +43,11 @@ def collect_metrics(*instances):
             'memory': 0,  # memory being used (MB, gauge)
             'cpu': 0,  # consumed cpu time (ms, cumulative)
             'files': 0,  # number of open files (gauge)
-            'runtime': 0,  # total time this executable has been running (cumulative)
+            'runtime': 0,  # total time this executable has been running
+                           # (cumulative)
             'exits': 0,  # number of unexpected exits (cumulative)
-            'restarts': 0,  # number of restarts because of changes (cumulative)
+            'restarts': 0,  # number of restarts because of changes
+                            # (cumulative)
             'endpoints': {  # allocated network endpoints (gauge)
                 'udpv4': [
                     '127.0.0.1:161',

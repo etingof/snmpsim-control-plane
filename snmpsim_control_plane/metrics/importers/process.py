@@ -17,7 +17,7 @@ MAX_CONSOLE_PAGE_AGE = 86400  # one day
 
 
 def import_metrics(jsondoc):
-    """Update metrics DB from `dict` data structure
+    """Update metrics DB from `dict` data structure.
 
     The input data structure is expected to be the one produced by SNMP
     simulator's command responder `fulljson` reporting module.
@@ -104,7 +104,7 @@ def import_metrics(jsondoc):
         process_model.changes += executable['changes']
 
         process_model.update_interval = (
-                jsondoc['last_update'] - jsondoc['first_update'])
+            jsondoc['last_update'] - jsondoc['first_update'])
 
         timestamp = datetime.datetime.utcfromtimestamp(
             jsondoc['last_update'])

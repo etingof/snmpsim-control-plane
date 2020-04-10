@@ -16,7 +16,7 @@ from snmpsim_control_plane.management import views  # noqa
 
 DESCRIPTION = """\
 SNMP Simulation Control Plane REST API server.
- 
+
 Maintains SNMP simulator configuration in a DB manageable via REST API.
 Generates SNMP simulator invocation script with necessary parameter
 realizing the most rest known configuration.
@@ -61,9 +61,10 @@ def parse_args():
 
     parser.add_argument(
         '--template', type=str,
-        help='Path to Jinja2 template to use for rendering SNMP simulator command '
-             'responder invocation command. Can also be set via config variable '
-             'SNMPSIM_MGMT_TEMPLATE. By default, built-in template is used.')
+        help='Path to Jinja2 template to use for rendering SNMP simulator '
+             'command responder invocation command. Can also be set via '
+             'config variable SNMPSIM_MGMT_TEMPLATE. By default, built-in '
+             'template is used.')
 
     parser.add_argument(
         '--destination', type=str,

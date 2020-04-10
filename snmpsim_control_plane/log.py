@@ -18,12 +18,14 @@ LOG_DEBUG = 0
 LOG_INFO = 1
 LOG_ERROR = 2
 
+LOG_LEVEL = LOG_INFO
+
 
 class AbstractLogger(object):
-    def __init__(self, progId, *priv):
-        self._logger = logging.getLogger(progId)
+    def __init__(self, prog_id, *priv):
+        self._logger = logging.getLogger(prog_id)
         self._logger.setLevel(logging.DEBUG)
-        self._progId = progId
+        self._progId = prog_id
         self._ident = 0
         self.init(*priv)
 
@@ -79,8 +81,8 @@ class SyslogLogger(AbstractLogger):
 
         try:
             handler = handlers.SysLogHandler(
-                address=(priv[2].startswith('/') and priv[2]
-                         or (priv[2], int(priv[3]))),
+                address=(priv[2].startswith('/') and priv[2] or
+                         (priv[2], int(priv[3]))),
                 facility=priv[0].lower(),
                 socktype=(len(priv) > 4 and priv[4] == 'tcp' and
                           socket.SOCK_STREAM or socket.SOCK_DGRAM))
@@ -97,7 +99,7 @@ class SyslogLogger(AbstractLogger):
 class FileLogger(AbstractLogger):
 
     class TimedRotatingFileHandler(handlers.TimedRotatingFileHandler):
-        """Store log creation time in a stand-alone file''s mtime"""
+        """Store log creation time in a stand-alone file''s mtime."""
 
         def __init__(self, *args, **kwargs):
             handlers.TimedRotatingFileHandler.__init__(self, *args, **kwargs)
@@ -123,7 +125,7 @@ class FileLogger(AbstractLogger):
                 os.path.dirname(self.baseFilename),
                 '.' + os.path.basename(self.baseFilename) + '-timestamp')
 
-        def doRollover(self):
+        def doRollover(self):  # noqa
             try:
                 handlers.TimedRotatingFileHandler.doRollover(self)
 
@@ -196,7 +198,8 @@ class FileLogger(AbstractLogger):
 
             elif maxage:
                 handler = self.TimedRotatingFileHandler(
-                    priv[0], backupCount=30, when=maxage[0], interval=maxage[1])
+                    priv[0], backupCount=30, when=maxage[0],
+                    interval=maxage[1])
 
             else:
                 handler = handlers.WatchedFileHandler(priv[0])
@@ -209,8 +212,8 @@ class FileLogger(AbstractLogger):
         self._logger.addHandler(handler)
 
         self('Log file %s, rotation rules: '
-             '%s' % (priv[0], maxsize and '> %sKB' % (maxsize/1024)
-                     or maxage and '%s%s' % (maxage[1], maxage[0]) or '<none>'))
+             '%s' % (priv[0], maxsize and '> %sKB' % (maxsize / 1024) or
+                     maxage and '%s%s' % (maxage[1], maxage[0]) or '<none>'))
 
     def __call__(self, s):
         now = time.time()
@@ -266,31 +269,29 @@ LEVELS_MAP = {
     'error': LOG_ERROR,
 }
 
-msg = lambda x: None
-
-logLevel = LOG_INFO
+msg = lambda x: None  # noqa
 
 
 def error(message, ctx=''):
-    if logLevel <= LOG_ERROR:
+    if LOG_LEVEL <= LOG_ERROR:
         msg('ERROR %s %s' % (message, ctx))
 
 
 def info(message, ctx=''):
-    if logLevel <= LOG_INFO:
+    if LOG_LEVEL <= LOG_INFO:
         msg('%s %s' % (message, ctx))
 
 
 def debug(message, ctx=''):
-    if logLevel <= LOG_DEBUG:
+    if LOG_LEVEL <= LOG_DEBUG:
         msg('DEBUG %s %s' % (message, ctx))
 
 
 def set_level(level):
-    global logLevel
+    global LOG_LEVEL
 
     try:
-        logLevel = LEVELS_MAP[level]
+        LOG_LEVEL = LEVELS_MAP[level]
 
     except KeyError:
         raise ControlPlaneError(
@@ -298,12 +299,12 @@ def set_level(level):
             '%s' % (level, ', '.join(LEVELS_MAP)))
 
 
-def set_logger(progId, *priv, **options):
+def set_logger(prog_id, *priv, **options):
     global msg
 
     try:
         if not isinstance(msg, AbstractLogger) or options.get('force'):
-            msg = METHODS_MAP[priv[0]](progId, *priv[1:])
+            msg = METHODS_MAP[priv[0]](prog_id, *priv[1:])
 
     except KeyError:
         raise ControlPlaneError(

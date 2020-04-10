@@ -71,8 +71,6 @@ def _process_is_running(leash):
 def manage_executables(watch_dir):
     known_instances = {}
 
-    started = int(time.time())
-
     log.info('Watching directory %s' % watch_dir)
 
     while True:

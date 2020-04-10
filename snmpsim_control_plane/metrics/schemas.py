@@ -78,7 +78,8 @@ class EndpointSchema(ma.ModelSchema):
     process = ma.Nested(ProcessSchema)
 
     _links = ma.Hyperlinks({
-        'self': ma.URLFor('show_endpoints', id='<process_id>', endpoint_id='<id>'),
+        'self': ma.URLFor(
+            'show_endpoints', id='<process_id>', endpoint_id='<id>'),
         'collection': ma.URLFor('show_endpoints', id='<process_id>')
     })
 

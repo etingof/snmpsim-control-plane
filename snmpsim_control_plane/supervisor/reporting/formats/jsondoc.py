@@ -19,7 +19,7 @@ from snmpsim_control_plane.supervisor.reporting.formats import base
 
 
 class JsonDocReporter(base.BaseReporter):
-    """Dump metrics as a JSON document,
+    """Dump metrics as a JSON document.
 
     Metrics are arranged as a data structure like this:
 
@@ -62,6 +62,7 @@ class JsonDocReporter(base.BaseReporter):
     }
 
     """
+
     REPORTING_FORMAT = 'jsondoc'
     REPORTING_VERSION = 1
     PRODUCER_HOST = socket.gethostname()
@@ -73,7 +74,8 @@ class JsonDocReporter(base.BaseReporter):
         if not args:
             raise error.ControlPlaneError(
                 'Missing %s parameter(s). Expected: '
-                '<method>:<reports-dir>[:dumping-period]' % self.__class__.__name__)
+                '<method>:<reports-dir>[:dumping-'
+                'period]' % self.__class__.__name__)
 
         self._reports_dir = os.path.join(args[0], self.REPORTING_FORMAT)
 
@@ -83,7 +85,8 @@ class JsonDocReporter(base.BaseReporter):
 
             except Exception as exc:
                 raise error.ControlPlaneError(
-                    'Malformed reports dumping period: %s' % args[1])
+                    'Malformed reports dumping period %s: '
+                    '%s' % (args[1], exc))
 
         try:
             if not os.path.exists(self._reports_dir):
@@ -97,7 +100,8 @@ class JsonDocReporter(base.BaseReporter):
         log.debug(
             'Initialized %s metrics reporter for instance %s, metrics '
             'directory %s' % (
-                self.__class__.__name__, self.PRODUCER_UUID, self._reports_dir))
+                self.__class__.__name__, self.PRODUCER_UUID,
+                self._reports_dir))
 
     @staticmethod
     def _json_serializer(obj):
@@ -113,8 +117,7 @@ class JsonDocReporter(base.BaseReporter):
 
     def dump_metrics(self, metrics, watch_dir=None,
                      started=None, begin=None, end=None):
-        """Dump metrics into a JSON file.
-        """
+        """Dump metrics into a JSON file."""
         json_metrics = self._format_metrics(metrics)
 
         json_metrics['format'] = self.REPORTING_FORMAT
@@ -146,6 +149,5 @@ class JsonDocReporter(base.BaseReporter):
 
     @staticmethod
     def _format_metrics(metrics):
-        """Reformat generic metrics into a specific layout
-        """
+        """Reformat generic metrics into a specific layout."""
         return {'executables': metrics}

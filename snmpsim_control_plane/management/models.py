@@ -19,13 +19,16 @@ class Tag(db.Model):
     description = db.Column(db.String(), nullable=True)
 
     endpoints = db.relationship(
-        'Endpoint', secondary='tag_endpoint', back_populates='tags', lazy='joined')
+        'Endpoint', secondary='tag_endpoint', back_populates='tags',
+        lazy='joined')
     users = db.relationship(
         'User', secondary='tag_user', back_populates='tags', lazy='joined')
     engines = db.relationship(
-        'Engine', secondary='tag_engine', back_populates='tags', lazy='joined')
+        'Engine', secondary='tag_engine', back_populates='tags',
+        lazy='joined')
     selectors = db.relationship(
-        'Selector', secondary='tag_selector', back_populates='tags', lazy='joined')
+        'Selector', secondary='tag_selector', back_populates='tags',
+        lazy='joined')
     agents = db.relationship(
         'Agent', secondary='tag_agent', back_populates='tags', lazy='joined')
     labs = db.relationship(
@@ -41,7 +44,8 @@ class Endpoint(db.Model):
         'Engine', secondary='engine_endpoint',
         back_populates='endpoints', lazy='joined')
     tags = db.relationship(
-        'Tag', secondary='tag_endpoint', back_populates='endpoints', lazy='joined')
+        'Tag', secondary='tag_endpoint', back_populates='endpoints',
+        lazy='joined')
 
     @validates('address')
     def validate_address(self, key, address):
@@ -81,7 +85,8 @@ class User(db.Model):
         db.Enum("DES", "3DES", "AES", "AES128", "AES192", "AES192BLMT",
                 "AES256", "AES256BLMT", "NONE"), default='NONE')
     engines = db.relationship(
-        'Engine', secondary='engine_user', back_populates='users', lazy='joined')
+        'Engine', secondary='engine_user', back_populates='users',
+        lazy='joined')
     tags = db.relationship(
         'Tag', secondary='tag_user', back_populates='users', lazy='joined')
 
@@ -136,7 +141,8 @@ class Engine(db.Model):
         'Endpoint', secondary='engine_endpoint',
         back_populates='engines', lazy='joined')
     tags = db.relationship(
-        'Tag', secondary='tag_engine', back_populates='engines', lazy='joined')
+        'Tag', secondary='tag_engine', back_populates='engines',
+        lazy='joined')
 
 
 class EngineUser(db.Model):
@@ -179,7 +185,8 @@ class Selector(db.Model):
     agents = db.relationship(
         'Agent', backref='selector', lazy='joined')
     tags = db.relationship(
-        'Tag', secondary='tag_selector', back_populates='selectors', lazy='joined')
+        'Tag', secondary='tag_selector', back_populates='selectors',
+        lazy='joined')
 
 
 class TagSelector(db.Model):
@@ -200,13 +207,17 @@ class Agent(db.Model):
     engine_id = db.Column(db.Integer, db.ForeignKey('engine.id'))
     selector_id = db.Column(db.Integer, db.ForeignKey('selector.id'))
     engines = db.relationship(
-        'Engine', secondary='agent_engine', back_populates='agents', lazy='joined')
+        'Engine', secondary='agent_engine', back_populates='agents',
+        lazy='joined')
     selectors = db.relationship(
-        'Selector', secondary='agent_selector', back_populates='agents', lazy='joined')
+        'Selector', secondary='agent_selector', back_populates='agents',
+        lazy='joined')
     labs = db.relationship(
-        'Lab', secondary='lab_agent', back_populates='agents', lazy='joined')
+        'Lab', secondary='lab_agent', back_populates='agents',
+        lazy='joined')
     tags = db.relationship(
-        'Tag', secondary='tag_agent', back_populates='agents', lazy='joined')
+        'Tag', secondary='tag_agent', back_populates='agents',
+        lazy='joined')
 
 
 class AgentEngine(db.Model):
@@ -248,7 +259,8 @@ class Lab(db.Model):
     name = db.Column(db.String(), nullable=True)
     power = db.Column(db.Enum('on', 'off'), default='off')
     agents = db.relationship(
-        'Agent', secondary='lab_agent', back_populates='labs', lazy='joined')
+        'Agent', secondary='lab_agent', back_populates='labs',
+        lazy='joined')
     tags = db.relationship(
         'Tag', secondary='tag_lab', back_populates='labs', lazy='joined')
 
