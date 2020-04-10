@@ -9,7 +9,7 @@
 #
 endpoint=http://localhost:5001/snmpsim/metrics/v1
 
-set -e
+set -ex
 
 function get_field() {
     endpoint=$1
