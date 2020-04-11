@@ -10,7 +10,8 @@ matrix:
   - python: 'nightly'
 # psutil starts failing on pypy
 #  - python: 'pypy'
-  - python: 'pypy3'
+# pypy3 is not available anymore
+#  - python: 'pypy3'
 install:
   - pip install tox setuptools -U
 script:
