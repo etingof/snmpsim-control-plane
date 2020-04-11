@@ -38,13 +38,13 @@ except Exception as exc:
 }
 
 USAGE=$(
-cat <<ENDOFUSAGE
+cat << END_OF_USAGE
 Usage: $0 [options]
   --help                          Usage help message
   --run-tests                     Run end-to-end tests
   --keep-running                  Keep REST API server running
   --repo-root                     Root directory of package repo
-ENDOFUSAGE
+END_OF_USAGE
 )
 
 keep_running=no
@@ -85,7 +85,7 @@ restapi_conf=$(mktemp $repo_root/.tmp/metrics-restapi.XXXXXX)
 dst_dir=$(mktemp -d $repo_root/.tmp/snmpsimd.XXXXXX)
 data_dir=$(mktemp -d $repo_root/.tmp/snmpsimd.XXXXXX)
 
-cat > $restapi_conf <<ENDOFCONFIG
+cat << END_OF_CONFIG > $restapi_conf
 SQLALCHEMY_DATABASE_URI = "sqlite:///$repo_root/.tmp/snmpsim-metrics-restapi.db"
 SQLALCHEMY_ECHO = False
 SQLALCHEMY_TRACK_MODIFICATIONS = False
@@ -94,7 +94,7 @@ DEBUG = False
 SNMPSIM_MGMT_LISTEN_IP = '127.0.0.1'
 SNMPSIM_MGMT_LISTEN_PORT = 5001
 
-ENDOFCONFIG
+END_OF_CONFIG
 
 snmpsim-metrics-restapi \
     --config $restapi_conf \
