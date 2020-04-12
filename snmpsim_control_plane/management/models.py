@@ -20,19 +20,19 @@ class Tag(db.Model):
 
     endpoints = db.relationship(
         'Endpoint', secondary='tag_endpoint', back_populates='tags',
-        lazy='joined')
+        lazy='subquery')
     users = db.relationship(
-        'User', secondary='tag_user', back_populates='tags', lazy='joined')
+        'User', secondary='tag_user', back_populates='tags', lazy='subquery')
     engines = db.relationship(
         'Engine', secondary='tag_engine', back_populates='tags',
-        lazy='joined')
+        lazy='subquery')
     selectors = db.relationship(
         'Selector', secondary='tag_selector', back_populates='tags',
-        lazy='joined')
+        lazy='subquery')
     agents = db.relationship(
-        'Agent', secondary='tag_agent', back_populates='tags', lazy='joined')
+        'Agent', secondary='tag_agent', back_populates='tags', lazy='subquery')
     labs = db.relationship(
-        'Lab', secondary='tag_lab', back_populates='tags', lazy='joined')
+        'Lab', secondary='tag_lab', back_populates='tags', lazy='subquery')
 
 
 class Endpoint(db.Model):
@@ -42,10 +42,10 @@ class Endpoint(db.Model):
     address = db.Column(db.String(64), unique=True, nullable=False)
     engines = db.relationship(
         'Engine', secondary='engine_endpoint',
-        back_populates='endpoints', lazy='joined')
+        back_populates='endpoints', lazy='subquery')
     tags = db.relationship(
         'Tag', secondary='tag_endpoint', back_populates='endpoints',
-        lazy='joined')
+        lazy='subquery')
 
     @validates('address')
     def validate_address(self, key, address):
@@ -86,9 +86,9 @@ class User(db.Model):
                 "AES256", "AES256BLMT", "NONE"), default='NONE')
     engines = db.relationship(
         'Engine', secondary='engine_user', back_populates='users',
-        lazy='joined')
+        lazy='subquery')
     tags = db.relationship(
-        'Tag', secondary='tag_user', back_populates='users', lazy='joined')
+        'Tag', secondary='tag_user', back_populates='users', lazy='subquery')
 
     @validates('auth_proto')
     def uppercase_auth_proto(self, key, proto):
@@ -133,16 +133,16 @@ class Engine(db.Model):
     engine_id = db.Column(db.String(32), default='auto')
     users = db.relationship(
         'User', secondary='engine_user',
-        back_populates='engines', lazy='joined')
+        back_populates='engines', lazy='subquery')
     agents = db.relationship(
         'Agent', secondary='agent_engine',
-        back_populates='engines', lazy='joined')
+        back_populates='engines', lazy='subquery')
     endpoints = db.relationship(
         'Endpoint', secondary='engine_endpoint',
-        back_populates='engines', lazy='joined')
+        back_populates='engines', lazy='subquery')
     tags = db.relationship(
         'Tag', secondary='tag_engine', back_populates='engines',
-        lazy='joined')
+        lazy='subquery')
 
 
 class EngineUser(db.Model):
@@ -183,10 +183,10 @@ class Selector(db.Model):
     comment = db.Column(db.String())
     template = db.Column(db.String())
     agents = db.relationship(
-        'Agent', backref='selector', lazy='joined')
+        'Agent', backref='selector', lazy='subquery')
     tags = db.relationship(
         'Tag', secondary='tag_selector', back_populates='selectors',
-        lazy='joined')
+        lazy='subquery')
 
 
 class TagSelector(db.Model):
@@ -208,16 +208,16 @@ class Agent(db.Model):
     selector_id = db.Column(db.Integer, db.ForeignKey('selector.id'))
     engines = db.relationship(
         'Engine', secondary='agent_engine', back_populates='agents',
-        lazy='joined')
+        lazy='subquery')
     selectors = db.relationship(
         'Selector', secondary='agent_selector', back_populates='agents',
-        lazy='joined')
+        lazy='subquery')
     labs = db.relationship(
         'Lab', secondary='lab_agent', back_populates='agents',
-        lazy='joined')
+        lazy='subquery')
     tags = db.relationship(
         'Tag', secondary='tag_agent', back_populates='agents',
-        lazy='joined')
+        lazy='subquery')
 
 
 class AgentEngine(db.Model):
@@ -260,9 +260,9 @@ class Lab(db.Model):
     power = db.Column(db.Enum('on', 'off'), default='off')
     agents = db.relationship(
         'Agent', secondary='lab_agent', back_populates='labs',
-        lazy='joined')
+        lazy='subquery')
     tags = db.relationship(
-        'Tag', secondary='tag_lab', back_populates='labs', lazy='joined')
+        'Tag', secondary='tag_lab', back_populates='labs', lazy='subquery')
 
 
 class LabAgent(db.Model):

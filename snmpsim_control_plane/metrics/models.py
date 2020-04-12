@@ -16,7 +16,7 @@ class Transport(db.Model):
     peer = db.Column(db.String(64), nullable=False)
 
     packets = db.relationship(
-        'Packet', cascade="all,delete", backref='transports', lazy=True)
+        'Packet', cascade="all,delete", backref='transports', lazy='select')
 
     # Sqlalchemy's merge requires unique fields to be primary keys
     __table_args__ = (
@@ -53,7 +53,7 @@ class Agent(db.Model):
     context_name = db.Column(db.String(64), nullable=False)
 
     recordings = db.relationship(
-        'Recording', cascade="all,delete", backref='agent', lazy=True)
+        'Recording', cascade="all,delete", backref='agent', lazy='select')
 
     # Sqlalchemy's merge requires unique fields to be primary keys
     __table_args__ = (
@@ -72,7 +72,7 @@ class Recording(db.Model):
         db.Integer, db.ForeignKey("agent.id"), nullable=False)
 
     pdus = db.relationship(
-        'Pdu', cascade="all,delete", backref='recording', lazy=True)
+        'Pdu', cascade="all,delete", backref='recording', lazy='select')
 
     __table_args__ = (
         db.PrimaryKeyConstraint(
@@ -90,9 +90,9 @@ class Pdu(db.Model):
         db.Integer, db.ForeignKey("recording.id"), nullable=False)
 
     varbinds = db.relationship(
-        'VarBind', cascade="all,delete", backref='pdu', lazy=True)
+        'VarBind', cascade="all,delete", backref='pdu', lazy='select')
     variations = db.relationship(
-        'Variation', cascade="all,delete", backref='pdu', lazy=True)
+        'Variation', cascade="all,delete", backref='pdu', lazy='select')
 
     __table_args__ = (
         db.PrimaryKeyConstraint(
@@ -164,9 +164,9 @@ class Process(db.Model):
     supervisor_id = db.Column(db.Integer(), db.ForeignKey('supervisor.id'))
 
     endpoints = db.relationship(
-        'Endpoint', backref='process', lazy=True)
+        'Endpoint', backref='process', lazy='select')
     console_pages = db.relationship(
-        'ConsolePage', backref='process', lazy=True)
+        'ConsolePage', backref='process', lazy='select')
 
     __table_args__ = (
         db.PrimaryKeyConstraint('supervisor_id', 'path'),
@@ -180,7 +180,7 @@ class Supervisor(db.Model):
     started = db.Column(db.DateTime())
 
     processes = db.relationship(
-        'Process', backref='supervisor', lazy=True)
+        'Process', backref='supervisor', lazy='select')
 
     __table_args__ = (
         db.PrimaryKeyConstraint('hostname'),
