@@ -1236,12 +1236,8 @@ paths:
           schema:
             type: integer
       responses:
-        "200":
-          description: Updated tag information
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Tag"
+        "204":
+          description: Null response
         default:
           description: Unspecified error
           content:
@@ -1320,12 +1316,8 @@ paths:
           schema:
             type: integer
       responses:
-        "200":
-          description: Updated tag information
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Tag"
+        "204":
+          description: Null response
         default:
           description: Unspecified error
           content:
@@ -1348,12 +1340,8 @@ paths:
           schema:
             type: integer
       responses:
-        "200":
-          description: Updated tag information
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Tag"
+        "204":
+          description: Null response
         default:
           description: Unspecified error
           content:
@@ -1408,12 +1396,8 @@ paths:
           schema:
             type: integer
       responses:
-        "200":
-          description: Updated tag information
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Tag"
+        "204":
+          description: Null response
         default:
           description: Unspecified error
           content:
@@ -1436,12 +1420,8 @@ paths:
           schema:
             type: integer
       responses:
-        "200":
-          description: Updated tag information
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Tag"
+        "204":
+          description: Null response
         default:
           description: Unspecified error
           content:
@@ -1496,12 +1476,8 @@ paths:
           schema:
             type: integer
       responses:
-        "200":
-          description: Updated tag information
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Tag"
+        "204":
+          description: Null response
         default:
           description: Unspecified error
           content:
@@ -1580,12 +1556,8 @@ paths:
           schema:
             type: integer
       responses:
-        "200":
-          description: Updated tag information
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Tag"
+        "204":
+          description: Null response
         default:
           description: Unspecified error
           content:
@@ -1664,12 +1636,8 @@ paths:
           schema:
             type: integer
       responses:
-        "200":
-          description: Updated tag information
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Tag"
+        "204":
+          description: Null response
         default:
           description: Unspecified error
           content:

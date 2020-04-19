@@ -2,6 +2,8 @@
 Revision 0.0.3, released XX-04-2020
 -----------------------------------
 
+- Modified Management REST API not to report tag information (esp.
+  the whole lot of tagged objects) on tag update calls.
 - Rebuild SNMP simulator invocation script only on Lab power state
   change for performance reasons. Prior to this change, invocation
   script has been generated on every change in the DB. This was

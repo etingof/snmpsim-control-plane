@@ -872,10 +872,7 @@ def new_tag():
     db.session.add(tag)
     db.session.commit()
 
-    tags_query = make_tags_query(tag.id)
-
-    schema = schemas.TagSchema()
-    return schema.jsonify(tags_query.first()), 201
+    return flask.Response(status=204)
 
 
 @app.route(PREFIX + '/tags/<id>', methods=['DELETE'])
@@ -954,10 +951,7 @@ def add_tag_entity(id, entity, entity_id):
     db.session.add(tag_entity)
     db.session.commit()
 
-    tags_query = make_tags_query(id)
-
-    schema = schemas.TagSchema()
-    return schema.jsonify(tags_query.first()), 200
+    return flask.Response(status=204)
 
 
 @app.route(PREFIX + '/tags/<id>/<entity>/<entity_id>', methods=['DELETE'])
@@ -978,10 +972,7 @@ def del_tag_entity(id, entity, entity_id):
     db.session.delete(entity_instance)
     db.session.commit()
 
-    entity_query = make_tags_query(id)
-
-    schema = schemas.TagSchema()
-    return schema.jsonify(entity_query.first()), 200
+    return flask.Response(status=204)
 
 
 DELETABLE_ENTITIES = (
@@ -1003,7 +994,4 @@ def del_tagged_objects(id):
 
     db.session.commit()
 
-    entity_query = make_tags_query(id)
-
-    schema = schemas.TagSchema()
-    return schema.jsonify(entity_query.first()), 200
+    return flask.Response(status=204)
