@@ -872,7 +872,10 @@ def new_tag():
     db.session.add(tag)
     db.session.commit()
 
-    return flask.Response(status=204)
+    tags_query = make_tags_query(tag.id)
+
+    schema = schemas.TagSchema()
+    return schema.jsonify(tags_query.first()), 201
 
 
 @app.route(PREFIX + '/tags/<id>', methods=['DELETE'])

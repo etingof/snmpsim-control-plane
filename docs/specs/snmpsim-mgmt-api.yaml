@@ -1136,7 +1136,12 @@ paths:
               $ref: "#/components/schemas/TagRequired"
       responses:
         "201":
-          description: Null response
+          description: >
+            A single tag that has been created.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Tag"
         default:
           description: Unspecified error
           content:
